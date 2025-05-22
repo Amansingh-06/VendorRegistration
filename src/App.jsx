@@ -4,8 +4,8 @@ import UploadMedia from './upload'
 function App() {
   return (
     <>
-      {/* <RegistrationPage /> */}
-      <UploadMedia/>
+      <RegistrationPage />
+      {/* <UploadMedia/> */}
     </>
   )
 }
