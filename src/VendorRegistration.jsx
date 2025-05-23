@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaVideo, FaImage, FaLocationArrow, FaUserAlt, FaStore } from 'react-icons/fa';
+import { FaVideo, FaImage, FaLocationArrow, FaUserAlt, FaStore,FaRegClock } from 'react-icons/fa';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -8,20 +8,26 @@ import { supabase } from './supabaseClient';
 import LocationPopup from './LocationPopUP';
 import Loader from './Loader';
 import toast from 'react-hot-toast';
+import TimeClockFull from './ClockPopup';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
     const [bannerFile, setBannerFile] = useState(null);
-    const [startTime, setStartTime] = useState('09:00');
-    const [endTime, setEndTime] = useState('22:00');
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [startView, setStartView] = useState(false);
+    const [endView, setEndView] = useState(false);
+        const [startTime, setStartTime] = useState(null)
+    const [endTime,setEndTime] = useState(null)
 
     const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm();
 
     const watchName = watch('name');
     const watchShopName = watch('shopName');
-    const watchAddress = watch('address');
+    const watchStreet = watch('street')
+    const watchCity = watch('city')
+    const watchState = watch('state')
+    const watchPincode = watch('pincode')
 
     // File upload function
     const uploadFile = async (file, bucketName) => {
@@ -67,14 +73,17 @@ function VendorRegistration() {
             const shopData = {
                 your_name: data.name,
                 shop_name: data.shopName,
-                address: data.address,
-                start_at: startTime,
-                close_at: endTime,
+                street: data.street,
+                city: data.city,
+                state: data.state,
+                pincode:data.pincode,
+                start_at: startTime.format('hh:mm A'),
+                close_at: endTime.format('hh:mm A'),
                 cuisines: data.cuisines || [],
                 video_url: videoUrl,
                 banner_url: bannerUrl,
             };
-
+            console.log(startTime.format('hh:mm A'), endTime.format('hh:mm A'))
             const { error } = await supabase.from('shops').insert([shopData]);
 
             if (error) {
@@ -86,8 +95,8 @@ function VendorRegistration() {
             // Reset form and states only on success
             setVideoFile(null);
             setBannerFile(null);
-            setStartTime('09:00');
-            setEndTime('22:00');
+            setStartTime(null);
+            setEndTime(null);
             reset();
             toast.success("User registered successfully");
         } catch (err) {
@@ -100,54 +109,123 @@ function VendorRegistration() {
     };
     
 
-    const isFormIncomplete = !watchName || !watchShopName || !watchAddress || !videoFile || !bannerFile || loading;
+    const isFormIncomplete = !watchName || !watchShopName || !watchStreet ||!watchCity ||!watchPincode || !watchState || !videoFile || !bannerFile || loading;
 
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
             {loading && <Loader/>}
-            <div className="border border-gray-300 bg-white w-full max-w-2xl md:p-8 p-4 rounded-lg shadow-lg">
-                <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">Vendor Registration</h1>
+            <div className="border border-gray-300 bg-white w-full max-w-2xl md:p-8 p-2 rounded-lg shadow-lg">
+                <h1 className="text-3xl font-bold mb-8 text-center text-primary">Vendor Registration</h1>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3" noValidate>
                     {/* Name and Shop Name */}
-                    <div className="flex flex-col gap-5">
-                        <div className="relative flex items-center">
-                            <FaUserAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Your Name"
-                                {...register('name', { required: 'Name is required' })}
-                                className="pl-10 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-indigo-500 transition"
-                            />
-                        </div>
-                        {errors.name && <p className="text-red-500 text-sm ">{errors.name.message}</p>}
+                    <div className=' p-2 py-5 shadow-lg flex flex-col gap-3 rounded-lg  border-gray-300 border-1 '>
 
-                        <div className="relative flex items-center">
-                            <FaStore className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Shop Name"
-                                {...register('shopName', { required: 'Shop name is required' })}
-                                className="pl-10 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-indigo-500 transition"
-                            />
+                        {/* Name & Shop Name Inputs with Floating Labels */}
+                        <div className="flex flex-col gap-5">
+                            {/* Name */}
+                            <div className="relative w-full">
+                                <FaUserAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
+                                <input
+                                    id='name'
+                                    type="text"
+                                    {...register('name', { required: 'Name is required' })}
+                                    className="peer pl-10 pt-3  pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-indigo-500 placeholder-transparent"
+                                    placeholder="Your Name"
+                                />
+                                <label htmlFor='name' className="absolute left-10 -top-2.5 text-black  bg-white text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold ">
+                                    Your Name
+                                </label>
+                                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                            </div>
+
+                            {/* Shop Name */}
+                            <div className="relative w-full">
+                                <FaStore className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
+                                <input
+                                    id='shopname'
+                                    type="text"
+                                    {...register('shopName', { required: 'Shop name is required' })}
+                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-indigo-500 placeholder-transparent"
+                                    placeholder="Shop Name"
+                                />
+                                <label htmlFor='shopname' className="absolute left-10 -top-2.5 bg-white text-black text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                    Shop Name
+                                </label>
+                                {errors.shopName && <p className="text-red-500 text-sm mt-1">{errors.shopName.message}</p>}
+                            </div>
                         </div>
-                        {errors.shopName && <p className="text-red-500 text-sm">{errors.shopName.message}</p>}
+
+                        {/* Address Subcategory */}
+                        <div className="flex flex-col gap-5 mt-6">
+                            {/* <p className="font-semibold text-lg text-gray-700">Complete Address</p> */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="relative">
+                                    <input
+                                        id='street'
+                                        type="text"
+                                        {...register('street', { required: 'Street is required' })}
+                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:border-indigo-500"
+                                        placeholder="Street Address"
+                                    />
+                                    <label htmlFor='street' className="absolute left-3 bg-white -top-2.5 text-black text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        Street Address
+                                    </label>
+                                    {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street.message}</p>}
+                                </div>
+
+                                <div className="relative">
+                                    <input
+                                        id='city'
+                                        type="text"
+                                        {...register('city', { required: 'City is required' })}
+                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:border-indigo-500"
+                                        placeholder="City"
+                                    />
+                                    <label htmlFor='city' className="absolute left-3 bg-white -top-2.5 text-black text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5  peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        City
+                                    </label>
+                                    {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>}
+                                </div>
+
+                                <div className="relative">
+                                    <input
+                                        id='state'
+                                        type="text"
+                                        {...register('state', { required: 'State is required' })}
+                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:border-indigo-500"
+                                        placeholder="State"
+                                    />
+                                    <label htmlFor='state' className="absolute left-3 -top-2.5 bg-white text-black text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        State
+                                    </label>
+                                    {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
+                                </div>
+
+                                <div className="relative">
+                                    <input
+                                        id='pincode'
+                                        type="text"
+                                        {...register('pincode', { required: 'Pincode is required' })}
+                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:border-indigo-500"
+                                        placeholder="Pincode"
+                                    />
+                                    <label htmlFor='pincode' className="absolute left-3 -top-2.5 text-black bg-white text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        Pincode
+                                    </label>
+                                    {errors.pincode && <p className="text-red-500 text-sm mt-1">{errors.pincode.message}</p>}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* Address */}
-                    <textarea
-                        placeholder="Complete Address"
-                        rows={4}
-                        {...register('address', { required: 'Address is required' })}
-                        className="p-3 w-full rounded border border-gray-300 resize-none focus:outline-none focus:border-indigo-500 transition"
-                    ></textarea>
-                    {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
-
                     {/* Location Button */}
+                    <div className=' p-2 py-5 flex flex-col gap-5 shadow-lg  border-gray-300 border-1 rounded-lg'>
                     <div>
                         <button type="button"
                             onClick={()=>setShowPopup(true)}
-                            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded transition">
+                            className="flex items-center gap-2 bg-blue hover:bg-indigo text-white px-4 py-2 rounded transition">
                             <FaLocationArrow /> Select Location
                         </button>
                         {showPopup && <LocationPopup onClose={()=>setShowPopup(false)}/>}
@@ -156,40 +234,42 @@ function VendorRegistration() {
                     {/* Timings */}
                     <div className="flex md:flex-row flex-wrap items-center gap-6 text-gray-700">
                         <div className="flex items-center gap-5">
-                            <label className="font-medium text-sm">Start At:</label>
-                            <TimePicker
-                                onChange={(value) => {
-                                    setStartTime(value);
-                                    setValue('startTime', value);
-                                }}
-                                value={startTime}
-                                disableClock
-                                format="h:mm a"
-                                className="border-gray-300! text-lg! w-36! focus:border-indigo-500! focus:outline-none ml-1"
-                            />
-                            {errors.startTime && <p className="text-red-500 text-sm">{errors.startTime.message}</p>}
+                            <label className="font-medium text-lg">Start At:</label>
+                                <FaRegClock
+                                    className='text-2xl'
+                                    onClick={() => setStartView(true)} />
+                                {startTime && (
+                                    <p className='text-sm'>Start At: {startTime.format('hh:mm A')}</p>
+                                )}
+                                {errors.startTime && <p className="text-red-500 text-sm">{errors.startTime.message}</p>}
+                                <TimeClockFull
+                                    isOpen={startView}
+                                    onClose={() => setStartView(false)}
+                                    onTimeSelect={(time) => setStartTime(time)}
+                                />
                         </div>
 
                         <div className="flex items-center gap-5">
-                            <label className="font-medium text-sm">Close At:</label>
-                            <TimePicker
-                                onChange={(value) => {
-                                    setEndTime(value);
-                                    setValue('endTime', value);
-                                }}
-                                value={endTime}
-                                disableClock
-                                format="h:mm a"
-                                className="border-gray-300! text-lg! w-36! focus:border-indigo-500! focus:outline-none! mr-2.5"
-                            />
-                            {errors.endTime && <p className="text-red-500 text-sm">{errors.endTime.message}</p>}
+                            <label className="font-medium text-lg">Close At:</label>
+                                <FaRegClock
+                                    className='text-2xl -ml-1'
+                                    onClick={() => setEndView(true)} />
+                                {endTime && (
+                                    <p className='text-sm'>Close At: { endTime.format('hh:mm A')}</p>
+                                )}
+                                {errors.endTime && <p className="text-red-500 text-sm">{errors.endTime.message}</p>}
+                                <TimeClockFull
+                                    isOpen={endView}
+                                    onClose={() => setEndView(false)}
+                                    onTimeSelect={(time) => setEndTime(time)}
+                                />
                         </div>
                     </div>
 
                     {/* File Uploads */}
                     <div className="flex flex-col md:flex-row gap-6 mt-4">
                         <div className="flex items-center gap-3 flex-1 min-w-[180px]">
-                            <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center gap-2 transition">
+                            <label className="cursor-pointer bg-indigo hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center gap-2 transition">
                                 <FaVideo /> Upload Video
                                 <input
                                     type="file"
@@ -199,7 +279,7 @@ function VendorRegistration() {
                                 />
                             </label>
                             <span
-                                className="text-sm text-gray-600 truncate max-w-[120px] "
+                                className="text-sm text-gray-600 truncate max-w-[100px] "
                                 title={videoFile ? videoFile.name : 'No video chosen'}
                             >
                                 {loading && videoFile ? 'Uploading video...' : (videoFile ? videoFile.name : 'No video chosen')}
@@ -207,7 +287,7 @@ function VendorRegistration() {
                         </div>
 
                         <div className="flex items-center gap-3 flex-1 min-w-[180px]">
-                            <label className="cursor-pointer bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-md flex items-center gap-2 transition">
+                            <label className="cursor-pointer bg-green hover:bg-green-700 text-white py-2 px-3 rounded-md flex items-center gap-2 transition">
                                 <FaImage /> Upload Banner
                                 <input
                                     type="file"
@@ -217,16 +297,18 @@ function VendorRegistration() {
                                 />
                             </label>
                             <span
-                                className="text-sm text-gray-600 truncate max-w-[120px]"
+                                className="text-sm text-gray-600 truncate max-w-[100px]"
                                 title={bannerFile ? bannerFile.name : 'No banner chosen'}
                             >
                                 {loading && bannerFile ? 'Uploading banner...' : (bannerFile ? bannerFile.name : 'No banner chosen')}
                             </span>
                         </div>
                     </div>
+                    </div>
+                    <div className=' p-2 py-5 shadow-lg  border-gray-300 border-1 rounded-lg '>
 
                     {/* Cuisine */}
-                    <div className="flex flex-col gap-3 mt-6">
+                    <div className="flex flex-col gap-3 -mt-2 ">
                         <p className="font-semibold text-lg text-gray-700">Available Cuisine</p>
                         <div className="flex gap-6 flex-wrap">
                             {['South Indian', 'North Indian', 'Chinese', 'Italian', 'Mexican'].map((cuisine, index) => (
@@ -245,13 +327,13 @@ function VendorRegistration() {
                             ))}
                         </div>
                     </div>
-
+</div>
                     {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isFormIncomplete}
-                        className={`py-3 mt-8 rounded transition
-              ${isFormIncomplete ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-700 hover:bg-indigo-800 text-white'}
+                        className={`py-3 mt-5  rounded-lg shadow-lg transition
+              ${isFormIncomplete ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-indigo-800 text-white'}
             `}
                     >
                         {loading ? 'Creating Account...' : 'Create Account'}
