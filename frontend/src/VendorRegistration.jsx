@@ -142,7 +142,7 @@ function VendorRegistration() {
                                     {...register("name", {
                                         required: "Name is required",
                                         validate: value => {
-                                            if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value)) {
+                                            if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value.trim())) {
                                                 return "Only characters and single spaces (not at start)";
                                             }
                                             if (value.replace(/\s/g, "").length < 3) {
@@ -164,8 +164,17 @@ function VendorRegistration() {
                                             e.preventDefault();
                                         }
                                     }}
+                                    onInput={(e) => {
+                                        const value = e.currentTarget.value;
+                                        // Remove leading spaces and invalid chars like numbers/symbols or multiple spaces
+                                        e.currentTarget.value = value
+                                            .replace(/[^a-zA-Z ]/g, "")       // only letters and spaces
+                                            .replace(/^\s+/, "")              // no leading space
+                                            .replace(/\s{2,}/g, " ");         // no multiple spaces
+                                    }}
                                     className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                 />
+
 
                                 <label htmlFor="name" className="absolute left-10 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
                                     Your Name
@@ -185,7 +194,7 @@ function VendorRegistration() {
                                         required: "Shop Name is required",
                                         validate: (value) => {
                                             if (/^\s/.test(value)) return "Cannot start with space";
-                                            if (!/^[A-Za-z0-9 ]+$/.test(value)) return "Only letters, numbers, and spaces allowed";
+                                            if (!/^[A-Za-z0-9 ]+$/.test(value.trim())) return "Only letters, numbers, and spaces allowed";
                                             return true;
                                         },
                                     })}
@@ -193,18 +202,30 @@ function VendorRegistration() {
                                         const allowedChars = /^[a-zA-Z0-9 ]$/;
                                         const controlKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
 
-                                        // ❌ Don't allow first character to be a space
+                                        // ❌ Don’t allow space at the beginning
                                         if (e.key === " " && e.currentTarget.selectionStart === 0) {
                                             e.preventDefault();
                                         }
 
-                                        // ❌ Don't allow any other disallowed character
+                                        // ❌ Disallow any invalid character
                                         if (!allowedChars.test(e.key) && !controlKeys.includes(e.key)) {
                                             e.preventDefault();
                                         }
                                     }}
+                                    onInput={(e) => {
+                                        let value = e.currentTarget.value;
+
+                                        // ✅ Cleanup invalid characters and extra spaces
+                                        value = value
+                                            .replace(/[^a-zA-Z0-9 ]/g, "") // remove special characters
+                                            .replace(/^\s+/, "")           // remove leading spaces
+                                            .replace(/\s{2,}/g, " ");      // replace multiple spaces with one
+
+                                        e.currentTarget.value = value;
+                                    }}
                                     className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                 />
+
 
 
 
@@ -319,7 +340,7 @@ function VendorRegistration() {
                     <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-8 bg-white">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            {/* Street - letters, numbers, space, comma (no starting space) */}
+                            {/* Street */}
                             <div className="relative">
                                 <input
                                     id="street"
@@ -328,9 +349,8 @@ function VendorRegistration() {
                                         required: "Street is required",
                                         validate: (value) => {
                                             if (!value.trim()) return "Street is required";
-                                            if (/^\s/.test(value)) return "Street cannot start with a space";
-                                            if (!/^[A-Za-z0-9 ,.\-#\/']+$/.test(value))
-                                                return "Only letters, numbers, spaces, and , . - # / ' allowed";
+                                            if (/^\s/.test(value)) return "Street cannot start with space";
+                                            if (!/^[A-Za-z0-9 ,.\-#\/']+$/.test(value)) return "Invalid characters in street";
                                             return true;
                                         },
                                     })}
@@ -342,6 +362,15 @@ function VendorRegistration() {
                                         ) {
                                             e.preventDefault();
                                         }
+                                        if (e.key === " " && e.currentTarget.selectionStart === 0) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    onInput={(e) => {
+                                        e.currentTarget.value = e.currentTarget.value
+                                            .replace(/[^a-zA-Z0-9 ,.\-#\/']/g, "")
+                                            .replace(/^\s+/, "")
+                                            .replace(/\s{2,}/g, " ");
                                     }}
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
                                     placeholder="Street"
@@ -352,7 +381,7 @@ function VendorRegistration() {
                                 {errors.street && <p className="text-red-500 text-sm">{errors.street.message}</p>}
                             </div>
 
-                            {/* District (City) - letters and spaces allowed, but first letter must be non-space */}
+                            {/* City */}
                             <div className="relative">
                                 <input
                                     id="city"
@@ -361,8 +390,8 @@ function VendorRegistration() {
                                         required: "City is required",
                                         validate: (value) => {
                                             if (!value.trim()) return "City is required";
-                                            if (/^\s/.test(value)) return "City cannot start with a space";
-                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value)) return "Only letters and spaces allowed, no numbers or special chars";
+                                            if (/^\s/.test(value)) return "City cannot start with space";
+                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value)) return "Only letters and single spaces allowed";
                                             return true;
                                         },
                                     })}
@@ -374,10 +403,15 @@ function VendorRegistration() {
                                         ) {
                                             e.preventDefault();
                                         }
-                                        // Prevent space at start
                                         if (e.key === " " && e.currentTarget.selectionStart === 0) {
                                             e.preventDefault();
                                         }
+                                    }}
+                                    onInput={(e) => {
+                                        e.currentTarget.value = e.currentTarget.value
+                                            .replace(/[^a-zA-Z ]/g, "")
+                                            .replace(/^\s+/, "")
+                                            .replace(/\s{2,}/g, " ");
                                     }}
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
                                     placeholder="City"
@@ -388,8 +422,7 @@ function VendorRegistration() {
                                 {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
                             </div>
 
-
-                            {/* State - only letters, no spaces */}
+                            {/* State */}
                             <div className="relative">
                                 <input
                                     id="state"
@@ -398,9 +431,8 @@ function VendorRegistration() {
                                         required: "State is required",
                                         validate: (value) => {
                                             if (!value.trim()) return "State is required";
-                                            if (/^\s/.test(value)) return "State cannot start with a space";
-                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value))
-                                                return "Only letters and spaces allowed, no numbers or special chars";
+                                            if (/^\s/.test(value)) return "State cannot start with space";
+                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value)) return "Only letters and single spaces allowed";
                                             return true;
                                         },
                                     })}
@@ -408,14 +440,19 @@ function VendorRegistration() {
                                         const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
                                         if (
                                             !allowedKeys.includes(e.key) &&
-                                            !/^[a-zA-Z ]$/.test(e.key)  // letters + space allowed
+                                            !/^[a-zA-Z ]$/.test(e.key)
                                         ) {
                                             e.preventDefault();
                                         }
-                                        // Prevent space at start
                                         if (e.key === " " && e.currentTarget.selectionStart === 0) {
                                             e.preventDefault();
                                         }
+                                    }}
+                                    onInput={(e) => {
+                                        e.currentTarget.value = e.currentTarget.value
+                                            .replace(/[^a-zA-Z ]/g, "")
+                                            .replace(/^\s+/, "")
+                                            .replace(/\s{2,}/g, " ");
                                     }}
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
                                     placeholder="State"
@@ -426,13 +463,13 @@ function VendorRegistration() {
                                 {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
                             </div>
 
-
-                            {/* Pincode - exactly 6 digits */}
+                            {/* Pincode */}
                             <div className="relative">
                                 <input
                                     id="pincode"
                                     type="text"
                                     maxLength={6}
+                                    inputMode="numeric"
                                     {...register("pincode", {
                                         required: "Pincode is required",
                                         validate: (value) => {
@@ -449,6 +486,9 @@ function VendorRegistration() {
                                             e.preventDefault();
                                         }
                                     }}
+                                    onInput={(e) => {
+                                        e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "").slice(0, 6);
+                                    }}
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
                                     placeholder="Pincode"
                                 />
@@ -460,6 +500,7 @@ function VendorRegistration() {
 
                         </div>
                     </div>
+
 
 
 
