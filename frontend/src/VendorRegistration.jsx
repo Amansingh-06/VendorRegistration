@@ -22,7 +22,7 @@ function VendorRegistration() {
         const [startTime, setStartTime] = useState(null)
     const [endTime,setEndTime] = useState(null)
 
-    const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm();
+    const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm({mode:'onChange'});
 
     const watchName = watch('name');
     const watchShopName = watch('shopName');
@@ -111,8 +111,16 @@ function VendorRegistration() {
     };
     
 
-    const isFormIncomplete = !watchName || !watchShopName || !watchStreet ||!watchCity ||!watchPincode || !watchState  || !bannerFile || loading;
-
+    const isFormIncomplete =
+        !watchName ||
+        !watchShopName ||
+        !watchStreet ||
+        !watchCity ||
+        !watchPincode ||
+        !watchState ||
+        !bannerFile ||
+        loading ||
+        Object.keys(errors).length > 0;
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
             {loading && <Loader/>}
@@ -126,29 +134,80 @@ function VendorRegistration() {
                         <div className="grid md:grid-cols-2 gap-4">
                             {/* Name */}
                             <div className="relative">
-                                <FaUserAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
+                                <FaUserAlt className="absolute left-3 top-4.5 text-black" />
                                 <input
                                     id="name"
                                     type="text"
-                                    {...register('name', { required: 'Name is required' })}
-                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                     placeholder="Your Name"
+                                    {...register("name", {
+                                        required: "Name is required",
+                                        validate: value => {
+                                            if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value)) {
+                                                return "Only characters and single spaces (not at start)";
+                                            }
+                                            if (value.replace(/\s/g, "").length < 3) {
+                                                return "At least 3 letters required (excluding spaces)";
+                                            }
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const key = e.key;
+                                        const isLetter = /^[a-zA-Z]$/.test(key);
+                                        const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'];
+                                        const isSpaceAllowed =
+                                            key === ' ' && /^[a-zA-Z]$/.test(e.currentTarget.value.slice(-1));
+                                        if (!(isLetter || allowedKeys.includes(key) || isSpaceAllowed)) {
+                                            e.preventDefault();
+                                        }
+                                        if (key === ' ' && e.currentTarget.value.length === 0) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                 />
+
                                 <label htmlFor="name" className="absolute left-10 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
                                     Your Name
                                 </label>
+                                {errors.name && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                                )}
                             </div>
 
                             {/* Shop Name */}
                             <div className="relative">
-                                <FaStore className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
+                                <FaStore className="absolute left-3 top-4.5 text-black" />
                                 <input
                                     id="shopname"
-                                    type="text"
-                                    {...register('shopName', { required: 'Shop name is required' })}
-                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                     placeholder="Shop Name"
+                                    {...register("shopName", {
+                                        required: "Shop Name is required",
+                                        validate: (value) => {
+                                            if (/^\s/.test(value)) return "Cannot start with space";
+                                            if (!/^[A-Za-z0-9 ]+$/.test(value)) return "Only letters, numbers, and spaces allowed";
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const allowedChars = /^[a-zA-Z0-9 ]$/;
+                                        const controlKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+
+                                        // ❌ Don't allow first character to be a space
+                                        if (e.key === " " && e.currentTarget.selectionStart === 0) {
+                                            e.preventDefault();
+                                        }
+
+                                        // ❌ Don't allow any other disallowed character
+                                        if (!allowedChars.test(e.key) && !controlKeys.includes(e.key)) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:orange placeholder-transparent"
                                 />
+
+
+
                                 <label htmlFor="shopname" className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
                                     Shop Name
                                 </label>
@@ -256,37 +315,154 @@ function VendorRegistration() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Card 2: Address + Location */}
+{/* Address */}
                     <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-8 bg-white">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {['street', 'city', 'state', 'pincode'].map((field) => (
-                                <div key={field} className="relative">
-                                    <input
-                                        id={field}
-                                        type="text"
-                                        {...register(field, { required: `${field.charAt(0).toUpperCase() + field.slice(1)} is required` })}
-                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
-                                        placeholder={field}
-                                    />
-                                    <label htmlFor={field} className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold ">
-                                        {field.charAt(0).toUpperCase() + field.slice(1)}
-                                    </label>
-                                    {errors[field] && <p className="text-red-500 text-sm">{errors[field].message}</p>}
-                                </div>
-                            ))}
-                        </div>
 
-                        <button
-                            type="button"
-                            onClick={() => setShowPopup(true)}
-                            className="flex items-center gap-2 bg-blue text-white px-4 py-2 rounded transition w-max"
-                        >
-                            <MdAddLocationAlt />
-                             Location
-                        </button>
-                        {showPopup && <LocationPopup onClose={() => setShowPopup(false)} />}
+                            {/* Street - letters, numbers, space, comma (no starting space) */}
+                            <div className="relative">
+                                <input
+                                    id="street"
+                                    type="text"
+                                    {...register("street", {
+                                        required: "Street is required",
+                                        validate: (value) => {
+                                            if (!value.trim()) return "Street is required";
+                                            if (/^\s/.test(value)) return "Street cannot start with a space";
+                                            if (!/^[A-Za-z0-9 ,.\-#\/']+$/.test(value))
+                                                return "Only letters, numbers, spaces, and , . - # / ' allowed";
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+                                        if (
+                                            !allowedKeys.includes(e.key) &&
+                                            !/^[a-zA-Z0-9 ,.\-#\/']$/.test(e.key)
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
+                                    placeholder="Street"
+                                />
+                                <label htmlFor="street" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                    Street
+                                </label>
+                                {errors.street && <p className="text-red-500 text-sm">{errors.street.message}</p>}
+                            </div>
+
+                            {/* District (City) - letters and spaces allowed, but first letter must be non-space */}
+                            <div className="relative">
+                                <input
+                                    id="city"
+                                    type="text"
+                                    {...register("city", {
+                                        required: "City is required",
+                                        validate: (value) => {
+                                            if (!value.trim()) return "City is required";
+                                            if (/^\s/.test(value)) return "City cannot start with a space";
+                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value)) return "Only letters and spaces allowed, no numbers or special chars";
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+                                        if (
+                                            !allowedKeys.includes(e.key) &&
+                                            !/^[a-zA-Z ]$/.test(e.key)
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                        // Prevent space at start
+                                        if (e.key === " " && e.currentTarget.selectionStart === 0) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
+                                    placeholder="City"
+                                />
+                                <label htmlFor="city" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                    City
+                                </label>
+                                {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                            </div>
+
+
+                            {/* State - only letters, no spaces */}
+                            <div className="relative">
+                                <input
+                                    id="state"
+                                    type="text"
+                                    {...register("state", {
+                                        required: "State is required",
+                                        validate: (value) => {
+                                            if (!value.trim()) return "State is required";
+                                            if (/^\s/.test(value)) return "State cannot start with a space";
+                                            if (!/^[A-Za-z]+(\s[A-Za-z]+)*$/.test(value))
+                                                return "Only letters and spaces allowed, no numbers or special chars";
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+                                        if (
+                                            !allowedKeys.includes(e.key) &&
+                                            !/^[a-zA-Z ]$/.test(e.key)  // letters + space allowed
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                        // Prevent space at start
+                                        if (e.key === " " && e.currentTarget.selectionStart === 0) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
+                                    placeholder="State"
+                                />
+                                <label htmlFor="state" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                    State
+                                </label>
+                                {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
+                            </div>
+
+
+                            {/* Pincode - exactly 6 digits */}
+                            <div className="relative">
+                                <input
+                                    id="pincode"
+                                    type="text"
+                                    maxLength={6}
+                                    {...register("pincode", {
+                                        required: "Pincode is required",
+                                        validate: (value) => {
+                                            if (!/^\d{6}$/.test(value)) return "Pincode must be exactly 6 digits";
+                                            return true;
+                                        },
+                                    })}
+                                    onKeyDown={(e) => {
+                                        const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+                                        if (
+                                            !allowedKeys.includes(e.key) &&
+                                            !/^[0-9]$/.test(e.key)
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none focus:orange"
+                                    placeholder="Pincode"
+                                />
+                                <label htmlFor="pincode" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                    Pincode
+                                </label>
+                                {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode.message}</p>}
+                            </div>
+
+                        </div>
                     </div>
+
+
+
 
                     {/* Card 3: Cuisine */}
                     <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 bg-white">
