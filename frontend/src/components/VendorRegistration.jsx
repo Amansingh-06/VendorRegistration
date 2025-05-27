@@ -7,7 +7,14 @@ import { IoImageOutline, IoQrCodeOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import { AiOutlineShop } from "react-icons/ai";
 import FileUploadButton from './FileUploadButton';
-
+import {
+    BUCKET_NAMES,
+    DEFAULTS,
+    FORM_FIELDS,
+    SUPABASE_TABLES,
+    TOAST_MESSAGES,
+    TIME_FORMAT
+} from '../utils/vendorConfig';
 
 
 
@@ -56,13 +63,15 @@ function VendorRegistration() {
 
     const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm({ mode: 'onChange' });
 
-    const watchName = watch('name');
-    const watchShopName = watch('shopName');
-    const watchStreet = watch('street')
-    const watchCity = watch('city')
-    const watchState = watch('state')
-    const watchPincode = watch('pincode')
-    const watchCuisines = watch('cuisines');
+    const watchFields = {
+        name: watch(FORM_FIELDS.NAME),
+        shopName: watch(FORM_FIELDS.SHOP_NAME),
+        street: watch(FORM_FIELDS.STREET),
+        city: watch(FORM_FIELDS.CITY),
+        state: watch(FORM_FIELDS.STATE),
+        pincode: watch(FORM_FIELDS.PINCODE),
+        cuisines: watch(FORM_FIELDS.CUISINES)
+      };
 
 
     // File upload function
@@ -97,42 +106,43 @@ function VendorRegistration() {
         return urlData.publicUrl;
     };
 
+    const formatTime = (time) => time ? time.format(TIME_FORMAT) : DEFAULTS.TIME;
+
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            // Upload files in parallel, if any upload fails, it throws and catch will handle
             const [videoUrl, bannerUrl, paymentQRUrl] = await Promise.all([
-                uploadFile(videoFile, 'videos'),
-                uploadFile(bannerFile, 'banners'),
-                uploadFile(paymentFile, 'payments-qr'),
+                uploadFile(videoFile, BUCKET_NAMES.VIDEO),
+                uploadFile(bannerFile, BUCKET_NAMES.BANNER),
+                uploadFile(paymentFile, BUCKET_NAMES.PAYMENT)
             ]);
 
             const shopData = {
-                your_name: data.name,
-                shop_name: data.shopName,
-                street: data.street,
-                city: data.city,
-                state: data.state,
-                pincode: data.pincode,
-                Shift1_start_at: startTime1.format('hh:mm A'),
-                Shift1_close_at: endTime1.format('hh:mm A'),
-                Shift2_start_at: startTime2 ? startTime2.format('hh:mm A') : "NA",
-                Shift2_close_at: endTime2 ? endTime2.format('hh:mm A') : "NA",
-                cuisines: data.cuisines || [],
-                video_url: videoUrl,
-                banner_url: bannerUrl,
+                your_name: data[FORM_FIELDS.NAME],
+                shop_name: data[FORM_FIELDS.SHOP_NAME],
+                street: data[FORM_FIELDS.STREET],
+                city: data[FORM_FIELDS.CITY],
+                state: data[FORM_FIELDS.STATE],
+                pincode: data[FORM_FIELDS.PINCODE],
+                Shift1_start_at: formatTime(startTime1),
+                Shift1_close_at: formatTime(endTime1),
+                Shift2_start_at: formatTime(startTime2),
+                Shift2_close_at: formatTime(endTime2),
+                cuisines: data[FORM_FIELDS.CUISINES] || [],
+                video_url: videoUrl || DEFAULTS.VIDEO_URL,
+                banner_url: bannerUrl || DEFAULTS.BANNER_URL,
                 paymentsqr_url: paymentQRUrl,
-                note_from_vendor: data.note?.trim() || "NA"
+                note_from_vendor: data[FORM_FIELDS.NOTE]?.trim() || DEFAULTS.NOTE
             };
-            const { error } = await supabase.from('shops').insert([shopData]);
+
+            const { error } = await supabase.from(SUPABASE_TABLES.TABLE).insert([shopData]);
 
             if (error) {
                 console.error('Insert Error:', error.message);
-                toast.error("Failed to register vendor");
-                return; // Stop execution on insert error
+                toast.error(TOAST_MESSAGES.REGISTER_FAILED);
+                return;
             }
 
-            // Reset form and states only on success
             setVideoFile(null);
             setBannerFile(null);
             setPaymentFile(null);
@@ -140,17 +150,17 @@ function VendorRegistration() {
             setEndTime1(null);
             setStartTime2(null);
             setEndTime2(null);
-            setEndTime(null);
             reset();
-            toast.success("User registered successfully");
+
+            toast.success(TOAST_MESSAGES.REGISTER_SUCCESS);
         } catch (err) {
-            // Handles all upload errors and unexpected errors
             console.error('Unexpected Error:', err.message);
-            toast.error("Something went wrong");
+            toast.error(TOAST_MESSAGES.UNEXPECTED_ERROR);
         } finally {
             setLoading(false);
         }
     };
+    
     React.useEffect(() => {
         if (showPopup || loading) {
             document.body.style.overflow = 'hidden';
@@ -166,16 +176,18 @@ function VendorRegistration() {
     // Check if form is incomplete
 
     const isBannerOrVideoMissing = !bannerFile && !videoFile;
+
     const isFormIncomplete =
-        !watchName ||
-        !watchShopName ||
-        !watchStreet ||
-        !watchCity ||
-        !watchPincode ||
-        !watchState ||
+        !watchFields.name ||
+        !watchFields.shopName ||
+        !watchFields.street ||
+        !watchFields.city ||
+        !watchFields.state ||
+        !watchFields.pincode ||
         !paymentFile ||
-        !watchCuisines || watchCuisines.length === 0 ||
-        isBannerOrVideoMissing ||
+        !watchFields.cuisines ||
+        watchFields.cuisines.length === 0 ||
+        (!bannerFile && !videoFile) ||
         loading ||
         Object.keys(errors).length > 0;
     return (

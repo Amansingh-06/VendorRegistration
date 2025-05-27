@@ -37,7 +37,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
             const lng = place.location?.lng();
             const areaName = place.addressComponents?.find(c =>
                 c.types.includes("sublocality") || c.types.includes("sublocality_level_1")
-            )?.long_name; // corrected to long_name
+            )?.long_name;
 
             setTempLocation({
                 name: place.formattedAddress,
