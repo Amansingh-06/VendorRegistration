@@ -206,7 +206,7 @@ function VendorRegistration() {
                                 {/* Name */}
                                 <div className="relative">
                                     {/* <FaUserAlt className="absolute left-3 top-4.5 text-black" /> */}
-                                    <FaRegUser className="absolute left-3 top-4.5 text-black text-lg" />
+                                    <FaRegUser className="absolute left-3 top-4 text-black text-lg" />
                                     <input
                                         id="name"
                                         type="text"
@@ -216,7 +216,7 @@ function VendorRegistration() {
                                         onInput={InputCleanup}
                                         className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
                                     />
-                                    <label htmlFor="name" className="absolute left-10 -top-2 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                    <label htmlFor="name" className="absolute left-10 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
                                         Your Name
                                     </label>
                                     {errors.name && (
@@ -227,7 +227,7 @@ function VendorRegistration() {
                                 {/* Shop Name */}
                                 <div className="relative">
                                     {/* <FaStore className="absolute left-3 top-4.5 text-black" /> */}
-                                    <AiOutlineShop className="absolute left-3 top-4.5 text-black text-lg" />
+                                    <AiOutlineShop className="absolute left-3 top-4 text-black text-lg" />
                                     <input
                                         id="shopname"
                                         placeholder="Shop Name"
@@ -255,7 +255,7 @@ function VendorRegistration() {
                                 {/* Start At */}
                                 <div className="w-full">
                                     <div className="relative">
-                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <FaRegClock className="absolute left-3 top-4 text-black" />
                                         <input
                                             id="startTime1"
                                             type="text"
@@ -293,7 +293,7 @@ function VendorRegistration() {
                                 {/* Close At */}
                                 <div className="w-full">
                                     <div className="relative">
-                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <FaRegClock className="absolute left-3 top-4 text-black" />
                                         <input
                                             id="endTime1"
                                             type="text"
@@ -335,7 +335,7 @@ function VendorRegistration() {
                                 {/* Start At */}
                                 <div className="w-full">
                                     <div className="relative">
-                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <FaRegClock className="absolute left-3 top-4 text-black" />
                                         <input
                                             id="startTime2"
                                             type="text"
@@ -373,7 +373,7 @@ function VendorRegistration() {
                                 {/* Close At */}
                                 <div className="w-full">
                                     <div className="relative">
-                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <FaRegClock className="absolute left-3 top-4 text-black" />
                                         <input
                                             id="endTime2"
                                             type="text"
