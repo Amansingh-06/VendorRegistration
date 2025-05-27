@@ -13,7 +13,8 @@ import {
     FORM_FIELDS,
     SUPABASE_TABLES,
     TOAST_MESSAGES,
-    TIME_FORMAT
+    TIME_FORMAT,
+    SHOP_DATA_KEYS
 } from '../utils/vendorConfig';
 
 
@@ -118,22 +119,22 @@ function VendorRegistration() {
             ]);
 
             const shopData = {
-                your_name: data[FORM_FIELDS.NAME],
-                shop_name: data[FORM_FIELDS.SHOP_NAME],
-                street: data[FORM_FIELDS.STREET],
-                city: data[FORM_FIELDS.CITY],
-                state: data[FORM_FIELDS.STATE],
-                pincode: data[FORM_FIELDS.PINCODE],
-                Shift1_start_at: formatTime(startTime1),
-                Shift1_close_at: formatTime(endTime1),
-                Shift2_start_at: formatTime(startTime2),
-                Shift2_close_at: formatTime(endTime2),
-                cuisines: data[FORM_FIELDS.CUISINES] || [],
-                video_url: videoUrl || DEFAULTS.VIDEO_URL,
-                banner_url: bannerUrl || DEFAULTS.BANNER_URL,
-                paymentsqr_url: paymentQRUrl,
-                note_from_vendor: data[FORM_FIELDS.NOTE]?.trim() || DEFAULTS.NOTE
-            };
+                [SHOP_DATA_KEYS.VENDOR_NAME]: data[FORM_FIELDS.NAME],
+                [SHOP_DATA_KEYS.SHOP_NAME]: data[FORM_FIELDS.SHOP_NAME],
+                [SHOP_DATA_KEYS.STREET]: data[FORM_FIELDS.STREET],
+                [SHOP_DATA_KEYS.CITY]: data[FORM_FIELDS.CITY],
+                [SHOP_DATA_KEYS.STATE]: data[FORM_FIELDS.STATE],
+                [SHOP_DATA_KEYS.PINCODE]: data[FORM_FIELDS.PINCODE],
+                [SHOP_DATA_KEYS.SHIFT1_START]: formatTime(startTime1),
+                [SHOP_DATA_KEYS.SHIFT1_CLOSE]: formatTime(endTime1),
+                [SHOP_DATA_KEYS.SHIFT2_START]: formatTime(startTime2),
+                [SHOP_DATA_KEYS.SHIFT2_CLOSE]: formatTime(endTime2),
+                [SHOP_DATA_KEYS.CUISINES]: data[FORM_FIELDS.CUISINES] || [],
+                [SHOP_DATA_KEYS.VIDEO_URL]: videoUrl || DEFAULTS.VIDEO_URL,
+                [SHOP_DATA_KEYS.BANNER_URL]: bannerUrl || DEFAULTS.BANNER_URL,
+                [SHOP_DATA_KEYS.PAYMENT_QR_URL]: paymentQRUrl,
+                [SHOP_DATA_KEYS.NOTE]: data[FORM_FIELDS.NOTE]?.trim() || DEFAULTS.NOTE,
+              };
 
             const { error } = await supabase.from(SUPABASE_TABLES.TABLE).insert([shopData]);
 

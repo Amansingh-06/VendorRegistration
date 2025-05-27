@@ -8,7 +8,7 @@ export const BUCKET_NAMES = {
 
 export const DEFAULTS = {
     NOTE: 'NA',
-    TIME: 'NA',
+    TIME: "00:00:00",
     VIDEO_URL: 'NA',
     BANNER_URL: 'NA'
 };
@@ -24,8 +24,27 @@ export const FORM_FIELDS = {
     NOTE: 'note'
 };
 
+export const SHOP_DATA_KEYS = {
+    VENDOR_NAME: 'v_name',
+    SHOP_NAME: 'shop_name',
+    STREET: 'street',
+    CITY: 'city',
+    STATE: 'state',
+    PINCODE: 'pincode',
+    SHIFT1_START: 'shift1_opening_time',
+    SHIFT1_CLOSE: 'shift1_closing_time',
+    SHIFT2_START: 'shift2_opening_time',
+    SHIFT2_CLOSE: 'shift2_closing_time',
+    CUISINES: 'cuisines_available',
+    VIDEO_URL: 'video_url',
+    BANNER_URL: 'banner_url',
+    PAYMENT_QR_URL: 'payment_url',
+    NOTE: 'note_from_vendor',
+};
+  
+
 export const SUPABASE_TABLES = {
-    TABLE: 'shops'
+    TABLE: 'vendor_request'
 };
 
 export const TOAST_MESSAGES = {
