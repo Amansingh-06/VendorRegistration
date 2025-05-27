@@ -6,7 +6,7 @@ import { TimeClock } from '@mui/x-date-pickers/TimeClock';
 
 export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
     const [value, setValue] = React.useState(dayjs());
-    const [view, setView] = React.useState('minutes'); // 'hours' | 'minutes'
+    const [view, setView] = React.useState('hours'); // 'hours' | 'minutes'
 
     // Change AM/PM
     const handleAmPmChange = (e) => {
@@ -25,6 +25,18 @@ export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
     const handleHourClick = () => {
         setView('hours');
     };
+
+    React.useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 

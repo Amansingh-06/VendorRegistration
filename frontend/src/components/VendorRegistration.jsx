@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaUserAlt, FaStore, FaRegClock } from 'react-icons/fa';
-import { MdAddLocationAlt, MdOutlineCloudUpload } from "react-icons/md";
+import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
+import { HiOutlineVideoCamera } from "react-icons/hi2";
+import { IoImageOutline, IoQrCodeOutline } from "react-icons/io5";
+import { FaRegUser } from "react-icons/fa";
+import { AiOutlineShop } from "react-icons/ai";
+import FileUploadButton from './FileUploadButton';
+
+
+
+
+
 import {
     nameValidation,
     nameKeyDownHandler,
@@ -30,14 +40,21 @@ import TimeClockFull from './ClockPopup';
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
     const [bannerFile, setBannerFile] = useState(null);
+    const [paymentFile, setPaymentFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [startView, setStartView] = useState(false);
-    const [endView, setEndView] = useState(false);
-        const [startTime, setStartTime] = useState(null)
-    const [endTime,setEndTime] = useState(null)
+    const [location, setLocation] = useState(null);
+    const [startTime1, setStartTime1] = useState(null);
+    const [endTime1, setEndTime1] = useState(null);
+    const [startTime2, setStartTime2] = useState(null);
+    const [endTime2, setEndTime2] = useState(null);
+    const [startView1, setStartView1] = useState(false);
+    const [endView1, setEndView1] = useState(false);
+    const [startView2, setStartView2] = useState(false);
+    const [endView2, setEndView2] = useState(false);
 
-    const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm({mode:'onChange'});
+
+    const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm({ mode: 'onChange' });
 
     const watchName = watch('name');
     const watchShopName = watch('shopName');
@@ -45,7 +62,7 @@ function VendorRegistration() {
     const watchCity = watch('city')
     const watchState = watch('state')
     const watchPincode = watch('pincode')
-    const watchNote = watch('note');
+    const watchCuisines = watch('cuisines');
 
 
     // File upload function
@@ -84,9 +101,10 @@ function VendorRegistration() {
         setLoading(true);
         try {
             // Upload files in parallel, if any upload fails, it throws and catch will handle
-            const [videoUrl, bannerUrl] = await Promise.all([
+            const [videoUrl, bannerUrl, paymentQRUrl] = await Promise.all([
                 uploadFile(videoFile, 'videos'),
                 uploadFile(bannerFile, 'banners'),
+                uploadFile(paymentFile, 'payments-qr'),
             ]);
 
             const shopData = {
@@ -95,15 +113,17 @@ function VendorRegistration() {
                 street: data.street,
                 city: data.city,
                 state: data.state,
-                pincode:data.pincode,
-                start_at: startTime.format('hh:mm A'),
-                close_at: endTime.format('hh:mm A'),
+                pincode: data.pincode,
+                Shift1_start_at: startTime1.format('hh:mm A'),
+                Shift1_close_at: endTime1.format('hh:mm A'),
+                Shift2_start_at: startTime2 ? startTime2.format('hh:mm A') : "NA",
+                Shift2_close_at: endTime2 ? endTime2.format('hh:mm A') : "NA",
                 cuisines: data.cuisines || [],
                 video_url: videoUrl,
                 banner_url: bannerUrl,
+                paymentsqr_url: paymentQRUrl,
                 note_from_vendor: data.note?.trim() || "NA"
             };
-            console.log(startTime.format('hh:mm A'), endTime.format('hh:mm A'))
             const { error } = await supabase.from('shops').insert([shopData]);
 
             if (error) {
@@ -115,7 +135,11 @@ function VendorRegistration() {
             // Reset form and states only on success
             setVideoFile(null);
             setBannerFile(null);
-            setStartTime(null);
+            setPaymentFile(null);
+            setStartTime1(null);
+            setEndTime1(null);
+            setStartTime2(null);
+            setEndTime2(null);
             setEndTime(null);
             reset();
             toast.success("User registered successfully");
@@ -127,8 +151,21 @@ function VendorRegistration() {
             setLoading(false);
         }
     };
-    
+    React.useEffect(() => {
+        if (showPopup || loading) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
 
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showPopup, loading]);
+
+    // Check if form is incomplete
+
+    const isBannerOrVideoMissing = !bannerFile && !videoFile;
     const isFormIncomplete =
         !watchName ||
         !watchShopName ||
@@ -136,162 +173,270 @@ function VendorRegistration() {
         !watchCity ||
         !watchPincode ||
         !watchState ||
-        !bannerFile ||
+        !paymentFile ||
+        !watchCuisines || watchCuisines.length === 0 ||
+        isBannerOrVideoMissing ||
         loading ||
         Object.keys(errors).length > 0;
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
-            {loading && <Loader/>}
+            {loading && <Loader />}
             <div className="border border-gray-300 bg-white w-full max-w-2xl md:p-8 p-2 rounded-lg shadow-lg">
-                <h1 className="text-3xl font-bold mb-8 text-center text-primary">Vendor Registration</h1>
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+                <h1 className="text-3xl font-bold mb-8 md:text-left text-center text-yellow">Vendor Registration</h1>
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7  py-4" noValidate>
                     {/* Card 1: Name, Shop Name, Timings, Upload */}
-                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-8 bg-white ">
+                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">
                         {/* Name & Shop Name */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {/* Name */}
-                            <div className="relative">
-                                <FaUserAlt className="absolute left-3 top-4.5 text-black" />
-                                <input
-                                    id="name"
-                                    type="text"
-                                    placeholder="Your Name"
-                                    {...register("name", nameValidation)}
-                                    onKeyDown={nameKeyDownHandler}
-                                    onInput={InputCleanup}
-                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
-                                />
-                                <label htmlFor="name" className="absolute left-10 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
-                                    Your Name
-                                </label>
-                                {errors.name && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                                )}
-                            </div>
-
-                            {/* Shop Name */}
-                            <div className="relative">
-                                <FaStore className="absolute left-3 top-4.5 text-black" />
-                                <input
-                                    id="shopname"
-                                    placeholder="Shop Name"
-                                    {...register("shopName", shopNameValidation)}
-                                    onKeyDown={shopNameKeyDownHandler}
-                                    onInput={InputCleanup}
-                                    className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
-                                />
-                                <label htmlFor="shopname" className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
-                                    Shop Name
-                                </label>
-                                {errors.shopName && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.shopName.message}</p>
-                                )}
-
-                            </div>
-                        </div>
-
-                        {/* Timings */}
-                        <div className="flex flex-col md:flex-row md:gap-22 gap-4">
-                            {/* Start Time Input */}
-                            <div className="flex flex-col gap-1 ">
-                                <label className="font-medium">Start At:</label>
-                                <div className="relative w-[200px]">
+                        <h1 className='md:text-2xl text-lg font-semibold text-gray-500'>Basic Details</h1>
+                        <div className=' flex flex-col gap-5'>
+                            <div className="grid md:grid-cols-2 gap-4 ">
+                                {/* Name */}
+                                <div className="relative">
+                                    {/* <FaUserAlt className="absolute left-3 top-4.5 text-black" /> */}
+                                    <FaRegUser className="absolute left-3 top-4.5 text-black text-lg" />
                                     <input
+                                        id="name"
                                         type="text"
-                                        readOnly
-                                        value={startTime ? startTime.format('hh:mm A') : ''}
-                                        onClick={() => setStartView(true)}
-                                        placeholder="Select Start Time"
-                                        className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded cursor-pointer bg-white placeholder:text-sm"
+                                        placeholder="Your Name"
+                                        {...register("name", nameValidation)}
+                                        onKeyDown={nameKeyDownHandler}
+                                        onInput={InputCleanup}
+                                        className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
                                     />
-                                    <FaRegClock
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-black cursor-pointer"
-                                        onClick={() => setStartView(true)}
+                                    <label htmlFor="name" className="absolute left-10 -top-2 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        Your Name
+                                    </label>
+                                    {errors.name && (
+                                        <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Shop Name */}
+                                <div className="relative">
+                                    {/* <FaStore className="absolute left-3 top-4.5 text-black" /> */}
+                                    <AiOutlineShop className="absolute left-3 top-4.5 text-black text-lg" />
+                                    <input
+                                        id="shopname"
+                                        placeholder="Shop Name"
+                                        {...register("shopName", shopNameValidation)}
+                                        onKeyDown={shopNameKeyDownHandler}
+                                        onInput={InputCleanup}
+                                        className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
+                                    />
+                                    <label htmlFor="shopname" className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
+                                        Shop Name
+                                    </label>
+                                    {errors.shopName && (
+                                        <p className="text-red-500 text-sm mt-1">{errors.shopName.message}</p>
+                                    )}
+
+                                </div>
+                            </div>
+
+                            {/* Timings */}
+                            {/* ===== Shift 1 ===== */}
+                            <div>
+                            <h2 className="text-lg font-semibold text-gray-700 mb-2">Shift 1</h2>
+
+                            <div className="flex flex-col md:flex-row gap-4 mb-6">
+                                {/* Start At */}
+                                <div className="w-full">
+                                    <div className="relative">
+                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <input
+                                            id="startTime1"
+                                            type="text"
+                                            readOnly
+                                            value={startTime1 ? startTime1.format('hh:mm A') : ''}
+                                            onClick={() => setStartView1(true)}
+                                            placeholder="Start At"
+                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
+                                        />
+                                        <label
+                                            htmlFor="startTime1"
+                                            className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+          peer-placeholder-shown:top-4 
+          peer-placeholder-shown:text-gray-500 
+          peer-focus:-top-2.5 
+          peer-focus:text-sm 
+          peer-focus:font-semibold 
+          peer-not-placeholder-shown:font-semibold"
+                                        >
+                                            Start At
+                                        </label>
+                                    </div>
+                                    {errors.startTime1 && <p className="text-red-500 text-sm mt-1">{errors.startTime1.message}</p>}
+                                    <TimeClockFull
+                                        isOpen={startView1}
+                                        onClose={() => setStartView1(false)}
+                                        onTimeSelect={(time) => {
+                                            setStartTime1(time);
+                                            setStartView1(false);
+                                            setValue('startTime1', time);
+                                        }}
                                     />
                                 </div>
-                                {errors.startTime && (
-                                    <p className="text-red-500 text-sm">{errors.startTime.message}</p>
-                                )}
-                                <TimeClockFull
-                                    isOpen={startView}
-                                    onClose={() => setStartView(false)}
-                                    onTimeSelect={(time) => {
-                                        setStartTime(time);
-                                        setStartView(false); // Close popup
-                                        setValue('startTime', time); // react-hook-form me set karna ho to
-                                    }}
-                                />
-                            </div>
 
-                            {/* Close Time Input */}
-                            <div className="flex flex-col gap-1">
-                                <label className="font-medium">Close At:</label>
-                                <div className="relative w-[200px]">
-                                    <input
-                                        type="text"
-                                        readOnly
-                                        value={endTime ? endTime.format('hh:mm A') : ''}
-                                        onClick={() => setEndView(true)}
-                                        placeholder="Select Close Time"
-                                        className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded cursor-pointer bg-white placeholder:text-sm"
-                                    />
-                                    <FaRegClock
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-black cursor-pointer"
-                                        onClick={() => setEndView(true)}
+                                {/* Close At */}
+                                <div className="w-full">
+                                    <div className="relative">
+                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <input
+                                            id="endTime1"
+                                            type="text"
+                                            readOnly
+                                            value={endTime1 ? endTime1.format('hh:mm A') : ''}
+                                            onClick={() => setEndView1(true)}
+                                            placeholder="Close At"
+                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
+                                        />
+                                        <label
+                                            htmlFor="endTime1"
+                                            className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+          peer-placeholder-shown:top-4 
+          peer-placeholder-shown:text-gray-500 
+          peer-focus:-top-2.5 
+          peer-focus:text-sm 
+          peer-focus:font-semibold 
+          peer-not-placeholder-shown:font-semibold"
+                                        >
+                                            Close At
+                                        </label>
+                                    </div>
+                                    {errors.endTime1 && <p className="text-red-500 text-sm mt-1">{errors.endTime1.message}</p>}
+                                    <TimeClockFull
+                                        isOpen={endView1}
+                                        onClose={() => setEndView1(false)}
+                                        onTimeSelect={(time) => {
+                                            setEndTime1(time);
+                                            setEndView1(false);
+                                            setValue('endTime1', time);
+                                        }}
                                     />
                                 </div>
-                                {errors.endTime && (
-                                    <p className="text-red-500 text-sm">{errors.endTime.message}</p>
-                                )}
-                                <TimeClockFull
-                                    isOpen={endView}
-                                    onClose={() => setEndView(false)}
-                                    onTimeSelect={(time) => {
-                                        setEndTime(time);
-                                        setEndView(false);
-                                        setValue('endTime', time);
-                                    }}
+                            </div>
+
+                            {/* ===== Shift 2 ===== */}
+                            <h2 className="text-lg  font-semibold text-gray-700 mb-2">Shift 2</h2>
+                            <div className="flex flex-col md:flex-row gap-4">
+                                {/* Start At */}
+                                <div className="w-full">
+                                    <div className="relative">
+                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <input
+                                            id="startTime2"
+                                            type="text"
+                                            readOnly
+                                            value={startTime2 ? startTime2.format('hh:mm A') : ''}
+                                            onClick={() => setStartView2(true)}
+                                            placeholder="Start At"
+                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
+                                        />
+                                        <label
+                                            htmlFor="startTime2"
+                                            className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+          peer-placeholder-shown:top-4 
+          peer-placeholder-shown:text-gray-500 
+          peer-focus:-top-2.5 
+          peer-focus:text-sm 
+          peer-focus:font-semibold 
+          peer-not-placeholder-shown:font-semibold"
+                                        >
+                                            Start At
+                                        </label>
+                                    </div>
+                                    {errors.startTime2 && <p className="text-red-500 text-sm mt-1">{errors.startTime2.message}</p>}
+                                    <TimeClockFull
+                                        isOpen={startView2}
+                                        onClose={() => setStartView2(false)}
+                                        onTimeSelect={(time) => {
+                                            setStartTime2(time);
+                                            setStartView2(false);
+                                            setValue('startTime2', time);
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Close At */}
+                                <div className="w-full">
+                                    <div className="relative">
+                                        <FaRegClock className="absolute left-3 top-4.5 text-black" />
+                                        <input
+                                            id="endTime2"
+                                            type="text"
+                                            readOnly
+                                            value={endTime2 ? endTime2.format('hh:mm A') : ''}
+                                            onClick={() => setEndView2(true)}
+                                            placeholder="Close At"
+                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
+                                        />
+                                        <label
+                                            htmlFor="endTime2"
+                                            className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+          peer-placeholder-shown:top-4 
+          peer-placeholder-shown:text-gray-500 
+          peer-focus:-top-2.5 
+          peer-focus:text-sm 
+          peer-focus:font-semibold 
+          peer-not-placeholder-shown:font-semibold"
+                                        >
+                                            Close At
+                                        </label>
+                                    </div>
+                                    {errors.endTime2 && <p className="text-red-500 text-sm mt-1">{errors.endTime2.message}</p>}
+                                    <TimeClockFull
+                                        isOpen={endView2}
+                                        onClose={() => setEndView2(false)}
+                                        onTimeSelect={(time) => {
+                                            setEndTime2(time);
+                                            setEndView2(false);
+                                            setValue('endTime2', time);
+                                        }}
+                                    />
+                                </div>
+                                </div>
+                            </div>
+
+
+
+                            {/* Uploads */}
+                            <div className="flex flex-col md:flex-row justify-between gap-4 mt-3">
+                                <FileUploadButton
+                                    label="Upload Video"
+                                    bgColor="bg-blue"
+                                    Icon={HiOutlineVideoCamera}
+                                    accept="video/*"
+                                    onChange={(e) => setVideoFile(e.target.files[0])}
+                                    file={videoFile}
+                                    loading={loading}
                                 />
-                            </div>
-                        </div>
 
-                        {/* Uploads */}
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex items-center gap-3 flex-1 min-w-[180px]">
-                                <label className="cursor-pointer bg-indigo text-white py-2 px-4 rounded-md flex items-center gap-2 transition">
-                                    <MdOutlineCloudUpload />
-                                Upload Video
-                                    <input
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={(e) => setVideoFile(e.target.files[0])}
-                                        className="hidden"
-                                    />
-                                </label>
-                                <span className="text-sm text-gray-600 truncate max-w-[80px]" title={videoFile?.name}>
-                                    {loading && videoFile ? 'Uploading...' : (videoFile ? videoFile.name : 'No video')}
-                                </span>
-                            </div>
+                                <FileUploadButton
+                                    label="Upload Banner"
+                                    bgColor="bg-green"
+                                    Icon={IoImageOutline}
+                                    accept="image/*"
+                                    onChange={(e) => setBannerFile(e.target.files[0])}
+                                    file={bannerFile}
+                                    loading={loading}
+                                />
 
-                            <div className="flex items-center gap-3 flex-1 min-w-[180px]">
-                                <label className="cursor-pointer bg-green text-white py-2 px-3 rounded-md flex items-center gap-2 transition">
-                                    <MdOutlineCloudUpload />
-                                Upload Banner
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setBannerFile(e.target.files[0])}
-                                        className="hidden"
-                                    />
-                                </label>
-                                <span className="text-sm text-gray-600 truncate max-w-[80px]" title={bannerFile?.name}>
-                                    {loading && bannerFile ? 'Uploading...' : (bannerFile ? bannerFile.name : 'No banner')}
-                                </span>
+                                <FileUploadButton
+                                    label="Upload QR"
+                                    bgColor="bg-yellow"
+                                    Icon={IoQrCodeOutline}
+                                    accept="image/*"
+                                    onChange={(e) => setPaymentFile(e.target.files[0])}
+                                    file={paymentFile}
+                                    loading={loading}
+                                />
                             </div>
                         </div>
                     </div>
-{/* Address */}
-                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-8 bg-white">
+                    {/* Address */}
+                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-6 bg-white">
+                        <h1 className='md:text-2xl text-lg font-semibold text-gray-500'>Address & Location</h1>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                             {/* Street */}
@@ -305,7 +450,7 @@ function VendorRegistration() {
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
                                     placeholder="Street"
                                 />
-                                <label htmlFor="street" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                <label htmlFor="street" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
                                     Street
                                 </label>
                                 {errors.street && <p className="text-red-500 text-sm">{errors.street.message}</p>}
@@ -322,7 +467,7 @@ function VendorRegistration() {
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
                                     placeholder="City"
                                 />
-                                <label htmlFor="city" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                <label htmlFor="city" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
                                     City
                                 </label>
                                 {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
@@ -339,7 +484,7 @@ function VendorRegistration() {
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
                                     placeholder="State"
                                 />
-                                <label htmlFor="state" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                <label htmlFor="state" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
                                     State
                                 </label>
                                 {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
@@ -358,39 +503,42 @@ function VendorRegistration() {
                                     className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
                                     placeholder="Pincode"
                                 />
-                                <label htmlFor="pincode" className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
+                                <label htmlFor="pincode" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
                                     Pincode
                                 </label>
                                 {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode.message}</p>}
                             </div>
                             {/* /* Location Button */}
-                            <div className='flex items-center  '>
-                            <button
-                                type="button"
+                            <div className='flex items-center gap-5  '>
+                                <button
+                                    type="button"
                                     onClick={() => setShowPopup(true)
-                                    
-                                }
+
+                                    }
                                     className="flex items-center gap-2 bg-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition" >
-                                <MdAddLocationAlt className="text-lg" />
-                                Location
+                                    <MdAddLocationAlt className="text-lg" />
+                                    Location
+                                    {console.log(location)}
                                 </button>
                                 {showPopup && (
                                     <LocationPopup
-                                       
+                                        setLocation={setLocation}
+                                        show={showPopup}
                                         onClose={() => setShowPopup(false)}
                                     />
                                 )}
-                                
+                                <button className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
+
                             </div>
-                            
+
                         </div>
-                        
+
                     </div>
 
                     {/* Card 3: Cuisine */}
-                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 bg-white">
-                        <p className="font-semibold text-lg text-gray-700 mb-3">Available Cuisine</p>
-                        <div className="flex gap-6 flex-wrap">
+                    <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-6 bg-white">
+                        <h1 className='md:text-2xl text-lg font-semibold text-gray-500 '>Available Cuisines</h1>
+                        <div className="flex gap-6 flex-wrap ">
                             {['South Indian', 'North Indian', 'Chinese', 'Italian', 'Mexican'].map((cuisine, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                     <input
@@ -412,7 +560,7 @@ function VendorRegistration() {
                             rows={4}
                             {...register("note")}
                             placeholder="Enter any note (optional)"
-                            className="peer w-full border border-gray-300 rounded-lg shadow-lg p-3 placeholder-transparent focus:outline-none focus:border-orange transition-all"
+                            className="peer w-full border border-gray-300 rounded-lg shadow-lg p-3 placeholder-transparent focus:outline-none focus:border-orange transition-all resize-none"
                         />
                         <label
                             htmlFor="note"
@@ -428,7 +576,7 @@ function VendorRegistration() {
                     <button
                         type="submit"
                         disabled={isFormIncomplete}
-                        className={`py-3 mt-4 rounded-lg shadow-lg transition ${isFormIncomplete ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-indigo-800 text-white'}`}
+                        className={`py-3  rounded-lg shadow-lg transition ${isFormIncomplete ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-indigo-800 text-white'}`}
                     >
                         {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
