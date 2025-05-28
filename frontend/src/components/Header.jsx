@@ -1,55 +1,38 @@
-import React from "react";
+import React, { useState } from 'react';
+import { MdOutlineMessage, MdOutlineFastfood } from "react-icons/md";
+import { GiChickenOven, GiFrenchFries, GiFullPizza } from 'react-icons/gi';
+import { FaIceCream } from 'react-icons/fa';
+import { PiBowlFood } from 'react-icons/pi';
 
-const Header = () => {
+const Header = ({ title = "Registration" }) => {
+    const [switchOn, setSwitchOn] = useState(false);
+
     return (
-        <header className="bg-white shadow-md sticky top-0 z-50">
-            <div className="container mx-auto flex items-center justify-between py-4 px-6">
-                {/* Logo */}
-                <div className="text-2xl font-bold text-indigo-600 cursor-pointer">
-                    VendorApp
-                </div>
+        <div className='w-full top-0 z-20 backdrop-blur-sm rounded-b-lg overflow-hidden bg-gradient-to-br from-orange via-yellow to-orange'>
 
-                {/* Navigation Links */}
-                <nav className="hidden md:flex space-x-8 text-gray-700 font-medium">
-                    <a href="#" className="hover:text-indigo-600 transition">Home</a>
-                    <a href="#" className="hover:text-indigo-600 transition">Products</a>
-                    <a href="#" className="hover:text-indigo-600 transition">About</a>
-                    <a href="#" className="hover:text-indigo-600 transition">Contact</a>
-                </nav>
-
-                {/* Search bar */}
-                <div className="hidden md:flex items-center border rounded-md overflow-hidden">
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        className="px-3 py-1 outline-none"
-                    />
-                    <button className="bg-indigo-600 text-white px-3 py-1 hover:bg-indigo-700 transition">
-                        Search
-                    </button>
-                </div>
-
-                {/* User/Login Button */}
-                <div className="ml-4">
-                    <button className="bg-indigo-600 text-white px-4 py-1 rounded-md hover:bg-indigo-700 transition">
-                        Login
-                    </button>
-                </div>
-
-                {/* Mobile menu icon */}
-                <div className="md:hidden text-gray-700 cursor-pointer">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-7 w-7"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-                    </svg>
-                </div>
+            {/* Floating Food Icons */}
+            <div>
+                <GiFullPizza className="absolute text-red opacity-30 text-2xl lg:text-4xl top-2 right-8 animate-bounce-slow pointer-events-none" />
+                <GiFrenchFries className="absolute text-red opacity-30 text-2xl lg:text-4xl bottom-10 left-8 animate-float pointer-events-none" />
+                <GiChickenOven className="absolute text-red opacity-30 text-2xl lg:text-4xl top-4 lg:top-1/3 right-44 animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-pink opacity-15 text-2xl lg:text-4xl bottom-6 right-12 animate-bounce-slow pointer-events-none" />
+                <MdOutlineFastfood className="absolute text-pink opacity-30 text-2xl lg:text-4xl bottom-0 lg:bottom-12 left-40 animate-bounce-slow pointer-events-none" />
+                <GiFullPizza className="absolute text-red opacity-30 text-2xl lg:text-4xl top-6 left-80 animate-float pointer-events-none" />
+                <PiBowlFood className="absolute text-red opacity-30 text-2xl lg:text-4xl top-8 right-80 animate-bounce-slow pointer-events-none" />
+                <GiChickenOven className="absolute text-red opacity-30 text-2xl lg:text-4xl top-12 right-[470px] animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-pink opacity-15 text-2xl lg:text-4xl top-10 left-60 lg:left-1/2 animate-bounce-slow pointer-events-none" />
+                <GiFrenchFries className="absolute text-pink opacity-30 text-2xl lg:text-4xl top-16 left-1/3 animate-bounce-slow pointer-events-none" />
+                <MdOutlineFastfood className="absolute text-red opacity-30 text-2xl lg:text-4xl top-2 left-20 lg:left-[600px] animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-pink opacity-15 text-2xl lg:text-4xl top-1 right-[550px] animate-bounce-slow pointer-events-none" />
             </div>
-        </header>
+
+            {/* Content */}
+            <div className="relative z-10 flex items-center justify-center p-5">
+                <h1 className="text-3xl font-bold md:text-left text-center text-white">
+                    {title}
+                </h1>
+            </div>
+        </div>
     );
 };
 

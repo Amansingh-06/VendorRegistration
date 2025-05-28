@@ -16,6 +16,7 @@ import {
     TIME_FORMAT,
     SHOP_DATA_KEYS
 } from '../utils/vendorConfig';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -44,6 +45,7 @@ import LocationPopup from './LocationPopUP';
 import Loader from './Loader';
 import toast from 'react-hot-toast';
 import TimeClockFull from './ClockPopup';
+import Header from './Header';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
@@ -61,6 +63,7 @@ function VendorRegistration() {
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
 
+    const navigate = useNavigate();
 
     const { register, handleSubmit, setValue, formState: { errors }, watch, reset } = useForm({ mode: 'onChange' });
 
@@ -154,6 +157,9 @@ function VendorRegistration() {
             reset();
 
             toast.success(TOAST_MESSAGES.REGISTER_SUCCESS);
+
+            navigate('/orders')
+
         } catch (err) {
             console.error('Unexpected Error:', err.message);
             toast.error(TOAST_MESSAGES.UNEXPECTED_ERROR);
@@ -195,7 +201,8 @@ function VendorRegistration() {
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
             {loading && <Loader />}
             <div className="border border-gray-300 bg-white w-full max-w-2xl md:p-8 p-2 rounded-lg shadow-lg">
-                <h1 className="text-3xl font-bold mb-8 md:text-left text-center text-yellow">Vendor Registration</h1>
+                {/* <h1 className="text-3xl font-bold mb-8 md:text-left text-center text-yellow">Vendor Registration</h1> */}
+                <Header title="Registration" />
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7  py-4" noValidate>
                     {/* Card 1: Name, Shop Name, Timings, Upload */}
                     <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">
@@ -531,7 +538,6 @@ function VendorRegistration() {
                                     className="flex items-center gap-2 bg-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition" >
                                     <MdAddLocationAlt className="text-lg" />
                                     Location
-                                    {console.log(location)}
                                 </button>
                                 {showPopup && (
                                     <LocationPopup
