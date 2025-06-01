@@ -7,6 +7,7 @@ import {
     useNavigationType,
 } from "react-router-dom";
 import LoginBGimage from "./LoginBGimage.jpg";
+import toast from "react-hot-toast";
 import OTPInput from "react-otp-input";
 import { useEffect, useState } from "react";
 import { FaIceCream } from "react-icons/fa";
@@ -190,7 +191,7 @@ const Otp = () => {
                             console.warn("Submit button not found");
                         }
                     }, 100);
-                    // toast.success("OTP Filled Automatically");
+                    toast.success("OTP Filled Automatically");
                 }
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -198,7 +199,7 @@ const Otp = () => {
                 }
             }
         } else {
-            // toast.error("OTP Autofill not supported in this browser.");
+            toast.error("OTP Autofill not supported in this browser.");
             console.warn("OTP Credential API not supported in this browser.");
         }
     }
@@ -357,7 +358,7 @@ const Otp = () => {
                 </div>
                 <ResendButton fullPhone={phone} setIsResending={setIsResending} />
 
-                <div className="flex flex-col w-full  lg:flex-row gap-3 items-center justify-between mt-6">
+                <div className="flex w-full items-center justify-between mt-6">
                     {/* Submit Button */}
 
                     {/* {

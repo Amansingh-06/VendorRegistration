@@ -11,8 +11,7 @@ import { PiBowlFood } from "react-icons/pi";
 import { supabase } from "../../utils/supabaseClient";
 import { toast } from "react-hot-toast";
 import { handleAuthError, sendOtp } from "../../utils/auth";
-// import Terms from "../../components/terms&conditions/Terms";
-
+import Terms from "../../components/Term";
 const Login = () => {
     const navigate = useNavigate();
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
@@ -307,7 +306,7 @@ const Login = () => {
 
                 {/* Optional: Help Text */}
 
-                {/* <Terms /> */}
+                <Terms />
             </form>
         </div>
     );
