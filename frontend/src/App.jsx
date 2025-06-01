@@ -4,6 +4,9 @@ import RegistrationPage from './components/VendorRegistration';
 import Header from './components/Header';
 import OrderPage from './pages/OrderPage';
 import AddEditItem from './pages/AddEditItems';
+import Login from './pages/Login/Login';
+import Otp from './pages/Login/Otp';
+import PrivateRoute from './Routes/ProtectedRoutes';
 
 function App() {
   return (
@@ -16,7 +19,16 @@ function App() {
         <Routes>
           <Route path="/orders" element={<OrderPage />} />
           <Route path="/manage-items" element={<AddEditItem />} />
-          <Route path="/" element={<RegistrationPage />} />
+          <Route
+            path="/user-registration"
+            element={
+              <PrivateRoute>
+                <RegistrationPage />
+              </PrivateRoute>
+            }
+          />          <Route path="/" element={<Login />} />
+          <Route path="/otp" element={<Otp />} />
+          {/* Add more routes as needed */}
         </Routes>
       </div>
     </Router>

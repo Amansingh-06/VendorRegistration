@@ -3,7 +3,8 @@
 export const BUCKET_NAMES = {
     VIDEO: 'videos',
     BANNER: 'banners',
-    PAYMENT: 'payments-qr'
+    PAYMENT: 'payments-qr',
+    ITEM_IMG:'items'
 };
 
 export const DEFAULTS = {
@@ -44,15 +45,13 @@ export const SHOP_DATA_KEYS = {
   
 
 export const SUPABASE_TABLES = {
-    TABLE: 'vendor_request'
+    TABLE: 'vendor_request',
+    ITEM_CATEGORY: 'item_category',
+    ITEM: 'item',
 };
 
 export const TOAST_MESSAGES = {
-    UPLOAD_ERROR: 'Error uploading file',
-    PUBLIC_URL_ERROR: 'Error getting public URL',
-    REGISTER_SUCCESS: 'User registered successfully',
-    REGISTER_FAILED: 'Failed to register vendor',
-    UNEXPECTED_ERROR: 'Something went wrong'
+  
 };
 
 export const TIME_CLOCK_CONFIG = {
@@ -77,4 +76,53 @@ export const TIME_CLOCK_CONFIG = {
   
 
 export const TIME_FORMAT = 'hh:mm A';
+  
+
+
+
+export const MESSAGES = {
+    FETCH_FAIL: 'Failed to fetch categories',
+    EMPTY_CATEGORY: "Category can't be empty",
+    CATEGORY_EXISTS: 'Category already exists',
+    CATEGORY_ADDED: 'Category added successfully',
+    CATEGORY_ADD_FAIL: 'Failed to add category',
+    CHECK_FAIL: 'Error checking category',
+    FORM_SUCCESS: 'Item submitted successfully!',
+    UPLOAD_ERROR: 'Error uploading file',
+    PUBLIC_URL_ERROR: 'Error getting public URL',
+    REGISTER_SUCCESS: 'User registered successfully',
+    REGISTER_FAILED: 'Failed to register vendor',
+    UNEXPECTED_ERROR: 'Something went wrong',
+    ITEM_CATEGORY_EXISTS: 'Item category already exists',
+    ITEM_REGISTER_SUCCESS: 'Item registered successfully',
+    ITEM_INSERT_FAILED: 'Failed to insert item',
+};
+  
+export const formatToCapital = (text) => text.trim().toUpperCase();
+
+
+// Field keys
+export const ITEM_FIELDS = {
+    ID: "item_id",
+    NAME: "item_name",
+    CUISINE: "item_cuisine",
+    QUANTITY: "item_quantity",
+    PRICE: "item_price",
+    PREP_TIME: "prep_time",
+    VEG: "veg",
+    CATEGORY: "item_category",
+    IMG_URL: "img_url",
+};
+
+// Default values
+export const ITEM_DEFAULTS = {
+    NAME: "NA",
+    CUISINE: "NA",
+    QUANTITY: "NA",
+    PRICE: -1,
+    PREP_TIME: -1,
+    VEG: false,
+    CATEGORY: "NA",
+    IMG_URL: "NA",
+};
   

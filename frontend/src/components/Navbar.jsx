@@ -68,24 +68,24 @@ const Navbar = () => {
             {/* Content */}
             <div className="relative z-10">
                 {!scrolled && (
-                    <div className={`flex items-center justify-between p-2 lg:p-4 max-w-9xl mx-auto transition-all duration-1200 `}>
+                    <div className={`flex items-center justify-between p-1 lg:p-4 max-w-9xl mx-auto transition-all duration-1200 `}>
                         {/* Left Section - Profile */}
-                        <div className='flex items-center gap-3 lg:gap-4'>
+                        <div className='flex items-center gap-2 lg:gap-4'>
                             <div className='relative'>
                                 <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border'>
                                     <img src="https://images.unsplash.com/photo-1678557856807-7ae6ff6893d1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='w-full h-full  rounded-full' />
                                 </div>
                             </div>
                             <div className='text-white'>
-                                <div className='flex justify-center items-center md:gap-5 gap-3'>
+                                <div className='flex justify-center items-center md:gap-5 gap-2'>
                                 <div className='text-base lg:text-2xl font-semibold drop-shadow-sm'>Wow Momos</div>
                                     <div className="relative flex items-center bg-white/30 backdrop-blur-sm rounded-full  md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
                                       
 
                                         {/* Adjust text and switch with left margin to avoid overlapping with icon */}
                                         <div className="text-white flex items-center gap-2 ">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold">
-                                                {switchOn ? 'On' : 'Off'}
+                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold px-1 md:py-2 py-1">
+                                                {switchOn ? 'Open' : 'closed'}
                                             </span>
                                             <IOSSwitch checked={switchOn} onChange={(e) => setSwitchOn(e.target.checked)}  />
                                         </div>

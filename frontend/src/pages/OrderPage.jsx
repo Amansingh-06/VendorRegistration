@@ -58,7 +58,7 @@ const OrderPage = () => {
                 <Navbar />
                 <div className="w-full max-w-2xl px-4 md:px-6 flex flex-col  bg-white rounded-lg shadow-lg gap-4">
 
-                    <h1 className="text-2xl font-bold text-left text-black ">
+                    <h1 className="text-xl font-bold text-left text-gray-500 ">
                         Orders
                     </h1>
 
