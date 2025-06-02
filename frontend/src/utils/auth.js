@@ -49,7 +49,7 @@ export const verifyOtp = async (phone, otpValue) => {
         if (otpError) {
             throw new Error("Invalid OTP, please enter the correct OTP");
         }
-        return data;
+        return data.session;
     } catch (error) {
         throw new Error("Invalid OTP, please enter the correct OTP");
     }
@@ -63,7 +63,7 @@ export const handleLogin = async (phone, navigate) => {
 
     // console.log("User updated:", data);
     // console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);
-    navigate("/orders");
+    navigate("/home");
 };
 
 export const handleSignupFlow = async (
@@ -72,6 +72,7 @@ export const handleSignupFlow = async (
     phone,
     navigate,
     setSession
+    , setVendorData
 ) => {
     if (buttonClicked === "getReward") {
         navigate("/userdetails", {
@@ -84,21 +85,23 @@ export const handleSignupFlow = async (
         const res = await handleSignup({
             ...data,
             mobile_number: phone,
-        }, false, navigate,setSession);
+        }, false, navigate,setSession,setVendorData);
 
         if (res) {
-            await supabase.auth.updateUser({
-              data: { isRegistered: true },
-            });
+            // await supabase.auth.updateUser({
+            //   data: { isRegistered: true },
+            // });
 
             console.log("User updated:", data);
             console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);
-            navigate("/user-registration");
+            navigate("/vendor-registration");
         }
     }
 };
 
-export const handleSignup = async (data, flag = false, navigate, setSession) => {
+export const handleSignup = async (data, flag = false, navigate, setSession, setVendorData) => {
+    const v_id = uuidv4(); // Generate a unique vendor ID
+
     try {
         console.log("data", data);
 
@@ -115,27 +118,20 @@ export const handleSignup = async (data, flag = false, navigate, setSession) => 
 
         const user_id = session?.user?.id;
 
-        const { error: insertError } = await supabase.from("vendor_request").insert([
-            {
-                v_id:uuidv4(),
-
-                mobile_number: data.mobile_number,
-                u_id: user_id,
-            },
-        ]);
-
-        if (insertError) {
-            console.log("Error in inserting into table", insertError);
-            return false;
-        }
-
-        // Update user metadata
-        await supabase.auth.updateUser({
-            data: { isRegistered: true },
+        setVendorData({
+            v_id,
+            mobile_number: data.mobile_number,
+            u_id: user_id,
         });
 
-        // ✅ Navigate to registration page
-        navigate("/user-registration");
+        // ⛔️ insertError ka code missing tha — yeh fix karo ya hatao
+        // Agar insert nahi karna to yeh error check hata do
+        // if (insertError) {
+        //     console.log("Error in inserting into table", insertError);
+        //     return false;
+        // }
+
+        navigate("/vendor-registration");
 
         return true;
     } catch (error) {
@@ -143,6 +139,7 @@ export const handleSignup = async (data, flag = false, navigate, setSession) => 
         return false;
     }
 };
+
 
 
 export const logout = async (setSession) => {

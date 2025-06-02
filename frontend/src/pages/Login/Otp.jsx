@@ -41,7 +41,7 @@ const Otp = () => {
         setSession,
         proceedToUserDetails,
         setProceedToUserDetails,
-    } = useAuth();
+        setVendorData    } = useAuth();
     const {
         register,
         trigger,
@@ -148,6 +148,7 @@ const Otp = () => {
                     phone,
                     navigate,
                     setSession,
+                    setVendorData
                 );
             }
         } catch (error) {

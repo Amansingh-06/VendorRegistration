@@ -7,6 +7,7 @@ import AddEditItem from './pages/AddEditItems';
 import Login from './pages/Login/Login';
 import Otp from './pages/Login/Otp';
 import PrivateRoute from './Routes/ProtectedRoutes';
+import ProtectedGuestRoute from './Routes/ProtectedGuestRoutes';
 
 function App() {
   return (
@@ -17,18 +18,41 @@ function App() {
 
         {/* ✅ Routes */}
         <Routes>
-          <Route path="/orders" element={<OrderPage />} />
-          <Route path="/manage-items" element={<AddEditItem />} />
+          <Route path="/home" element={
+            <PrivateRoute>
+              <OrderPage />
+            </PrivateRoute>
+          } />
+          {/* <Route path="/manage-items" element={<AddEditItem />} /> */}
           <Route
-            path="/user-registration"
+            path="/manage-items"
             element={
               <PrivateRoute>
-                <RegistrationPage />
+                <AddEditItem />
               </PrivateRoute>
             }
-          />          <Route path="/" element={<Login />} />
-          <Route path="/otp" element={<Otp />} />
-          {/* Add more routes as needed */}
+          />
+          <Route
+            path="/vendor-registration"
+            element={
+              <ProtectedGuestRoute>
+                <RegistrationPage />
+              </ProtectedGuestRoute>
+            }
+          />
+          <Route path="/" element={
+            <ProtectedGuestRoute>
+              <Login />
+            </ProtectedGuestRoute>
+          } />
+          <Route
+            path="/otp"
+            element={
+              <ProtectedGuestRoute>
+                <Otp />
+              </ProtectedGuestRoute>
+            }
+          />          {/* Add more routes as needed */}
         </Routes>
       </div>
     </Router>

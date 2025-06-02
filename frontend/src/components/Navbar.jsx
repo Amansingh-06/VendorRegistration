@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { MdOutlineMessage } from "react-icons/md";
 import { GiChickenOven, GiFrenchFries, GiFullPizza } from 'react-icons/gi';
 import { FaIceCream } from 'react-icons/fa';
@@ -6,6 +6,8 @@ import { MdOutlineFastfood } from 'react-icons/md';
 import { PiBowlFood } from 'react-icons/pi';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
+import { useAuth } from '../context/authContext';
+import { supabase } from '../utils/supabaseClient';
 
 const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -42,9 +44,31 @@ const IOSSwitch = styled((props) => (
     },
 }));
 
+
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
+    const { session } = useAuth();
+    const [vendorProfile, setVendorProfile] = useState(null);
+
+
+    useEffect(() => {
+        const fetchVendorData = async () => {
+            if (session?.user?.id) {
+                const { data, error } = await supabase
+                    .from('vendor_request')
+                    .select('*')
+                    .eq('u_id', session.user.id)
+                    .single();
+
+                if (!error) setVendorProfile(data);
+            }
+        };
+
+        fetchVendorData();
+    }, [session]);
+    
+    console.log("Vendor Profile Data:", vendorProfile);
 
     return (
         <div className='w-full top-0 z-20 backdrop-blur-sm rounded-b-lg overflow-hidden bg-gradient-to-br from-orange via-yellow to-orange'>
@@ -72,13 +96,36 @@ const Navbar = () => {
                         {/* Left Section - Profile */}
                         <div className='flex items-center gap-2 lg:gap-4'>
                             <div className='relative'>
-                                <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border'>
-                                    <img src="https://images.unsplash.com/photo-1678557856807-7ae6ff6893d1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='w-full h-full  rounded-full' />
+                                <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
+
+                                    {vendorProfile && (vendorProfile.banner_url && vendorProfile.banner_url !== 'NA') ? (
+                                        <img
+                                            src={vendorProfile.banner_url}
+                                            alt="Vendor Banner"
+                                            className='w-full h-full object-cover'
+                                        />
+                                    ) : vendorProfile && (vendorProfile.video_url && vendorProfile.video_url !== 'NA') ? (
+                                        <video
+                                            src={vendorProfile.video_url}
+                                            className="w-full h-full object-cover"
+                                            muted
+                                            preload="metadata"
+                                            onLoadedMetadata={e => e.target.currentTime = 1}
+                                        />
+                                    ) : (
+                                        <img
+                                            src="https://via.placeholder.com/150"
+                                            alt="Default"
+                                            className='w-full h-full object-cover'
+                                        />
+                                    )}
+
                                 </div>
                             </div>
+
                             <div className='text-white'>
                                 <div className='flex justify-center items-center md:gap-5 gap-2'>
-                                <div className='text-base lg:text-2xl font-semibold drop-shadow-sm'>Wow Momos</div>
+                                    <div className='text-base lg:text-2xl font-semibold drop-shadow-sm'>{vendorProfile?.shop_name}</div>
                                     <div className="relative flex items-center bg-white/30 backdrop-blur-sm rounded-full  md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
                                       
 
@@ -92,7 +139,7 @@ const Navbar = () => {
                                     </div>
 
                                 </div>
-                                <div className="md:text-sm text-xs font-thin ">Aman Singh</div>
+                                <div className="md:text-sm text-xs font-thin ">{vendorProfile?.v_name}</div>
                             </div>
                           
                         </div>

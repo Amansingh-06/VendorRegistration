@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from '../utils/supabaseClient';
-import Loader from "../components/Loader";
-import NetworkError from "../components/NetworkError";
-import { logout } from "../utils/auth";
+import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/authContext";
+import Loader from "../components/Loader";
+import { logout } from "../utils/auth";
+import NetworkError from "../components/NetworkError";
 
-
-
-const PrivateRoute = ({ children }) => {
+const ProtectedGuestRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     // const [session, setSession] = useState(null);
-    const { session, setSession } = useAuth();
     const [isRegistered, setIsRegistered] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [error, setError] = useState(null);
     const [isRetrying, setIsRetrying] = useState(false);
-    const MAX_RETRIES = 3;
 
+    const { session, setSession, proceedToUserDetails } = useAuth();
+    const MAX_RETRIES = 3;
     useEffect(() => {
         const getUserData = async () => {
             try {
@@ -76,29 +74,25 @@ const PrivateRoute = ({ children }) => {
     ) {
         return (
             <NetworkError />
-           
-        )
+        );
     }
 
-    // Auth/Access control
-    if (!session || !isRegistered) {
 
-        const handleUnwantedSession = async () => {
-            await logout();
-        }
 
-        if (session && !isRegistered) {
-            handleUnwantedSession();
-        }
-
-        return <Navigate to="/" replace />;
+    // ✅ Final access control logic
+    if (session && isRegistered) {
+        return <Navigate to="/home" replace />;
     }
-    // if (!session || !isRegistered) return <Navigate to="/login" replace />;
-    // write the code for 
 
-    // if (!isRegistered) return <Navigate to="/userdetails" replace />;
+    const handleUnwantedSession = async (setSession) => {
+        await logout(setSession);
+    }
+
+    if (session && !isRegistered && window.location.pathname !== "/vendor-registration") {
+        handleUnwantedSession(setSession);
+    }
 
     return children;
 };
 
-export default PrivateRoute;
+export default ProtectedGuestRoute;

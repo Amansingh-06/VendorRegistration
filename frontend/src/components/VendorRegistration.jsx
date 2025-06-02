@@ -67,8 +67,7 @@ function VendorRegistration() {
 
     const navigate = useNavigate();
 
-    const { session } = useAuth();
-const user_id = session?.user?.id || null;
+    const { session, vendorData } = useAuth();
     const { register, handleSubmit, setValue, formState: { errors }, watch, reset, trigger , setError,
         clearErrors,
          } = useForm({ mode: 'onChange' });
@@ -152,10 +151,16 @@ const user_id = session?.user?.id || null;
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
+            const fullVendorData = {
+                ...vendorData,
+                ...shopData,
+            };
+
+            // Upsert ya insert karo supabase me
             const { error } = await supabase
-                .from(SUPABASE_TABLES?.TABLE)
-                .update(shopData)
-                .eq('u_id', user_id);
+                .from('vendor_request')
+                .upsert(fullVendorData, { onConflict: 'v_id' });
+    
             if (error) {
                 console.error('Insert Error:', error.message);
                 toast.error(MESSAGES.REGISTER_FAILED);
@@ -172,8 +177,11 @@ const user_id = session?.user?.id || null;
             reset();
 
             toast.success(MESSAGES.REGISTER_SUCCESS);
+            await supabase.auth.updateUser({
+                data: { isRegistered: true },
+              });
 
-            navigate('/orders')
+            navigate('/home');
 
         } catch (err) {
             console.error('Unexpected Error:', err.message);
