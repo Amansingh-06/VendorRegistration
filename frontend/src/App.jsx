@@ -8,6 +8,7 @@ import Login from './pages/Login/Login';
 import Otp from './pages/Login/Otp';
 import PrivateRoute from './Routes/ProtectedRoutes';
 import ProtectedGuestRoute from './Routes/ProtectedGuestRoutes';
+import VendorProfile from './pages/Login/Vendor_profile';
 
 function App() {
   return (
@@ -53,6 +54,8 @@ function App() {
               </ProtectedGuestRoute>
             }
           />          {/* Add more routes as needed */}
+          <Route path="/profile" element={<VendorProfile />} />
+
         </Routes>
       </div>
     </Router>

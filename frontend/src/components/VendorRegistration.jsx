@@ -8,6 +8,14 @@ import { FaRegUser } from "react-icons/fa";
 import { AiOutlineShop } from "react-icons/ai";
 import FileUploadButton from './FileUploadButton';
 import { v4 as uuidv4 } from 'uuid';
+import { GrStreetView } from "react-icons/gr";
+import { PiCityLight } from "react-icons/pi";
+import { PiMapPinAreaLight } from "react-icons/pi";
+import { TbMapPinCode } from "react-icons/tb";
+
+
+
+
 import {
     BUCKET_NAMES,
     DEFAULTS,
@@ -48,6 +56,7 @@ import toast from 'react-hot-toast';
 import TimeClockFull from './ClockPopup';
 import Header from './Header';
 import { useAuth } from '../context/authContext';
+import InputField from './InputField';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
@@ -281,48 +290,28 @@ function VendorRegistration() {
                             {/* Name & Shop Name */}
                             <h1 className='md:text-2xl text-lg font-semibold text-gray-500'>Basic Details</h1>
                             <div className=' flex flex-col gap-5'>
-                                <div className="grid md:grid-cols-2 gap-4 ">
-                                    {/* Name */}
-                                    <div className="relative">
-                                        {/* <FaUserAlt className="absolute left-3 top-4.5 text-black" /> */}
-                                        <FaRegUser className="absolute left-3 top-4 text-black text-lg" />
-                                        <input
-                                            id="name"
-                                            type="text"
-                                            placeholder="Your Name"
-                                            {...register("name", nameValidation)}
-                                            onKeyDown={nameKeyDownHandler}
-                                            onInput={InputCleanup}
-                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
-                                        />
-                                        <label htmlFor="name" className="absolute left-10 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
-                                            Your Name
-                                        </label>
-                                        {errors.name && (
-                                            <p className="text-red-500 text-sm mt-1">{errors?.name?.message}</p>
-                                        )}
-                                    </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <InputField
+                                        id="name"
+                                        placeholder="Your Name"
+                                        icon={FaRegUser}
+                                        register={register}
+                                        validation={nameValidation}
+                                        error={errors?.name}
+                                        onKeyDown={nameKeyDownHandler}
+                                        onInput={InputCleanup}
+                                    />
 
-                                    {/* Shop Name */}
-                                    <div className="relative">
-                                        {/* <FaStore className="absolute left-3 top-4.5 text-black" /> */}
-                                        <AiOutlineShop className="absolute left-3 top-4 text-black text-lg" />
-                                        <input
-                                            id="shopname"
-                                            placeholder="Shop Name"
-                                            {...register("shopName", shopNameValidation)}
-                                            onKeyDown={shopNameKeyDownHandler}
-                                            onInput={InputCleanup}
-                                            className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none  focus:border-orange transition-all placeholder-transparent"
-                                        />
-                                        <label htmlFor="shopname" className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
-                                            Shop Name
-                                        </label>
-                                        {errors.shopName && (
-                                            <p className="text-red-500 text-sm mt-1">{errors?.shopName?.message}</p>
-                                        )}
-
-                                    </div>
+                                    <InputField
+                                        id="shopName"
+                                        placeholder="Shop Name"
+                                        icon={AiOutlineShop}
+                                        register={register}
+                                        validation={shopNameValidation}
+                                        error={errors?.shopName}
+                                        onKeyDown={shopNameKeyDownHandler}
+                                        onInput={InputCleanup}
+                                    />
                                 </div>
 
                                 {/* Timings */}
@@ -538,76 +527,59 @@ function VendorRegistration() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                                {/* Street */}
-                                <div className="relative">
-                                    <input
-                                        id="street"
-                                        type="text"
-                                        {...register("street", streetValidation)}
-                                        onKeyDown={streetKeyDown}
-                                        onInput={streetInputClean}
-                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
-                                        placeholder="Street"
-                                    />
-                                    <label htmlFor="street" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-not-placeholder-shown:font-semibold">
-                                        Street
-                                    </label>
-                                    {errors?.street && <p className="text-red-500 text-sm">{errors?.street?.message}</p>}
-                                </div>
+                                <InputField
+                                    icon={GrStreetView}
+                                    
+                                    id="street"
+                                    label="Street"
+                                    placeholder="Street"
+                                    register={register}
+                                    validation={streetValidation}
+                                    error={errors?.street}
+                                    onKeyDown={streetKeyDown}
+                                    onInput={streetInputClean}
+                                />
 
                                 {/* City */}
-                                <div className="relative">
-                                    <input
-                                        id="city"
-                                        type="text"
-                                        {...register("city", { ...cityStateValidation, required: "City is required" })}
-                                        onKeyDown={cityStateKeyDown}
-                                        onInput={cityStateInputClean}
-                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
-                                        placeholder="City"
-                                    />
-                                    <label htmlFor="city" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
-                                        City
-                                    </label>
-                                    {errors?.city && <p className="text-red-500 text-sm">{errors?.city?.message}</p>}
-                                </div>
+                                <InputField
+                                    id="city"
+                                    label="City"
+                                    icon={PiCityLight}
+                                    placeholder="City"
+                                    register={register}
+                                    validation={{ ...cityStateValidation, required: "City is required" }}
+                                    error={errors?.city}
+                                    onKeyDown={cityStateKeyDown}
+                                    onInput={cityStateInputClean}
+                                />
 
                                 {/* State */}
-                                <div className="relative">
-                                    <input
-                                        id="state"
-                                        type="text"
-                                        {...register("state", { ...cityStateValidation, required: "State is required" })}
-                                        onKeyDown={cityStateKeyDown}
-                                        onInput={cityStateInputClean}
-                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
-                                        placeholder="State"
-                                    />
-                                    <label htmlFor="state" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
-                                        State
-                                    </label>
-                                    {errors?.state && <p className="text-red-500 text-sm">{errors?.state?.message}</p>}
-                                </div>
+                                <InputField
+                                    id="state"
+                                    icon={PiMapPinAreaLight}
+                                    label="State"
+                                    placeholder="State"
+                                    register={register}
+                                    validation={{ ...cityStateValidation, required: "State is required" }}
+                                    error={errors?.state}
+                                    onKeyDown={cityStateKeyDown}
+                                    onInput={cityStateInputClean}
+                                />
 
                                 {/* Pincode */}
-                                <div className="relative">
-                                    <input
-                                        id="pincode"
-                                        type="text"
-                                        maxLength={6}
-                                        inputMode="numeric"
-                                        {...register("pincode", pincodeValidation)}
-                                        onKeyDown={pincodeKeyDown}
-                                        onInput={pincodeInputClean}
-                                        className="peer p-3 w-full border border-gray-300 rounded placeholder-transparent focus:outline-none  focus:border-orange transition-all"
-                                        placeholder="Pincode"
-                                    />
-                                    <label htmlFor="pincode" className="absolute left-3 -top-2.5 text-sm bg-white text-black  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold">
-                                        Pincode
-                                    </label>
-                                    {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode.message}</p>}
-                                </div>
-                                {/* /* Location Button */}
+                                <InputField
+                                    id="pincode"
+                                    icon={TbMapPinCode}
+                                    label="Pincode"
+                                    placeholder="Pincode"
+                                    register={register}
+                                    validation={pincodeValidation}
+                                    error={errors?.pincode}
+                                    onKeyDown={pincodeKeyDown}
+                                    onInput={pincodeInputClean}
+                                    maxLength={6}
+                                    inputMode="numeric"
+                                />                                {/* /* Location Button */}
                                 <div className='flex items-center gap-5  '>
                                     <button
                                         type="button"
