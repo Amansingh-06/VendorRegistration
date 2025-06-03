@@ -47,10 +47,10 @@ const AddEditItem = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             const { data, error } = await supabase
-                .from(SUPABASE_TABLES.ITEM_CATEGORY)
+                .from(SUPABASE_TABLES?.ITEM_CATEGORY)
                 .select('*');
             if (error) {
-                toast.error(MESSAGES.FETCH_FAIL);
+                toast.error(MESSAGES?.FETCH_FAIL);
                 console.error(error);
             } else {
                 setCategories(data);
@@ -65,24 +65,24 @@ const AddEditItem = () => {
 
         // Case-insensitive check
         const { data: existing, error: checkError } = await supabase
-            .from(SUPABASE_TABLES.ITEM_CATEGORY)
+            .from(SUPABASE_TABLES?.ITEM_CATEGORY)
             .select('*')
             .ilike('title', trimmed); // ilike => case-insensitive match
 
         if (checkError) {
-            toast.error(MESSAGES.CHECK_FAIL);
+            toast.error(MESSAGES?.CHECK_FAIL);
             console.error(checkError);
             return;
         }
 
         if (existing.length > 0) {
-            toast.error(MESSAGES.CATEGORY_EXISTS);
+            toast.error(MESSAGES?.CATEGORY_EXISTS);
             return;
         }
 
         // Save exactly as user typed
         const { data, error } = await supabase
-            .from(SUPABASE_TABLES.ITEM_CATEGORY)
+            .from(SUPABASE_TABLES?.ITEM_CATEGORY)
             .insert([
                 {
                     cat_id: uuidv4(),     // ✅ add random UUID
@@ -93,7 +93,7 @@ const AddEditItem = () => {
     
 
         if (error) {
-            toast.error(MESSAGES.CATEGORY_ADD_FAIL);
+            toast.error(MESSAGES?.CATEGORY_ADD_FAIL);
             console.error(error);
             return;
         }
@@ -129,10 +129,10 @@ const AddEditItem = () => {
             });
 
         if (error) {
-            console.error('Error uploading file:', error.message);
-            toast.error(MESSAGES.UPLOAD_ERROR);
+            console.error('Error uploading file:', error?.message);
+            toast.error(MESSAGES?.UPLOAD_ERROR);
 
-            throw new Error(error.message);
+            throw new Error(error?.message);
         }
 
         const { data: urlData, error: urlError } = supabase.storage
@@ -140,13 +140,13 @@ const AddEditItem = () => {
             .getPublicUrl(filePath);
 
         if (urlError) {
-            console.error('Error getting public URL:', urlError.message);
-            toast.error(MESSAGES.PUBLIC_URL_ERROR);
+            console.error('Error getting public URL:', urlError?.message);
+            toast.error(MESSAGES?.PUBLIC_URL_ERROR);
 
-            throw new Error(urlError.message);
+            throw new Error(urlError?.message);
         }
 
-        return urlData.publicUrl;
+        return urlData?.publicUrl;
     };
     
 
@@ -158,20 +158,20 @@ const AddEditItem = () => {
 
             const finalData = {
                 [ITEM_FIELDS.ID]: uuidv4(),
-                [ITEM_FIELDS.NAME]: data.itemName || ITEM_DEFAULTS.NAME,
-                [ITEM_FIELDS.CUISINE]: data.cuisine || ITEM_DEFAULTS.CUISINE,
-                [ITEM_FIELDS.QUANTITY]: data.quantity || ITEM_DEFAULTS.QUANTITY,
-                [ITEM_FIELDS.PRICE]: parseFloat(data.price) || ITEM_DEFAULTS.PRICE,
-                [ITEM_FIELDS.PREP_TIME]: parseInt(data.prepTime) || ITEM_DEFAULTS.PREP_TIME,
-                [ITEM_FIELDS.VEG]: data.type === "veg",
-                [ITEM_FIELDS.CATEGORY]: data.category || ITEM_DEFAULTS.CATEGORY,
-                [ITEM_FIELDS.IMG_URL]: img_url || ITEM_DEFAULTS.IMG_URL,
+                [ITEM_FIELDS.NAME]: data?.itemName || ITEM_DEFAULTS?.NAME,
+                [ITEM_FIELDS.CUISINE]: data?.cuisine || ITEM_DEFAULTS?.CUISINE,
+                [ITEM_FIELDS.QUANTITY]: data?.quantity || ITEM_DEFAULTS?.QUANTITY,
+                [ITEM_FIELDS.PRICE]: parseFloat(data?.price) || ITEM_DEFAULTS?.PRICE,
+                [ITEM_FIELDS.PREP_TIME]: parseInt(data?.prepTime) || ITEM_DEFAULTS?.PREP_TIME,
+                [ITEM_FIELDS.VEG]: data?.type === "veg",
+                [ITEM_FIELDS.CATEGORY]: data?.category || ITEM_DEFAULTS?.CATEGORY,
+                [ITEM_FIELDS.IMG_URL]: img_url || ITEM_DEFAULTS?.IMG_URL,
               };
              const { error } = await supabase.from(SUPABASE_TABLES.ITEM).insert([finalData]);
 
                         if (error) {
-                            console.error('Insert Error:', error.message);
-                            toast.error(MESSAGES.ITEM_INSERT_FAILED);
+                            console.error('Insert Error:', error?.message);
+                            toast.error(MESSAGES?.ITEM_INSERT_FAILED);
                             return;
                         }
             
@@ -179,15 +179,15 @@ const AddEditItem = () => {
                         reset();
             
             console.log("Data inserted successfully");
-            toast.success(MESSAGES.ITEM_REGISTER_SUCCESS);
+            toast.success(MESSAGES?.ITEM_REGISTER_SUCCESS);
             setPreviewImage(null); // Reset preview image
             
 
             console.log("Final Data:", finalData);
 
         } catch (err) {
-            console.error("Something went wrong:", err.message);
-            toast.error(MESSAGES.UNEXPECTED_ERROR);
+            console.error("Something went wrong:", err?.message);
+            toast.error(MESSAGES?.UNEXPECTED_ERROR);
 
         } finally {
             setLoading(false);
@@ -226,7 +226,7 @@ const AddEditItem = () => {
                             onInput={InputCleanup}
                             type="text"
                             placeholder="Item Name"
-                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors.itemName ? 'border-red' : 'border-gray-300'
+                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors?.itemName ? 'border-red' : 'border-gray-300'
                                 } focus:outline-none focus:border-orange placeholder-transparent`}
                         />
                         <label
@@ -235,8 +235,8 @@ const AddEditItem = () => {
                         >
                             Item Name
                         </label>
-                        {errors.itemName && (
-                            <p className="text-red text-sm mt-1">{errors.itemName.message}</p>
+                        {errors?.itemName && (
+                            <p className="text-red text-sm mt-1">{errors?.itemName.message}</p>
                         )}
                     </div>
 
@@ -283,7 +283,7 @@ const AddEditItem = () => {
                             onInput={priceInputClean}
                             type="text"
                             placeholder="Price"
-                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors.price ? 'border-red' : 'border-gray-300'
+                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors?.price ? 'border-red' : 'border-gray-300'
                                 } focus:outline-none focus:border-orange placeholder-transparent`}
                         />
                         <label
@@ -292,8 +292,8 @@ const AddEditItem = () => {
                         >
                             Price
                         </label>
-                        {errors.price && (
-                            <p className="text-red text-sm mt-1">{errors.price.message}</p>
+                        {errors?.price && (
+                            <p className="text-red text-sm mt-1">{errors?.price.message}</p>
                         )}
                     </div>
 
@@ -307,7 +307,7 @@ const AddEditItem = () => {
                             onInput={numberOnlyInputClean}
                             type="text"
                             placeholder="Preparation Time"
-                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors.prepTime ? 'border-red-500' : 'border-gray-300'
+                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors?.prepTime ? 'border-red-500' : 'border-gray-300'
                                 } focus:outline-none focus:border-orange placeholder-transparent`}
                         />
                         <label
@@ -316,8 +316,8 @@ const AddEditItem = () => {
                         >
                             Preparation Time(in min)
                         </label>
-                        {errors.prepTime && (
-                            <p className="text-red text-sm mt-1">{errors.prepTime.message}</p>
+                        {errors?.prepTime && (
+                            <p className="text-red text-sm mt-1">{errors?.prepTime.message}</p>
                         )}
                         </div>
                 </div>
@@ -352,7 +352,7 @@ const AddEditItem = () => {
                           
                         </div>
                         {errors.type && (
-                            <p className="text-red-500 text-sm -mt-10">{errors.type.message}</p>
+                            <p className="text-red-500 text-sm -mt-10">{errors?.type?.message}</p>
                         )}
 
                       
@@ -373,8 +373,8 @@ const AddEditItem = () => {
                         <label className="absolute left-9 -top-2.5 text-sm bg-white px-1 text-black font-semibold">
                             Cuisine
                         </label>
-                        {errors.cuisine && (
-                            <p className="text-red text-sm mt-1">{errors.cuisine.message}</p>
+                        {errors?.cuisine && (
+                            <p className="text-red text-sm mt-1">{errors?.cuisine?.message}</p>
                         )}
                     </div>
 
@@ -387,14 +387,14 @@ const AddEditItem = () => {
                                 } focus:outline-none focus:border-orange`}
                         >
                             <option value="">Select category</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.title.toUpperCase()}>
-                                    {cat.title}
+                            {categories?.map((cat) => (
+                                <option key={cat?.id} value={cat?.title?.toUpperCase()}>
+                                    {cat?.title}
                                 </option>
                             ))}
                         </select>
-                        {errors.category && (
-                            <p className="text-red text-sm mt-1">{errors.category.message}</p>
+                        {errors?.category && (
+                            <p className="text-red text-sm mt-1">{errors?.category?.message}</p>
                         )}
 
                         {showCategoryInput ? (

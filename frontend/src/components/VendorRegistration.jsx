@@ -112,9 +112,9 @@ function VendorRegistration() {
             });
 
         if (error) {
-            console.error('Error uploading file:', error.message);
+            console.error('Error uploading file:', error?.message);
             toast.error("Error uploading file");
-            throw new Error(error.message); // Throw error to stop further processing
+            throw new Error(error?.message); // Throw error to stop further processing
         }
 
         const { data: urlData, error: urlError } = supabase.storage
@@ -122,11 +122,11 @@ function VendorRegistration() {
             .getPublicUrl(filePath);
 
         if (urlError) {
-            console.error('Error getting public URL:', urlError.message);
-            throw new Error(urlError.message); // Throw error to stop further processing
+            console.error('Error getting public URL:', urlError?.message);
+            throw new Error(urlError?.message); // Throw error to stop further processing
         }
 
-        return urlData.publicUrl;
+        return urlData?.publicUrl;
     };
 
     const formatTime = (time) => time ? time?.format(TIME_FORMAT) : DEFAULTS.TIME;
@@ -346,7 +346,7 @@ function VendorRegistration() {
                                                     Starts At
                                                 </label>
                                             </div>
-                                            {errors.startTime1 && <p className="text-red-500 text-sm mt-1">{errors?.startTime1?.message}</p>}
+                                            {errors?.startTime1 && <p className="text-red-500 text-sm mt-1">{errors?.startTime1?.message}</p>}
                                             <TimeClockFull
                                                 isOpen={startView1}
                                                 onClose={() => setStartView1(false)}
@@ -384,7 +384,7 @@ function VendorRegistration() {
                                                     Closes At
                                                 </label>
                                             </div>
-                                            {errors.endTime1 && <p className="text-red-500 text-sm mt-1">{errors?.endTime1?.message}</p>}
+                                            {errors?.endTime1 && <p className="text-red-500 text-sm mt-1">{errors?.endTime1?.message}</p>}
                                             <TimeClockFull
                                                 isOpen={endView1}
                                                 onClose={() => setEndView1(false)}
@@ -426,7 +426,7 @@ function VendorRegistration() {
                                                     Starts At
                                                 </label>
                                             </div>
-                                            {errors.startTime2 && <p className="text-red-500 text-sm mt-1">{errors?.startTime2?.message}</p>}
+                                            {errors?.startTime2 && <p className="text-red-500 text-sm mt-1">{errors?.startTime2?.message}</p>}
                                             <TimeClockFull
                                                 isOpen={startView2}
                                                 onClose={() => setStartView2(false)}

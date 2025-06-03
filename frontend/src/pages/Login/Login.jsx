@@ -116,7 +116,7 @@ const Login = () => {
                 .from("vendor_request")
                 .select("mobile_number")
                 .eq("mobile_number", fullPhone)
-                .maybeSingle();
+                .single();
 
             // console.log(userData);
 

@@ -71,8 +71,8 @@ const PrivateRoute = ({ children }) => {
     if (
         error &&
         (!navigator.onLine ||
-            error.message.includes("Failed to fetch") ||
-            error.message.includes("Network Error"))
+            error?.message?.includes("Failed to fetch") ||
+            error?.message?.includes("Network Error"))
     ) {
         return (
             <NetworkError />

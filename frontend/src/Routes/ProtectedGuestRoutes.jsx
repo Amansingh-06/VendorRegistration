@@ -40,8 +40,8 @@ const ProtectedGuestRoute = ({ children }) => {
             } catch (err) {
                 const isNetworkError =
                     !navigator.onLine ||
-                    err.message.includes("Failed to fetch") ||
-                    err.message.includes("Network Error");
+                    err?.message?.includes("Failed to fetch") ||
+                    err?.message?.includes("Network Error");
 
                 // console.error("Supabase connection error:", err);
                 if (isNetworkError && retryCount < MAX_RETRIES - 1) {
@@ -69,8 +69,8 @@ const ProtectedGuestRoute = ({ children }) => {
     if (
         error &&
         (!navigator.onLine ||
-            error.message.includes("Failed to fetch") ||
-            error.message.includes("Network Error"))
+            error?.message?.includes("Failed to fetch") ||
+            error?.message?.includes("Network Error"))
     ) {
         return (
             <NetworkError />
@@ -88,9 +88,15 @@ const ProtectedGuestRoute = ({ children }) => {
         await logout(setSession);
     }
 
-    if (session && !isRegistered && window.location.pathname !== "/vendor-registration") {
+    if (session && !isRegistered && window?.location?.pathname !== "/vendor-registration") {
         handleUnwantedSession(setSession);
+
     }
+    // ⛔ Prevent showing /vendor-registration when session is not present
+    if (!session && window?.location?.pathname === "/vendor-registration") {
+        return <Navigate to="/" replace />;
+    }
+
 
     return children;
 };

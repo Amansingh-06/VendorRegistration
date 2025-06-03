@@ -25,3 +25,5 @@ const FileUploadButton = ({ label, bgColor, Icon, accept, onChange, file, loadin
 };
 
 export default FileUploadButton;
+
+

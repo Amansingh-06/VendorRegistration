@@ -31,7 +31,7 @@ export const sendOtp = async (fullPhone) => {
     console.log("OTP send response error:", otpError);
 
     if (otpError) {
-        console.error("Error sending OTP:", otpError.message || otpError);
+        console.error("Error sending OTP:", otpError?.message || otpError);
         toast.error("Failed to send OTP. Please try again.");
         throw new Error("Couldn't send OTP. Retry in a moment.");
     }
@@ -49,7 +49,7 @@ export const verifyOtp = async (phone, otpValue) => {
         if (otpError) {
             throw new Error("Invalid OTP, please enter the correct OTP");
         }
-        return data.session;
+        return data?.session;
     } catch (error) {
         throw new Error("Invalid OTP, please enter the correct OTP");
     }
