@@ -1,0 +1,83 @@
+Improvments
+
+1.  give the heading Basic Details,Address & Location(text-gray and faded)--done
+2. change the icons of buttons--done
+3. add location icon in side of location button--done
+4. add by default hour in clockpopup--done
+5. video aur banner me se koi ek compulsary-done
+6. Increse trucate size--done
+connect with ravi on location and id(not done) and maaz for centralisation of all the needed thing like theme color font and all
+7 cusins compulsary--done
+8- null ki jagah NA use krenge---done(frontend)
+change table according to pdf---pending
+Avoid hardcoding---done
+add shift 1 and 2 in clock section--done
+
+upload video(color-blue),upload Qr(color-yellow)---done
+vender-registration(color-yellow) and left krna hai--done
+add poppins--done
+increse size of clock input--done
+make fileupload component--done
+add icon in address and onlu use outlined icons in place of name and shop--done(outline in name and shop)
+gap ko sahi krna hai in cousins---done
+add margin in submit button--done
+subheading 2xl for pc and lg for mb--done
+
+
+toggle button alighn krna hai ---done
+route handle krna hai--done
+table complete krna hai(column add krna hai )--not done yet
+vender registration header bna ke dalna hai(navbar)--done
+help text add krna hai icon ke niche--done
+scroller me padding dena hai isko hta dena hai--done
+button text km krna hai padding km krna hai --done
+order delevry type likhna hai place of takeaway---done
+add button left side alighn krna hai--done
+selected pr icon lagana hai aur green krna hai --done
+order ready button ko theme ke anusar change krna hai --done
+prepare ko yellow delayed ko red on the way ko yellow delevred ko green ---done
+
+
+ add item category in table and fetch---done
+ Add item ka business logic likhna hai--done
+
+ header ko sahi krna hai--done
+ shift2 ke aage (optional likhna hai)--done
+ starts at closes at krna hai---done
+ file uploading pr reserch krna hai--done
+ no video selected ---done
+ select video--done
+ error ko click pr show krna hai  same edit item button pr v krna hai---done
+
+ action button orange hoga--done
+primary color ko orange secondary color yellow
+padding add krna toggle switch me --done
+on off ki jagah open closed--done
+heading ko gray aur small--done
+category ko jaise input kiya hai waise save krna hai dikhana bs capital me hai--done
+vwg non vwg button ko sahikrna hai---done
+groupin krna hai edit item ko--done
+preprtion time(in min)--done
+
+ no video selected ---done
+  starts at closes at krna hai---done
+   header ko sahi krna hai--done
+    select video--done
+     shift2 ke aage (optional likhna hai)--done
+ action button orange hoga--done
+ padding add krna toggle switch me --done
+ on off ki jagah open closed--done
+preprtion time(in min)--done
+
+
+
+
+
+
+
+
+
+
+
+
+

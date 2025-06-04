@@ -45,6 +45,8 @@ const SearchInput = ({ placeholder, py }) => {
     const fetchGoogleSuggestions = async (query) => {
         try {
             const { success, suggestions, error } = await getGooglePlaceSuggestions(query);
+            console.log("Suggestions:", suggestions); // 👈 Add this
+
             if (success) {
                 setGoogleSuggestions(suggestions);
             } else {

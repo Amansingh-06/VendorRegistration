@@ -12,6 +12,8 @@ import { GrStreetView } from "react-icons/gr";
 import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
+import { getCurrentLocation } from '../utils/address';
+
 
 
 
@@ -278,6 +280,46 @@ function VendorRegistration() {
         (!bannerFile && !videoFile) ||
         loading ||
         Object.keys(errors).length > 0;
+    
+    
+    // Handle “Current Location” button click
+        const handleCurrentLocation = async () => {
+            const toastId = toast.loading("Getting current Location");
+            try {
+                const { success, error: locError } = await getCurrentLocation(
+                    ({ lat, lng }) => {
+                        setPosition({ lat, lng });
+                    },
+                    setError,
+                    setSelectedAddress
+                );
+                if (!success || locError) {
+                    toast.dismiss(toastId);
+                    // handleAddressError(
+                    //     locError || new Error("Unknown"),
+                    //     "Unable to fetch current location"
+                    // );
+                    return;
+                }
+                // When current location is fetched, switch to edit mode
+                toast.dismiss(toastId);
+                console.log("Current location fetched successfully");
+                console.log(location)
+                // navigate("/edit_address", {
+                //     state: {
+                //         isEdit: true,
+                //         address_id: "",
+                //     },
+                // });
+            } catch (err) {
+                toast.dismiss(toastId);
+                console.error("Error in location:", err);
+                // handleAddressError(err, "Failed to fetch current location");
+            }
+        };
+        
+    console.log(selectedAddress)
+
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
             {loading && <Loader />}
@@ -597,7 +639,7 @@ function VendorRegistration() {
                                             onClose={() => setShowPopup(false)}
                                         />
                                     )}
-                                    <button className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
+                                    <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
 
