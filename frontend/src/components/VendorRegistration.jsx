@@ -651,7 +651,7 @@ function VendorRegistration() {
                                             onClose={() => setShowPopup(false)}
                                         />
                                     )}
-                                    <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
+                                    <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
                                 {locationError ? (
