@@ -52,6 +52,7 @@ import Header from './Header';
 import { useAuth } from '../context/authContext';
 import InputField from './InputField';
 import { useSearch } from '../context/SearchContext';
+import { set } from 'mongoose';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
@@ -130,6 +131,10 @@ function VendorRegistration() {
     const formatTime = (time) => time ? time?.format(TIME_FORMAT) : DEFAULTS.TIME;
 
     const onSubmit = async (data) => {
+        const customValid = validateCustomFields();
+        if (!customValid) return;
+        console.log("✅ handleSubmit called with data:", data); // 👈 YEH CHECK HAI
+
         setLoading(true);
         const vendor_name = data[FORM_FIELDS?.NAME] || 'unknown'; 
         try {
@@ -155,8 +160,8 @@ function VendorRegistration() {
                 [SHOP_DATA_KEYS?.VIDEO_URL]: videoUrl || DEFAULTS?.VIDEO_URL,
                 [SHOP_DATA_KEYS?.BANNER_URL]: bannerUrl || DEFAULTS?.BANNER_URL,
                 [SHOP_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
-                latitude: (location?.lat || selectedAddress?.lat || -1),
-                longitude: (location?.lng || selectedAddress?.lng || -1),
+                latitude: selectedAddress?.lat || -1,
+                longitude: selectedAddress?.long || -1,
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
@@ -243,13 +248,14 @@ function VendorRegistration() {
         } else {
             clearErrors('media');
         }
-        if (!location && !selectedAddress) {
-            toast.error("Please select your location");
-            setLocationError(true);
-            isValid = false;
-        } else {
-            setLocationError(false);
-        }
+        // if (!selectedAddress?.lat || !selectedAddress?.long) {
+        //     toast.error("Please select your location");
+        //     setLocationError(true);
+        //     isValid = false;
+        // } else {
+        //     setLocationError(false);
+        // }
+        
         
 
         return isValid;
@@ -269,7 +275,12 @@ function VendorRegistration() {
     }, [showPopup, loading]);
 
     // Check if form is incomplete
-
+    const filteredErrors = Object.entries(errors).filter(([key, value]) => {
+        // ❌ Ignore only this specific message
+        if (value?.ref === undefined) return false;
+        return true; // ✅ Count all other errors
+    });
+      
 
     const isFormIncomplete =
         !watchFields?.name ||
@@ -285,47 +296,51 @@ function VendorRegistration() {
         watchFields?.cuisines?.length === 0 ||
         (!bannerFile && !videoFile) ||
         loading ||
-        (!location && !selectedAddress) || // 👈 Add this line
-        Object.keys(errors).length > 0;
-    
+        // !selectedAddress?.lat || !selectedAddress?.long ||
+        filteredErrors.length > 0 
+
+
     
     // Handle “Current Location” button click
-        const handleCurrentLocation = async () => {
-            const toastId = toast.loading("Getting current Location");
-            try {
-                const { success, error: locError } = await getCurrentLocation(
-                    ({ lat, lng }) => {
-                        setPosition({ lat, lng });
-                    },
-                    // setLocation,
-                    setError,
-                    setSelectedAddress
-                );
-                if (!success || locError) {
-                    toast.dismiss(toastId);
-                    // handleAddressError(
-                    //     locError || new Error("Unknown"),
-                    //     "Unable to fetch current location"
-                    // );
-                    return;
+    const handleCurrentLocation = async () => {
+        console.log("📍 handleCurrentLocation called");
+
+        const toastId = toast.loading("Getting current Location");
+
+        try {
+            const { success, error: locError } = await getCurrentLocation(
+                ({ lat, lng }) => {
+                    // Prevent unnecessary state update
+                    setPosition((prev) => {
+                        if (prev.lat === lat && prev.lng === lng) return prev;
+                        return { lat, lng };
+                    });
+                },
+                setError,
+                (loc) => {
+                    // same here
+                    setSelectedAddress((prev) => {
+                        if (prev?.lat === loc?.lat && prev?.lng === loc?.lng) return prev;
+                        return loc;
+                    });
                 }
-                // When current location is fetched, switch to edit mode
-                toast.dismiss(toastId);
-                console.log("Current location fetched successfully");
-                setLocationError(false); 
-                console.log(location)
-                // navigate("/edit_address", {
-                //     state: {
-                //         isEdit: true,
-                //         address_id: "",
-                //     },
-                // });
-            } catch (err) {
-                toast.dismiss(toastId);
-                console.error("Error in location:", err);
-                // handleAddressError(err, "Failed to fetch current location");
+            );
+
+            toast.dismiss(toastId);
+
+            if (!success || locError) {
+                return;
             }
-        };
+
+            setLocationError(false);
+            console.log("✅ Current location fetched");
+
+        } catch (err) {
+            toast.dismiss(toastId);
+            console.error("❌ Location Error:", err);
+        }
+    };
+      
         
     console.log(selectedAddress)
 
@@ -335,14 +350,7 @@ function VendorRegistration() {
             <div className="border border-gray-300 bg-white w-full max-w-2xl  rounded-lg shadow-lg">
                 <Header title="Registration" />
                 <div className='md:p-6 p-2 rounded-lg shadow-lg'>
-                    <form onSubmit={handleSubmit(async (data) => {
-                        const formValid = await trigger();
-                        const customValid = validateCustomFields();
-
-                        if (formValid && customValid) {
-                            onSubmit(data); // Call your custom submit logic
-                        }
-                    })} className="flex flex-col gap-7  py-4" noValidate>
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7  py-4" noValidate>
                         {/* Card 1: Name, Shop Name, Timings, Upload */}
                         <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">
                             {/* Name & Shop Name */}
@@ -359,7 +367,6 @@ function VendorRegistration() {
                                         onKeyDown={nameKeyDownHandler}
                                         onInput={InputCleanup}
                                     />
-
                                     <InputField
                                         id="shopName"
                                         placeholder="Shop Name"
@@ -371,12 +378,10 @@ function VendorRegistration() {
                                         onInput={InputCleanup}
                                     />
                                 </div>
-
                                 {/* Timings */}
                                 {/* ===== Shift 1 ===== */}
                                 <div>
                                     <h2 className="text-lg font-semibold text-gray-700 mb-2">Shift 1</h2>
-
                                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                                         {/* Start At */}
                                         <div className="w-full">
@@ -648,17 +653,18 @@ function VendorRegistration() {
                                         <MdAddLocationAlt className="text-lg" />
                                         Location
                                     </button>
-                                    {showPopup && (
+                                    {/* {showPopup && (
                                         <LocationPopup
                                             setLocation={(loc) => {
                                                 setLocation(loc);
+                                                setSelectedAddress(loc);
                                                 setShowPopup(false);
                                           }}
                                             show={showPopup}
                                             onClose={() => setShowPopup(false)}
                                         />
-                                    )}
-                                    <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
+                                    )} */}
+                                    {/* <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button> */}
 
                                 </div>
                                 {locationError ? (
@@ -717,8 +723,16 @@ function VendorRegistration() {
 
                         {/* Submit */}
                         <button
-                            type="submit"
-                            disabled={isFormIncomplete}
+                            type="button"
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                const formValid = await trigger();
+                                const customValid = validateCustomFields();
+
+                                if (formValid && customValid) {
+                                    handleSubmit(onSubmit)(e); // 👈 pass event here
+                                }
+                            }}
                             className={`py-3 rounded-lg shadow-lg transition ${isFormIncomplete
                                 ? 'bg-gray-400 cursor-not-allowed'
                                 : 'bg-primary hover:bg-indigo-800 text-white'
@@ -729,7 +743,20 @@ function VendorRegistration() {
 
 
 
+
+
                     </form>
+                    {showPopup && (
+                        <LocationPopup
+                            setLocation={(loc) => {
+                                setLocation(loc);
+                                setSelectedAddress(loc);
+                                setShowPopup(false);
+                            }}
+                            show={showPopup}
+                            onClose={() => setShowPopup(false)}
+                        />
+                    )}
                 </div>
                 
 
