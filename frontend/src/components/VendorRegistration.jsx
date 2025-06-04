@@ -13,6 +13,7 @@ import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
+import { useSearch } from '../context/SearchContext';
 
 
 
@@ -75,6 +76,8 @@ function VendorRegistration() {
     const [endView1, setEndView1] = useState(false);
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
+        const { selectedAddress, setSelectedAddress } = useSearch();
+    
 
     const navigate = useNavigate();
 

@@ -9,7 +9,7 @@ import { useSearch } from "../context/SearchContext";
 import SearchInput from "./SearchInput";
 
 
-// import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+// import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api"
 
 // Libraries array defined outside component to avoid reloading issue
 const libraries = ["places"];
