@@ -710,7 +710,7 @@ function VendorRegistration() {
 
                         {/* Submit */}
                         <button
-                            type="button"
+                            type="submit"
                             onClick={async () => {
                                 const formValid = await trigger();           // React Hook Form validation
                                 const customValid = validateCustomFields();  // Custom validations
