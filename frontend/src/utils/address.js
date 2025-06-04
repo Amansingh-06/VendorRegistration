@@ -415,7 +415,7 @@ export const loadGoogleMapsScript = () => {
 
 export const fetchAddressFromPlaceId = async (placeId) => {
     const response = await fetch(
-        `http://localhost:4000/address-from-placeid?placeId=${placeId}`
+        `${import.meta.env.VITE_BACKEND_URL}/address-from-placeid?placeId=${placeId}`
     );
     const data = await response.json();
     console.log(data);

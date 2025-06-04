@@ -63,7 +63,6 @@ const OrderPage = () => {
                     <h1 className="text-xl font-bold text-left text-gray-500 ">
                         Orders
                     </h1>
-                    <button onClick={() => nav('/location')}>Location</button>
 
                     <div className="flex flex-wrap  ">
                         <ButtonGroup active={active} setActive={setActive} />

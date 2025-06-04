@@ -132,13 +132,13 @@ console.log(selectedAddress)
 
                 {/* <p className="text-sm text-red-600 mt-2 text-center">{error}</p> */}
 
-                {/* {tempLocation && (
+                 {selectedAddress && (
                     <div className="mt-4 text-sm text-gray-800 border-t pt-3">
-                        <p><strong>Selected:</strong> {tempLocation.name}</p>
-                        <p><strong>Lat:</strong> {tempLocation.lat.toFixed(6)} | <strong>Lng:</strong> {tempLocation.lng.toFixed(6)}</p>
-                        {tempLocation.areaName && <p><strong>Area:</strong> {tempLocation.areaName}</p>}
+                        <p><strong>Selected:</strong> {selectedAddress?.name}</p>
+                        {/* <p><strong>Lat:</strong> {selectedAddress?.lat.toFixed(6)} | <strong>Lng:</strong> {selectedAddress?.lng.toFixed(6)}</p> */}
+                        {selectedAddress?.areaName && <p><strong>Area:</strong> {selectedAddress?.areaName}</p>}
                     </div>
-                )} */}
+                )} 
 
                 {/* Confirm Location Button */}
                 <div className="mt-4 flex justify-center">

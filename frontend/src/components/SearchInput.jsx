@@ -19,8 +19,11 @@ const SearchInput = ({ placeholder, py }) => {
     useEffect(() => {
         const initGoogleMaps = async () => {
             try {
+                console.log("📦 Trying to load Google Maps script...");
                 await loadGoogleMapsScript();
+                console.log("✅ Google Maps script loaded");
             } catch (error) {
+                console.error("❌ Failed to load Google Maps script:", error);
                 handleAddressError(error, "Failed to initialize location search");
             }
         };
@@ -28,7 +31,7 @@ const SearchInput = ({ placeholder, py }) => {
         initGoogleMaps();
     }, []);
 
-    // Fetch Google Suggestions
+    // Fetch Google Suggestions when query changes
     useEffect(() => {
         if (query.trim() === "") {
             setGoogleSuggestions([]);
@@ -44,8 +47,16 @@ const SearchInput = ({ placeholder, py }) => {
 
     const fetchGoogleSuggestions = async (query) => {
         try {
+            console.log("🔍 Fetching suggestions for:", query);
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                console.warn("⚠️ Google Maps Places is not available on window object");
+            }
+
             const { success, suggestions, error } = await getGooglePlaceSuggestions(query);
-            console.log("Suggestions:", suggestions); // 👈 Add this
+
+            console.log("📨 Suggestions fetched:", suggestions);
+            console.log("✅ Success status:", success);
+            console.log("❌ Error (if any):", error);
 
             if (success) {
                 setGoogleSuggestions(suggestions);
@@ -53,6 +64,7 @@ const SearchInput = ({ placeholder, py }) => {
                 throw new Error(error);
             }
         } catch (error) {
+            console.error("❌ Error during fetchGoogleSuggestions:", error);
             handleAddressError(error, "Failed to get location suggestions");
             setGoogleSuggestions([]);
         }
@@ -76,10 +88,20 @@ const SearchInput = ({ placeholder, py }) => {
             setQuery('');
             setShowSuggestions(false);
         } catch (error) {
+            console.error("❌ Error getting place details:", error);
             handleAddressError(error, "Could not get location details");
             setShowSuggestions(false);
         }
     };
+
+    // Debug useEffects
+    useEffect(() => {
+        console.log("🆕 Query updated:", query);
+    }, [query]);
+
+    useEffect(() => {
+        console.log("🧠 Suggestions updated:", googleSuggestions);
+    }, [googleSuggestions]);
 
     return (
         <div className="w-full my-4 relative flex justify-center">
@@ -106,7 +128,6 @@ const SearchInput = ({ placeholder, py }) => {
                 {/* Suggestions */}
                 {query && showSuggestions && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-96 overflow-auto z-50 divide-y divide-gray-100">
-                        {/* Google suggestions only */}
                         {googleSuggestions.map((suggestion) => (
                             <div
                                 key={`google-${suggestion.place_id}`}

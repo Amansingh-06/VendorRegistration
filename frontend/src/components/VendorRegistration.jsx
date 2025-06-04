@@ -639,7 +639,7 @@ function VendorRegistration() {
                                     </button>
                                     {showPopup && (
                                         <LocationPopup
-                                            setLocation={setLocation}
+                                            // setLocation={setLocation}
                                             show={showPopup}
                                             onClose={() => setShowPopup(false)}
                                         />
@@ -649,7 +649,7 @@ function VendorRegistration() {
                                 </div>
                                 {selectedAddress && (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {selectedAddress?.landmark}
+                                        Current location: {selectedAddress?.name}
                                     </p>
                                 )}
 
