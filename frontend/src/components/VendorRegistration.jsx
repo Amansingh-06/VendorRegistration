@@ -13,7 +13,6 @@ import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
-import { useSearch } from '../context/SearchContext';
 
 
 
@@ -60,6 +59,7 @@ import TimeClockFull from './ClockPopup';
 import Header from './Header';
 import { useAuth } from '../context/authContext';
 import InputField from './InputField';
+import { useSearch } from '../context/SearchContext';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
@@ -67,7 +67,7 @@ function VendorRegistration() {
     const [paymentFile, setPaymentFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [location, setLocation] = useState(null);
+    // const [location, setLocation] = useState({ lat: 26.8467, lng: 80.9462 });
     const [startTime1, setStartTime1] = useState(null);
     const [endTime1, setEndTime1] = useState(null);
     const [startTime2, setStartTime2] = useState(null);
@@ -294,7 +294,7 @@ function VendorRegistration() {
                     ({ lat, lng }) => {
                         setPosition({ lat, lng });
                     },
-                    setLocation,
+                    // setLocation,
                     setError,
                     setSelectedAddress
                 );
@@ -647,9 +647,9 @@ function VendorRegistration() {
                                     <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
-                                {location && (
+                                {selectedAddress && (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {location?.address}, {location?.areaName}, {location?.cityName}
+                                        Current location: {selectedAddress?.landmark}
                                     </p>
                                 )}
 

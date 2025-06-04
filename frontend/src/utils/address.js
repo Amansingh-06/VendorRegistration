@@ -195,13 +195,14 @@ export const getCurrentLocation = async (
         console.log("Current position:", position.coords);
 
         const data = await getAddressFromLatLng(latitude, longitude);
-        const address = data?.results[0].formatted_address;
-        const areaName = data?.results[0].address_components.find(
+        console.log("Address data:", data);
+        const address = data?.results[0]?.formatted_address;
+        const areaName = data?.results[0]?.address_components.find(
             (component) =>
                 component.types.includes("sublocality") ||
                 component.types.includes("sublocality_level_1")
         )?.long_name;
-        const cityName = data?.results[0].address_components.find(
+        const cityName = data?.results[0]?.address_components.find(
             component =>
                 component.types.includes("locality") ||
                 component.types.includes("administrative_area_level_2")
