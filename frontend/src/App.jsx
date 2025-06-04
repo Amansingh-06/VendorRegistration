@@ -9,6 +9,9 @@ import Otp from './pages/Login/Otp';
 import PrivateRoute from './Routes/ProtectedRoutes';
 import ProtectedGuestRoute from './Routes/ProtectedGuestRoutes';
 import VendorProfile from './pages/Vendor_profile';
+import EditAddress from './pages/Address/EditAddress';
+import Address from './pages/Address/Address';
+import LocationPopup from './components/LocationPopUP';
 
 function App() {
   return (
@@ -53,12 +56,30 @@ function App() {
                 <Otp />
               </ProtectedGuestRoute>
             }
-          />          {/* Add more routes as needed */}
+          />
+          {/* Add more routes as needed */}
+          <Route
+            path="/address"
+            element={
+              <PrivateRoute>
+                <Address />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/edit_address"
+            element={
+              <PrivateRoute>
+                <EditAddress />
+              </PrivateRoute>
+            }
+          />
           <Route path="/profile" element={
             <PrivateRoute>
               <VendorProfile />
             </PrivateRoute>
           } />
+          <Route path='/location' element={<LocationPopup />} />
 
         </Routes>
       </div>

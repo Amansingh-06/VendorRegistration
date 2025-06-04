@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import ButtonGroup from '../components/FilterButton';
 import OrderCard from '../components/OrderCard';
 import Navbar from '../components/Navbar';
 import BottomNav from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const sampleOrders = [
     {
@@ -45,6 +46,7 @@ const OrderPage = () => {
     const [active, setActive] = useState('All');
     const [orders, setOrders] = useState(sampleOrders);
 
+    const nav = useNavigate();
 
     const filteredOrders =
         active === 'All'
@@ -61,6 +63,7 @@ const OrderPage = () => {
                     <h1 className="text-xl font-bold text-left text-gray-500 ">
                         Orders
                     </h1>
+                    <button onClick={() => nav('/location')}>Location</button>
 
                     <div className="flex flex-wrap  ">
                         <ButtonGroup active={active} setActive={setActive} />

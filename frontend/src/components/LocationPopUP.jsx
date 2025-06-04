@@ -1,125 +1,88 @@
 import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { toast } from "react-hot-toast";
+import { getCurrentLocation ,handleAddressError} from "../utils/address";
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSearch } from "../context/SearchContext";
+import SearchInput from "./SearchInput";
+
+
+// import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 // Libraries array defined outside component to avoid reloading issue
 const libraries = ["places"];
+//default marker icon fix for leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+});
+
+
 
 const LocationPopup = ({ show, onClose, setLocation }) => {
-    const containerRef = useRef(null);
-    const [tempLocation, setTempLocation] = useState(null);
-    const [markerPosition, setMarkerPosition] = useState(null);
-    const [error, setError] = useState("");
+    const [isLoaded, setIsLoaded] = useState(true);
+    const [position, setPosition] = useState({ lat: 28.7041, lng:77.1025 }); // Lucknow default
+    const [selectedType, setSelectedType] = useState("Home");
+    const location = useLocation();
+    // const { session } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [address_id, setAddress_id] = useState("");
+    const navigate = useNavigate();
+    const { selectedAddress, setSelectedAddress } = useSearch();
 
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: libraries,
-    });
+    // Change map view to current locations
 
-    const loadPlaceAutocomplete = async () => {
-        const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
-        if (!containerRef.current) return;
-
-        containerRef.current.innerHTML = "";
-
-        const placeAutocomplete = new PlaceAutocompleteElement();
-        placeAutocomplete.className = "w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500";
-        containerRef.current.appendChild(placeAutocomplete);
-
-        placeAutocomplete.addEventListener("gmp-placeselect", async (event) => {
-            const place = event.detail.place;
-            await place.fetchFields({
-                fields: ["formattedAddress", "location", "addressComponents"]
-            });
-
-            const lat = place.location?.lat();
-            const lng = place.location?.lng();
-            const areaName = place.addressComponents?.find(c =>
-                c.types.includes("sublocality") || c.types.includes("sublocality_level_1")
-            )?.long_name;
-
-            setTempLocation({
-                name: place.formattedAddress,
-                lat,
-                lng,
-                accuracy: "From search",
-                areaName,
-            });
-            setMarkerPosition({ lat, lng });
-            setError("");
-        });
+    const ChangeMapView = ({ position }) => {
+        const map = useMap();
+        useEffect(() => {
+            map.setView(position, map.getZoom());
+        }, [position, map]);
+        return null;
     };
 
-    const getAddressFromLatLng = async (lat, lng) => {
+    // Handle “Current Location” button click
+    const handleCurrentLocation = async () => {
+        const toastId = toast.loading("Getting current Location");
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/reverse-geocode?lat=${lat}&lng=${lng}`
+            const { success, error: locError } = await getCurrentLocation(
+                ({ lat, lng }) => {
+                    setPosition({ lat, lng });
+                },
+                setError,
+                setSelectedAddress
             );
-            const data = await response.json();
-            return data;
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const getCurrentLocation = () => {
-        if (!navigator.geolocation) {
-            setError("Geolocation is not supported by your browser.");
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude, accuracy } = position.coords;
-                const data = await getAddressFromLatLng(latitude, longitude);
-                if (!data?.results?.length) {
-                    setError("Unable to fetch address from your location.");
-                    return;
-                }
-                const address = data.results[0].formatted_address;
-                const areaName = data.results[0].address_components.find(
-                    (component) =>
-                        component.types.includes("sublocality") ||
-                        component.types.includes("sublocality_level_1")
-                )?.long_name;
-
-                setTempLocation({
-                    name: address,
-                    lat: latitude,
-                    lng: longitude,
-                    accuracy,
-                    areaName,
-                });
-                setMarkerPosition({ lat: latitude, lng: longitude });
-                setError("");
-            },
-            (err) => {
-                setError(`Error getting location: ${err.message}`);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0,
+            if (!success || locError) {
+                toast.dismiss(toastId);
+                // handleAddressError(
+                //     locError || new Error("Unknown"),
+                //     "Unable to fetch current location"
+                // );
+                return;
             }
-        );
-    };
-
-    useEffect(() => {
-        if (show && isLoaded) {
-            loadPlaceAutocomplete();
+            // When current location is fetched, switch to edit mode
+            toast.dismiss(toastId);
+            console.log("Current location fetched successfully");
+            console.log(location)
+            // navigate("/edit_address", {
+            //     state: {
+            //         isEdit: true,
+            //         address_id: "",
+            //     },
+            // });
+        } catch (err) {
+            toast.dismiss(toastId);
+            console.error("Error in location:", err);
+            // handleAddressError(err, "Failed to fetch current location");
         }
-    }, [show, isLoaded]);
-
-    const handleSetLocation = () => {
-        if (tempLocation) {
-            setLocation(tempLocation);
-            onClose();
-        }
     };
-
-    if (!show) return null;
-
+    
+console.log(selectedAddress)
     return (
         <div className="inset-0 z-50 backdrop-blur-sm bg-black/30 fixed flex justify-center items-center">
             <div className="relative bg-white w-[90%] md:w-[600px] rounded-2xl shadow-xl md:p-8 p-2 py-8">
@@ -129,27 +92,35 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                 >
                     ✕
                 </button>
+                <h1>setLocatoon</h1>
 
                 {/* Autocomplete Input */}
                 <div className="relative mb-4">
-                    <IoSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
-                    <div ref={containerRef} className="w-full"></div>
+                    {/* <IoSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+                    <div  className="w-full"></div> */}
+                    <SearchInput/>
                 </div>
 
                 {/* Google Map */}
                 {isLoaded && (
                     <div className="h-64 relative rounded-xl overflow-hidden">
-                        <GoogleMap
-                            zoom={15}
-                            center={markerPosition || { lat: 28.6139, lng: 77.2090 }}
-                            mapContainerStyle={{ width: "100%", height: "100%" }}
-                        >
-                            {markerPosition && <Marker position={markerPosition} />}
-                        </GoogleMap>
+                         <MapContainer
+                                            center={position}
+                                            zoom={13}
+                                            style={{ zIndex: 0 }}
+                                            className="h-full w-full"
+                                        >
+                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                            <Marker position={position}>
+                                                <Popup>Selected Location</Popup>
+                                            </Marker>
+                                            <ChangeMapView position={position} />
+                                        </MapContainer>
+                        
 
                         {/* Floating Current Location Button */}
                         <button
-                            onClick={getCurrentLocation}
+                            onClick={handleCurrentLocation}
                             className="absolute bottom-4 right-3 md:right-1/3 shadow-md rounded-full p-2 hover:scale-105 transition-transform flex items-center justify-center border-2 border-blue-500 text-blue-500 md:gap-2"
                             title="Use Current Location"
                         >
@@ -159,22 +130,22 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                     </div>
                 )}
 
-                {error && <p className="text-sm text-red-600 mt-2 text-center">{error}</p>}
+                {/* <p className="text-sm text-red-600 mt-2 text-center">{error}</p> */}
 
-                {tempLocation && (
+                {/* {tempLocation && (
                     <div className="mt-4 text-sm text-gray-800 border-t pt-3">
                         <p><strong>Selected:</strong> {tempLocation.name}</p>
                         <p><strong>Lat:</strong> {tempLocation.lat.toFixed(6)} | <strong>Lng:</strong> {tempLocation.lng.toFixed(6)}</p>
                         {tempLocation.areaName && <p><strong>Area:</strong> {tempLocation.areaName}</p>}
                     </div>
-                )}
+                )} */}
 
                 {/* Confirm Location Button */}
                 <div className="mt-4 flex justify-center">
                     <button
-                        onClick={handleSetLocation}
-                        disabled={!tempLocation}
-                        className={`px-6 py-2 rounded-full text-white font-medium ${tempLocation ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
+                        // onClick={handleCurrentLocation}
+                        // disabled={!tempLocation}
+                        // className={`px-6 py-2 rounded-full text-white font-medium ${tempLocation ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
                     >
                         Set Location
                     </button>
