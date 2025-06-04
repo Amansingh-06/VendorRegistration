@@ -52,7 +52,6 @@ import Header from './Header';
 import { useAuth } from '../context/authContext';
 import InputField from './InputField';
 import { useSearch } from '../context/SearchContext';
-import { set } from 'mongoose';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
