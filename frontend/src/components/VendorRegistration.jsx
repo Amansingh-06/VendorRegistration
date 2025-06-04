@@ -76,8 +76,8 @@ function VendorRegistration() {
     const [endView1, setEndView1] = useState(false);
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
-        const { selectedAddress, setSelectedAddress } = useSearch();
-    
+    const [position, setPosition] = useState({ lat: 26.8467, lng: 80.9462 }); // Default to Lucknow coordinates
+    const { selectedAddress, setSelectedAddress } = useSearch();
 
     const navigate = useNavigate();
 
