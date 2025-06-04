@@ -645,6 +645,12 @@ function VendorRegistration() {
                                     <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
+                                {selectedAddress && (
+                                    <p className="mt-2 text-sm text-gray-700">
+                                        Current location: {selectedAddress}
+                                    </p>
+                                )}
+
 
                             </div>
 
