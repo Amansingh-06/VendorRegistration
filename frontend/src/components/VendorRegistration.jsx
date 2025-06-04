@@ -14,10 +14,6 @@ import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
 
-
-
-
-
 import {
     BUCKET_NAMES,
     DEFAULTS,
@@ -28,10 +24,6 @@ import {
     SHOP_DATA_KEYS
 } from '../utils/vendorConfig';
 import { useNavigate } from 'react-router-dom';
-
-
-
-
 import {
     nameValidation,
     nameKeyDownHandler,
@@ -76,10 +68,10 @@ function VendorRegistration() {
     const [endView1, setEndView1] = useState(false);
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
+    const [locationError, setLocationError] = useState(false);
+
     const [position, setPosition] = useState({ lat: 26.8467, lng: 80.9462 }); // Default to Lucknow coordinates
     const { selectedAddress, setSelectedAddress } = useSearch();
-    
-
     const navigate = useNavigate();
 
     const { session, vendorData } = useAuth();
@@ -163,6 +155,8 @@ function VendorRegistration() {
                 [SHOP_DATA_KEYS?.VIDEO_URL]: videoUrl || DEFAULTS?.VIDEO_URL,
                 [SHOP_DATA_KEYS?.BANNER_URL]: bannerUrl || DEFAULTS?.BANNER_URL,
                 [SHOP_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
+                latitude: (location?.lat || selectedAddress?.lat || -1),
+                longitude: (location?.lng || selectedAddress?.lng || -1),
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
@@ -249,6 +243,14 @@ function VendorRegistration() {
         } else {
             clearErrors('media');
         }
+        if (!location && !selectedAddress) {
+            toast.error("Please select your location");
+            setLocationError(true);
+            isValid = false;
+        } else {
+            setLocationError(false);
+        }
+        
 
         return isValid;
     };
@@ -283,6 +285,7 @@ function VendorRegistration() {
         watchFields?.cuisines?.length === 0 ||
         (!bannerFile && !videoFile) ||
         loading ||
+        (!location && !selectedAddress) || // 👈 Add this line
         Object.keys(errors).length > 0;
     
     
@@ -309,6 +312,7 @@ function VendorRegistration() {
                 // When current location is fetched, switch to edit mode
                 toast.dismiss(toastId);
                 console.log("Current location fetched successfully");
+                setLocationError(false); 
                 console.log(location)
                 // navigate("/edit_address", {
                 //     state: {
@@ -650,11 +654,14 @@ function VendorRegistration() {
                                     <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
-                                {(location || selectedAddress) && (
+                                {locationError ? (
+                                    <p className="text-sm text-red-500">Please select your location</p>
+                                ) : (location || selectedAddress) ? (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {location?.name || selectedAddress?.name || "Unknown"}
+                                        Current location: {location?.name || selectedAddress?.name || `${position.lat}, ${position.lng}`}
                                     </p>
-                                )}
+                                ) : null}
+
 
 
                             </div>
