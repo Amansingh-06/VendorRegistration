@@ -141,14 +141,25 @@ console.log(selectedAddress)
                 )} 
 
                 {/* Confirm Location Button */}
-                <div className="mt-4 flex justify-center">
-                    <button
-                        // onClick={handleCurrentLocation}
-                        // disabled={!tempLocation}
-                        // className={`px-6 py-2 rounded-full text-white font-medium ${tempLocation ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
-                    >
-                        Set Location
-                    </button>
+                    {/* Confirm Location Button */}
+                    <div className="mt-4 flex justify-center">
+                        <button
+                            onClick={() => {
+                                if (selectedAddress) {
+                                    setLocation(selectedAddress);  // parent ko location bhejdo
+                                    onClose(); // popup band karo
+                                }
+                            }}
+                            disabled={!selectedAddress}
+                            className={`px-6 py-2 rounded-full text-white font-medium ${selectedAddress
+                                    ? "bg-green-600 hover:bg-green-700"
+                                    : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                        >
+                            Set Location
+                        </button>
+                    
+
                 </div>
             </div>
         </div>

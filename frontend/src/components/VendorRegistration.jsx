@@ -67,7 +67,7 @@ function VendorRegistration() {
     const [paymentFile, setPaymentFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    // const [location, setLocation] = useState({ lat: 26.8467, lng: 80.9462 });
+    const [location, setLocation] = useState(null);
     const [startTime1, setStartTime1] = useState(null);
     const [endTime1, setEndTime1] = useState(null);
     const [startTime2, setStartTime2] = useState(null);
@@ -639,7 +639,10 @@ function VendorRegistration() {
                                     </button>
                                     {showPopup && (
                                         <LocationPopup
-                                            // setLocation={setLocation}
+                                            setLocation={(loc) => {
+                                                setLocation(loc);
+                                                setShowPopup(false);
+                                          }}
                                             show={showPopup}
                                             onClose={() => setShowPopup(false)}
                                         />
@@ -647,9 +650,9 @@ function VendorRegistration() {
                                     <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
-                                {selectedAddress && (
+                                {(location || selectedAddress) && (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {selectedAddress?.name}
+                                        Current location: {location?.name || selectedAddress?.name || "Unknown"}
                                     </p>
                                 )}
 
