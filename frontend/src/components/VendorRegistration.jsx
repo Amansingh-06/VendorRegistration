@@ -78,6 +78,7 @@ function VendorRegistration() {
     const [endView2, setEndView2] = useState(false);
     const [position, setPosition] = useState({ lat: 26.8467, lng: 80.9462 }); // Default to Lucknow coordinates
     const { selectedAddress, setSelectedAddress } = useSearch();
+    
 
     const navigate = useNavigate();
 
@@ -293,6 +294,7 @@ function VendorRegistration() {
                     ({ lat, lng }) => {
                         setPosition({ lat, lng });
                     },
+                    setLocation,
                     setError,
                     setSelectedAddress
                 );
@@ -645,9 +647,9 @@ function VendorRegistration() {
                                     <button onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
-                                {selectedAddress && (
+                                {location && (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {selectedAddress}
+                                        Current location: {location?.address}, {location?.areaName}, {location?.cityName}
                                     </p>
                                 )}
 
