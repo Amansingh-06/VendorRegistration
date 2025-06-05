@@ -1,103 +1,81 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from '../utils/supabaseClient';
 import Loader from "../components/Loader";
 import NetworkError from "../components/NetworkError";
 import { logout } from "../utils/auth";
 import { useAuth } from "../context/authContext";
 
-
-
 const PrivateRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
-    // const [session, setSession] = useState(null);
     const { session, setSession } = useAuth();
-    const [isRegistered, setIsRegistered] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(null); // Start as null, not false
     const [retryCount, setRetryCount] = useState(0);
     const [error, setError] = useState(null);
-    const [isRetrying, setIsRetrying] = useState(false);
     const MAX_RETRIES = 3;
+    const location = useLocation();
 
     useEffect(() => {
         const getUserData = async () => {
             try {
-                console.log(`Attempt ${retryCount + 1}`);
-                if (retryCount > 0) setIsRetrying(true);
-                const {
-                    data: { session },
-                } = await supabase.auth.getSession();
+                const { data: { session } } = await supabase.auth.getSession();
 
                 if (!session) throw new Error("No session returned");
 
                 setSession(session);
                 setError(null);
-                setIsLoading(false);
-                setIsRetrying(false);
 
-                const user = session?.user;
+                const user = session.user;
                 if (user) {
-                    const isReg = user?.user_metadata?.isRegistered ?? false;
+                    // Set isRegistered properly
+                    const isReg = user.user_metadata?.isRegistered ?? false;
                     setIsRegistered(isReg);
                 }
+
+                setIsLoading(false);
             } catch (err) {
                 const isNetworkError =
                     !navigator.onLine ||
                     err.message.includes("Failed to fetch") ||
                     err.message.includes("Network Error");
 
-                // console.error("Supabase connection error:", err);
                 if (isNetworkError && retryCount < MAX_RETRIES - 1) {
-                    console.warn("Network error, retrying...", err);
-                    // schedule a retry
                     setTimeout(() => setRetryCount((c) => c + 1), 3000);
-                    return; // bail out of this catch so we stay in loading state
+                    return;
                 }
 
-                // non-network error (or out of retries): give up
-                console.error("Error fetching session:", err);
                 setError(err);
                 setIsLoading(false);
-                setIsRetrying(false);
             }
         };
 
         getUserData();
     }, [retryCount, setSession]);
 
-    if (isLoading) {
+    if (isLoading || isRegistered === null) {
         return <Loader />;
     }
 
     if (
         error &&
         (!navigator.onLine ||
-            error?.message?.includes("Failed to fetch") ||
-            error?.message?.includes("Network Error"))
+            error.message.includes("Failed to fetch") ||
+            error.message.includes("Network Error"))
     ) {
-        return (
-            <NetworkError />
-           
-        )
+        return <NetworkError />;
     }
 
-    // Auth/Access control
-    if (!session || !isRegistered) {
-
-        const handleUnwantedSession = async () => {
-            await logout();
-        }
-
-        if (session && !isRegistered) {
-            handleUnwantedSession();
-        }
-
-        return <Navigate to="/" replace />;
+    // If session not there, redirect to login/home
+    if (!session) {
+        return <Navigate to="/" replace state={{ from: location }} />;
     }
-    // if (!session || !isRegistered) return <Navigate to="/login" replace />;
-    // write the code for 
 
-    // if (!isRegistered) return <Navigate to="/userdetails" replace />;
+    // If session there but not registered, redirect to registration page
+    if (!isRegistered) {
+        return <Navigate to="/vendor-registration" replace />;
+    }
 
+    // If registered and logged in, show children (protected content)
     return children;
 };
 

@@ -9,6 +9,8 @@ import { GiKnifeFork } from 'react-icons/gi';
 import { supabase } from '../utils/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { FaLocationCrosshairs } from 'react-icons/fa6';
+import { useAuth } from '../context/authContext';
 
 import {
     InputCleanup,
@@ -37,6 +39,7 @@ const AddEditItem = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const categoryInputRef = useRef(null);
+    const { vendorProfile } = useAuth();
 
  
     const handleFileChange = (e) => {
@@ -86,7 +89,8 @@ const AddEditItem = () => {
             .insert([
                 {
                     cat_id: uuidv4(),     // ✅ add random UUID
-                    title: trimmed        // ✅ user input as-is
+                    title: trimmed  ,      // ✅ user input as-is
+                    vendor_id: vendorProfile?.v_id // Add vendor_id if needed
                 }
             ])
             .select();
@@ -148,6 +152,9 @@ const AddEditItem = () => {
 
         return urlData?.publicUrl;
     };
+    useEffect(() => {
+        console.log("vendor",vendorProfile)
+    },[])
     
 
     const onSubmit = async (data) => {
@@ -166,7 +173,8 @@ const AddEditItem = () => {
                 [ITEM_FIELDS.VEG]: data?.type === "veg",
                 [ITEM_FIELDS.CATEGORY]: data?.category || ITEM_DEFAULTS?.CATEGORY,
                 [ITEM_FIELDS.IMG_URL]: img_url || ITEM_DEFAULTS?.IMG_URL,
-              };
+                [ITEM_FIELDS.VENDOR_ID]: vendorProfile?.v_id
+              };``
              const { error } = await supabase.from(SUPABASE_TABLES.ITEM).insert([finalData]);
 
                         if (error) {

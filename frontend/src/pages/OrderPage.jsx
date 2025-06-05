@@ -1,9 +1,10 @@
-import React, { use, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonGroup from '../components/FilterButton';
 import OrderCard from '../components/OrderCard';
 import Navbar from '../components/Navbar';
 import BottomNav from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/supabaseClient';
 
 const sampleOrders = [
     {
@@ -46,6 +47,20 @@ const OrderPage = () => {
     const [active, setActive] = useState('All');
     const [orders, setOrders] = useState(sampleOrders);
 
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                const isRegistered = session.user?.user_metadata?.isRegistered ?? false;
+                console.log("✅ User is registered:", isRegistered);
+            } else {
+                console.log("❌ User not logged in");
+            }
+        };
+
+        checkUser();
+    }, []);
     const nav = useNavigate();
 
     const filteredOrders =

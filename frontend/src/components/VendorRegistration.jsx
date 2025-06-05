@@ -130,8 +130,8 @@ function VendorRegistration() {
     const formatTime = (time) => time ? time?.format(TIME_FORMAT) : DEFAULTS.TIME;
 
     const onSubmit = async (data) => {
-        const customValid = validateCustomFields();
-        if (!customValid) return;
+        // const customValid = validateCustomFields();
+        // if (!customValid) return;
         console.log("✅ handleSubmit called with data:", data); // 👈 YEH CHECK HAI
 
         setLoading(true);
@@ -190,14 +190,30 @@ function VendorRegistration() {
             reset();
 
             toast.success(MESSAGES.REGISTER_SUCCESS);
-            await supabase.auth.updateUser({
+            // 👇 Register the user
+            const { data: updatedUser, error: updateError } = await supabase.auth.updateUser({
                 data: { isRegistered: true },
-              });
+            });
 
-            navigate('/home');
+            if (updateError) {
+                toast.error("User metadata update failed");
+                return;
+            }
+
+            // 👇 Fetch fresh session
+            const { data:sessionData } = await supabase.auth.getSession();
+            if (sessionData?.session?.user?.user_metadata?.isRegistered) {
+                // setSession(data.session); // context
+                navigate("/home");
+            } else {
+                toast.error("User session not updated with registration info");
+            }
+
+
+            // navigate('/home');
 
         } catch (err) {
-            console.error('Unexpected Error:', err.message);
+            console.error('Unexpected Error:', err);
             toast.error(MESSAGES.UNEXPECTED_ERROR);
         } finally {
             setLoading(false);
@@ -259,8 +275,7 @@ function VendorRegistration() {
 
         return isValid;
     };
-      
-    
+
     React.useEffect(() => {
         if (showPopup || loading) {
             document.body.style.overflow = 'hidden';
@@ -279,8 +294,6 @@ function VendorRegistration() {
         if (value?.ref === undefined) return false;
         return true; // ✅ Count all other errors
     });
-      
-
     const isFormIncomplete =
         !watchFields?.name ||
         !watchFields?.shopName ||
@@ -298,8 +311,6 @@ function VendorRegistration() {
         // !selectedAddress?.lat || !selectedAddress?.long ||
         filteredErrors.length > 0 
 
-
-    
     // Handle “Current Location” button click
     const handleCurrentLocation = async () => {
         console.log("📍 handleCurrentLocation called");
@@ -328,6 +339,7 @@ function VendorRegistration() {
             toast.dismiss(toastId);
 
             if (!success || locError) {
+                console.log("location returned",locError)
                 return;
             }
 
@@ -663,7 +675,7 @@ function VendorRegistration() {
                                             onClose={() => setShowPopup(false)}
                                         />
                                     )} */}
-                                    {/* <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button> */}
+                                    <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
 
                                 </div>
                                 {locationError ? (
@@ -724,13 +736,15 @@ function VendorRegistration() {
                         <button
                             type="button"
                             onClick={async (e) => {
+                                console.log("button press")
                                 e.preventDefault();
-                                const formValid = await trigger();
-                                const customValid = validateCustomFields();
+                                // const formValid = await trigger();
+                                // const customValid = validateCustomFields();
 
-                                if (formValid && customValid) {
-                                    handleSubmit(onSubmit)(e); // 👈 pass event here
-                                }
+                                // if (formValid && customValid) {
+                                //     handleSubmit(onSubmit)(e); // 👈 pass event here
+                                // }
+                                handleSubmit(onSubmit)(e)
                             }}
                             className={`py-3 rounded-lg shadow-lg transition ${isFormIncomplete
                                 ? 'bg-gray-400 cursor-not-allowed'

@@ -13,6 +13,7 @@ import EditAddress from './pages/Address/EditAddress';
 import Address from './pages/Address/Address';
 import LocationPopup from './components/LocationPopUP';
 import VendorRegistration from './components/VendorRegistration';
+import VendorEarnings from './pages/VendorEarning';
 
 function App() {
   return (
@@ -37,14 +38,20 @@ function App() {
               </PrivateRoute>
             }
           />
-          {/* <Route
+          <Route
+            path='/earning'
+            element={<PrivateRoute>
+              <VendorEarnings />
+            </PrivateRoute>} />
+          
+          <Route
             path="/vendor-registration"
             element={
               <ProtectedGuestRoute>
                 <RegistrationPage />
               </ProtectedGuestRoute>
             }
-          /> */}
+          />
           <Route path="/" element={
             <ProtectedGuestRoute>
               <Login />
@@ -80,7 +87,6 @@ function App() {
               <VendorProfile />
             </PrivateRoute>
           } />
-          <Route path='vendor-registration' element={<VendorRegistration/>}/>
 
         </Routes>
       </div>

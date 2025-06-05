@@ -112,6 +112,7 @@ export const ITEM_FIELDS = {
     VEG: "veg",
     CATEGORY: "item_category",
     IMG_URL: "img_url",
+    VENDOR_ID: "vendor_id",
 };
 
 // Default values

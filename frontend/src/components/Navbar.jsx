@@ -48,27 +48,8 @@ const IOSSwitch = styled((props) => (
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
-    const { session } = useAuth();
-    const [vendorProfile, setVendorProfile] = useState(null);
+    const { session,vendorProfile } = useAuth();
 
-
-    useEffect(() => {
-        const fetchVendorData = async () => {
-            if (session?.user?.id) {
-                const { data, error } = await supabase
-                    .from('vendor_request')
-                    .select('*')
-                    .eq('u_id', session.user.id)
-                    .single();
-
-                if (!error) setVendorProfile(data);
-            }
-        };
-
-        fetchVendorData();
-    }, [session]);
-    
-    console.log("Vendor Profile Data:", vendorProfile);
 
     return (
         <div className='w-full top-0 z-20 backdrop-blur-sm rounded-b-lg overflow-hidden bg-gradient-to-br from-orange via-yellow to-orange'>
@@ -98,15 +79,15 @@ const Navbar = () => {
                             <div className='relative'>
                                 <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
 
-                                    {vendorProfile && (vendorProfile.banner_url && vendorProfile.banner_url !== 'NA') ? (
+                                    {vendorProfile && (vendorProfile?.banner_url && vendorProfile?.banner_url !== 'NA') ? (
                                         <img
                                             src={vendorProfile.banner_url}
                                             alt="Vendor Banner"
                                             className='w-full h-full object-cover'
                                         />
-                                    ) : vendorProfile && (vendorProfile.video_url && vendorProfile.video_url !== 'NA') ? (
+                                    ) : vendorProfile && (vendorProfile?.video_url && vendorProfile?.video_url !== 'NA') ? (
                                         <video
-                                            src={vendorProfile.video_url}
+                                            src={vendorProfile?.video_url}
                                             className="w-full h-full object-cover"
                                             muted
                                             preload="metadata"

@@ -57,9 +57,9 @@ export const verifyOtp = async (phone, otpValue) => {
 
 export const handleLogin = async (phone, navigate) => {
 
-    await supabase.auth.updateUser({
-        data: { isRegistered: true },
-    });
+    // await supabase.auth.updateUser({
+    //     data: { isRegistered: true },
+    // });
 
     // console.log("User updated:", data);
     // console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);
@@ -93,7 +93,7 @@ export const handleSignupFlow = async (
             // });
 
             console.log("User updated:", data);
-            console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);
+            console.log("isRegistered in handlesignup:", data?.user?.user_metadata?.isRegistered);
             navigate("/vendor-registration");
         }
     }
@@ -115,6 +115,12 @@ export const handleSignup = async (data, flag = false, navigate, setSession, set
         if (session) {
             setSession(session);
         }
+        await supabase.auth.updateUser({
+            data: {
+                isRegistered: false
+            }
+        });
+          
 
         const user_id = session?.user?.id;
 
@@ -144,9 +150,9 @@ export const handleSignup = async (data, flag = false, navigate, setSession, set
 
 export const logout = async (setSession) => {
     try {
-        await supabase.auth.updateUser({
-            data: { isRegistered: false },
-        });
+        // await supabase.auth.updateUser({
+        //     data: { isRegistered: false },
+        // });
         await supabase.auth.signOut();
         setSession(null);
         // toast.success("logged out");

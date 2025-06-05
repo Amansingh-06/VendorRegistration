@@ -192,10 +192,10 @@ export const getCurrentLocation = async (
             setError("Location accuracy is too low (>10 meters).");
             // return; // Don't proceed further
         }
-        console.log("Current position:", position.coords);
+        // console.log("Current position:", position.coords);
 
         const data = await getAddressFromLatLng(latitude, longitude);
-        console.log("Address data:", data);
+        // console.log("Address data:", data);
         const address = data?.results[0]?.formatted_address;
         const areaName = data?.results[0]?.address_components.find(
             (component) =>
@@ -229,7 +229,7 @@ export const getCurrentLocation = async (
             cityName: cityName
         });
         setSelectedAddress(add);
-        console.log(location)
+        // console.log(location)
 
         return {
             success: true,
