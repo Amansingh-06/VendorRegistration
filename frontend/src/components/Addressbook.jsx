@@ -17,7 +17,7 @@ import {
     fetchAllSavedAddresses,
     getCurrentLocation,
     handleAddressError,
-    markAsSelectedAddress,
+    // markAsSelectedAddress,
 } from "../utils/address";
 import Loader from "./Loader";
 // import { toast } from "react-toastify";
@@ -165,27 +165,27 @@ const AddressBook = () => {
         }
     };
 
-    const handleSelectLocation = async (address_id) => {
-        const toastId = toast.loading("Setting as default address...");
-        try {
-            const { success, error } = await markAsSelectedAddress(address_id);
+    // const handleSelectLocation = async (address_id) => {
+    //     const toastId = toast.loading("Setting as default address...");
+    //     try {
+    //         const { success, error } = await markAsSelectedAddress(address_id);
 
-            if (!success) {
-                throw new Error(error);
-            }
+    //         if (!success) {
+    //             throw new Error(error);
+    //         }
 
-            // Update the local addresses list
-            // await loadAddresses();
+    //         // Update the local addresses list
+    //         // await loadAddresses();
 
-            toast.dismiss(toastId);
-            toast.success("Default address updated");
-            navigate("/"); // Navigate back to home after selection
+    //         toast.dismiss(toastId);
+    //         toast.success("Default address updated");
+    //         navigate("/"); // Navigate back to home after selection
 
-        } catch (error) {
-            toast.dismiss(toastId);
-            handleAddressError(error, "Could not update default address");
-        }
-    }
+    //     } catch (error) {
+    //         toast.dismiss(toastId);
+    //         handleAddressError(error, "Could not update default address");
+    //     }
+    // }
 
     useEffect(() => {
         const handleCurrentAddress = async () => {

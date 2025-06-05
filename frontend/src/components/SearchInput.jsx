@@ -82,7 +82,7 @@ const SearchInput = ({ placeholder, py }) => {
                 floor: "NA",
                 h_no: "NA",
             };
-
+console.lof(data)
             setSelectedAddress(address);
             // navigate("/edit_address", { state: { isEdit: true } });
             setQuery('');

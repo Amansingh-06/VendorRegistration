@@ -422,96 +422,96 @@ export const fetchAddressFromPlaceId = async (placeId) => {
     return data;
 };
 
-export const markAsSelectedAddress = async (address_id) => {
-    try {
-        // Get current user
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
+// export const markAsSelectedAddress = async (address_id) => {
+//     try {
+//         // Get current user
+//         const {
+//             data: { user },
+//             error: authError,
+//         } = await supabase.auth.getUser();
 
-        if (authError || !user) {
-            return {
-                success: false,
-                error: "User not authenticated"
-            };
-        }
+//         if (authError || !user) {
+//             return {
+//                 success: false,
+//                 error: "User not authenticated"
+//             };
+//         }
 
-        // First, set all addresses' isSelected to false
-        const { error: resetError } = await supabase
-            .from("delivery_address")
-            .update({ is_selected: false })
-            .eq("u_id", user.id);
+//         // First, set all addresses' isSelected to false
+//         const { error: resetError } = await supabase
+//             .from("delivery_address")
+//             .update({ is_selected: false })
+//             .eq("u_id", user.id);
 
-        if (resetError) {
-            throw resetError;
-        }
+//         if (resetError) {
+//             throw resetError;
+//         }
 
-        // Then, set the selected address to true
-        const { error: updateError } = await supabase
-            .from("delivery_address")
-            .update({
-                is_selected: true,
-                updated_at: new Date().toISOString()
-            })
-            .match({
-                address_id: address_id,
-                u_id: user.id
-            });
+//         // Then, set the selected address to true
+//         const { error: updateError } = await supabase
+//             .from("delivery_address")
+//             .update({
+//                 is_selected: true,
+//                 updated_at: new Date().toISOString()
+//             })
+//             .match({
+//                 address_id: address_id,
+//                 u_id: user.id
+//             });
 
-        if (updateError) {
-            throw updateError;
-        }
+//         if (updateError) {
+//             throw updateError;
+//         }
 
-        return {
-            success: true,
-            error: null
-        };
+//         return {
+//             success: true,
+//             error: null
+//         };
 
-    } catch (error) {
-        console.error("Error marking address as selected:", error);
-        return {
-            success: false,
-            error: error.message || "Failed to mark address as selected"
-        };
-    }
-};
+//     } catch (error) {
+//         console.error("Error marking address as selected:", error);
+//         return {
+//             success: false,
+//             error: error.message || "Failed to mark address as selected"
+//         };
+//     }
+// };
 
 
-export const getSelectedAddress = async () => {
-    try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+// export const getSelectedAddress = async () => {
+//     try {
+//         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (authError || !user) {
-            return {
-                success: false,
-                error: "User not authenticated"
-            };
-        }
+//         if (authError || !user) {
+//             return {
+//                 success: false,
+//                 error: "User not authenticated"
+//             };
+//         }
 
-        const { data, error } = await supabase
-            .from("delivery_address")
-            .select("*")
-            .eq("u_id", user.id)
-            .eq("is_selected", true)
-            .single();
+//         const { data, error } = await supabase
+//             .from("delivery_address")
+//             .select("*")
+//             .eq("u_id", user.id)
+//             .eq("is_selected", true)
+//             .single();
 
-        if (error) {
-            throw error;
-        }
+//         if (error) {
+//             throw error;
+//         }
 
-        return {
-            success: true,
-            address: data,
-            error: null
-        };
+//         return {
+//             success: true,
+//             address: data,
+//             error: null
+//         };
 
-    } catch (error) {
-        console.error("Error fetching selected address:", error);
-        return {
-            success: false,
-            address: null,
-            error: error.message
-        };
-    }
-};
+//     } catch (error) {
+//         console.error("Error fetching selected address:", error);
+//         return {
+//             success: false,
+//             address: null,
+//             error: error.message
+//         };
+//     }
+// };
