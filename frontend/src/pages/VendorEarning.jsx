@@ -1,6 +1,13 @@
 import React,{useState} from 'react';
 import BottomNav from '../components/Footer';
 import Header from '../components/Header';
+import { DateRange } from 'react-date-range';
+import { format } from 'date-fns';
+
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+
+
 
 const VendorEarnings = () => {
     const initialReviews = [
@@ -28,6 +35,9 @@ const VendorEarnings = () => {
     const [showAllItemsMap, setShowAllItemsMap] = useState({});
     const [replyingId, setReplyingId] = useState(null);
     const [replyText, setReplyText] = useState("");
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [dateRange, setDateRange] = useState([new Date('2025-04-01'), new Date('2025-05-01')]);
+
 
     const toggleItems = (id) => {
         setShowAllItemsMap((prev) => ({
@@ -35,6 +45,14 @@ const VendorEarnings = () => {
             [id]: !prev[id]
         }));
     };
+  
+    // Calendar ke liye onChange handler
+    const onChangeCalendar = (value) => {
+        setDateRange(value);
+    };
+
+    
+
 
     const handleReplyClick = (id) => {
         setReplyingId(id);
@@ -93,12 +111,43 @@ const VendorEarnings = () => {
                     </section>
 
                     {/* Summary Section */}
-                    <section className="bg-white rounded-xl shadow p-4 md:p-6">
+                    <section className="bg-white rounded-xl shadow p-4 md:p-6 relative">
+                        {/* Heading + Date Display + Icon */}
                         <div className="flex justify-between items-center flex-wrap gap-2">
                             <h2 className="text-lg font-semibold text-gray-500">Insights</h2>
-                            <p className="text-sm text-gray-500">01 Apr 2025 - 01 May 2025</p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm text-gray-500">
+                                    {Array.isArray(dateRange)
+                                        ? `${dateRange[0].toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })} - ${dateRange[1].toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                                        : dateRange.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </p>
+
+                                <button onClick={() => setShowCalendar((prev) => !prev)} className="cursor-pointer">
+                                    📅
+                                </button>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 text-center">
+
+                        {/* 📅 Calendar Picker Toggle */}
+                        {/* 📅 Calendar Picker Toggle */}
+                        {showCalendar && (
+                            <div
+                                className="mt-4 absolute right-20 rounded-lg shadow-lg bg-white"
+                                style={{ width: '280px', height: 'auto', zIndex: 50, padding: '10px' }}
+                            >
+                                <Calendar
+                                    selectRange={true}
+                                    onChange={onChangeCalendar}
+                                    value={dateRange}
+                                    // calendarType="ISO 8601"  // ya "US", dono supported hain
+                                />
+
+                            </div>
+                        )}
+
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-center">
                             <div className="p-4 border rounded-lg bg-gray-50">
                                 <p className="text-gray-600">Earnings</p>
                                 <p className="text-xl font-bold text-gray-800">₹XX</p>

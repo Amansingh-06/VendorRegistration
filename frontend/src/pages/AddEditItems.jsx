@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
 import { useAuth } from '../context/authContext';
+import { useNavigate } from 'react-router-dom';
 
 import {
     InputCleanup,
@@ -25,12 +26,14 @@ import {
     numberOnlyInputClean,
     numberOnlyKeyDownHandler,
     numberOnlyValidation,
+    shopNameKeyDownHandler,
 
 
 } from '../utils/Validation';
 import { SUPABASE_TABLES, MESSAGES,BUCKET_NAMES,ITEM_DEFAULTS,ITEM_FIELDS } from '../utils/vendorConfig';
 import { formatToCapital } from '../utils/vendorConfig';
 import Loader from '../components/Loader';
+import BottomNav from '../components/Footer';
 
 const AddEditItem = () => {
     const [categories, setCategories] = useState([]);
@@ -40,6 +43,9 @@ const AddEditItem = () => {
     const [loading, setLoading] = useState(false);
     const categoryInputRef = useRef(null);
     const { vendorProfile } = useAuth();
+    const fileInputRef = useRef();
+    const navigate = useNavigate()
+
 
  
     const handleFileChange = (e) => {
@@ -64,49 +70,69 @@ const AddEditItem = () => {
 
     const handleAddCategory = async () => {
         const trimmed = newCategory.trim();
-        if (!trimmed) return toast.error(MESSAGES.EMPTY_CATEGORY);
+        if (!trimmed) {
+            return toast.error(MESSAGES.EMPTY_CATEGORY);
+        }
 
-        // Case-insensitive check
+        // Check if category already exists (case-insensitive)
         const { data: existing, error: checkError } = await supabase
             .from(SUPABASE_TABLES?.ITEM_CATEGORY)
             .select('*')
-            .ilike('title', trimmed); // ilike => case-insensitive match
+            .ilike('title', trimmed);
 
         if (checkError) {
-            toast.error(MESSAGES?.CHECK_FAIL);
+            toast.error(MESSAGES.CHECK_FAIL);
             console.error(checkError);
             return;
         }
 
         if (existing.length > 0) {
-            toast.error(MESSAGES?.CATEGORY_EXISTS);
+            toast.error(MESSAGES.CATEGORY_EXISTS);
             return;
         }
 
-        // Save exactly as user typed
+        // ✅ Show loading toast only before inserting
+        const toastId = toast.loading('Adding Category');
+
         const { data, error } = await supabase
             .from(SUPABASE_TABLES?.ITEM_CATEGORY)
             .insert([
                 {
-                    cat_id: uuidv4(),     // ✅ add random UUID
-                    title: trimmed  ,      // ✅ user input as-is
-                    vendor_id: vendorProfile?.v_id // Add vendor_id if needed
+                    cat_id: uuidv4(),
+                    title: trimmed,
+                    vendor_id: vendorProfile?.v_id,
                 }
             ])
             .select();
-    
+
+        toast.dismiss(toastId);
 
         if (error) {
-            toast.error(MESSAGES?.CATEGORY_ADD_FAIL);
+            toast.error(MESSAGES.CATEGORY_ADD_FAIL);
             console.error(error);
             return;
         }
 
+        const addedCat = {
+            ...data[0],
+            title: data[0].title.toUpperCase(), // force uppercase for consistency
+        };
+
+        // ✅ Update categories first
+        setCategories(prev => [...prev, addedCat]);
+
+        // ✅ Then set value in form (ensure it matches dropdown <option value>)
+        setValue('category', addedCat.title.toUpperCase());
+        console.log("✅ Category selected after adding:", addedCat.title.toUpperCase());
+
         toast.success(MESSAGES.CATEGORY_ADDED);
-        setCategories([...categories, { ...data[0], title: data[0].title.toUpperCase() }]); // capitalize for UI
+
         setNewCategory('');
         setShowCategoryInput(false);
     };
+    
+    
+    
     
 
     const {
@@ -114,10 +140,18 @@ const AddEditItem = () => {
         handleSubmit,
         setValue,
         trigger,
+        watch,
         setError,clearErrors,
         formState: { errors, isValid },
         reset
     } = useForm({ mode: 'onChange' });
+
+    const [selectedType, setSelectedType] = useState(watch('type') || '');
+
+    const handleChange = (e) => {
+        setSelectedType(e.target.value);
+        setValue('type', e.target.value, { shouldValidate: true });
+    };
 
     const uploadFile = async (file, bucketName) => {
         if (!file || !file.name) return null; // 👈 fixed here
@@ -158,6 +192,8 @@ const AddEditItem = () => {
     
 
     const onSubmit = async (data) => {
+        console.log("🟡 Submitted form data:", data);
+
         setLoading(true);
         try {
             const img_url = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG);
@@ -174,7 +210,8 @@ const AddEditItem = () => {
                 [ITEM_FIELDS.CATEGORY]: data?.category || ITEM_DEFAULTS?.CATEGORY,
                 [ITEM_FIELDS.IMG_URL]: img_url || ITEM_DEFAULTS?.IMG_URL,
                 [ITEM_FIELDS.VENDOR_ID]: vendorProfile?.v_id
-              };``
+            }; ``
+            console.log(finalData)
              const { error } = await supabase.from(SUPABASE_TABLES.ITEM).insert([finalData]);
 
                         if (error) {
@@ -188,6 +225,7 @@ const AddEditItem = () => {
             
             console.log("Data inserted successfully");
             toast.success(MESSAGES?.ITEM_REGISTER_SUCCESS);
+            navigate('/home')
             setPreviewImage(null); // Reset preview image
             
 
@@ -209,22 +247,33 @@ const AddEditItem = () => {
         if (!valid) {
             console.log("Form has validation errors");
         }
-  };
+    };
+    const selectedCat = watch('category');
+
+   
+
+    // Clear file input value
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+
+
+
     return (
         <motion.form
             onSubmit={handleSubmit(onSubmit)}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="max-w-2xl w-full mx-auto  bg-white rounded-2xl shadow-lg font-poppins "
+            className="max-w-2xl w-full mx-auto  bg-white rounded-2xl shadow-lg font-poppins  "
             noValidate
         >
             {loading && <Loader />}
             <Header title="Add Item" />
-            <div className='max-w-2xl w-full mx-auto px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
+            <div className='max-w-2xl w-full mx-auto px-2 md:px-8  py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
                 <div className="grid gap-8">
                     {/* Item Name */}
-                    <div className=' w-full mx-auto px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
+                    <div className='  px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
                     <div className="relative">
                         <FaUtensils className="absolute left-3 top-4 text-black text-md" />
                         <input
@@ -253,22 +302,24 @@ const AddEditItem = () => {
                     {/* Quantity */}
                     <div className="relative">
                         <FaHashtag className="absolute left-3 top-4 text-black text-md" />
-                        <input
-                            id="quantity"
-                            {...register('quantity', {
-                                validate: (value) => {
-                                    if (!value) return true; // allow empty
-                                    if (!/^\d+$/.test(value)) return "Only digits allowed (no spaces or symbols)";
-                                    return true;
-                                }
-                            })}
-                            onKeyDown={numberOnlyKeyDownHandler}
-                            onInput={numberOnlyInputClean}
-                            type="number"
-                            placeholder="Quantity (optional)"
-                            className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors.quantity ? 'border-red' : 'border-gray-300'
-                                } focus:outline-none focus:border-orange placeholder-transparent`}
-                        />
+                            <input
+                                id="quantity"
+                                {...register('quantity', {
+                                    validate: (value) => {
+                                        if (!value) return true; // optional field
+                                        if (!/^[a-zA-Z0-9]+$/.test(value)) {
+                                            return "Only letters and digits allowed. No spaces or special characters.";
+                                        }
+                                        return true;
+                                    }
+                                })}
+                                onKeyDown={shopNameKeyDownHandler}
+                                type="text"
+                                placeholder="Quantity (optional)"
+                                className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${errors.quantity ? 'border-red' : 'border-gray-300'
+                                    } focus:outline-none focus:border-orange placeholder-transparent`}
+                            />
+
 
                         <label
                             htmlFor="quantity"
@@ -329,39 +380,109 @@ const AddEditItem = () => {
                         )}
                         </div>
                 </div>
-                <div className='px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8 flex flex-col gap-2'>
-                    {/* Type */}
-                        <div className="flex gap-6 ">
-                            <label className="relative cursor-pointer">
-                                <input
-                                    type="radio"
-                                    value="veg"
-                                    {...register('type', { required: 'Please select type' })}
-                                    className="peer sr-only"
-                                />
-                                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 peer-checked:border-green-500 peer-checked:bg-green-50 transition">
-                                    <div className="w-4 h-4 rounded-full border-2 border-green-500 peer-checked:bg-green-500 transition" />
-                                    <span className="text-sm text-gray-700">Veg</span>
-                                </div>
-                            </label>
+                    <div className='  px-6 py-6 bg-white rounded-2xl shadow-lg font-poppins space-y-8 flex flex-col gap-6'>
+                        {/* Type */}
 
-                            <label className="relative cursor-pointer">
-                                <input
-                                    type="radio"
-                                    value="nonveg"
-                                    {...register('type', { required: 'Please select type' })}
-                                    className="peer sr-only"
-                                />
-                                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 peer-checked:border-red-500 peer-checked:bg-red-50 transition">
-                                    <div className="w-4 h-4 rounded-full border-2 border-red-500 peer-checked:bg-red-500 transition" />
-                                    <span className="text-sm text-gray-700">Non-Veg</span>
-                                </div>
-                            </label>
-                          
+                        <div className="mb-6">
+                            <h3 className="text-base font-semibold text-gray-600 mb-2">Select Type</h3>
+                            <div className="flex gap-8">
+
+                                {/* Veg Option */}
+                                <label className="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        value="veg"
+                                        {...register('type', { required: 'Please select type' })}
+                                        className="hidden"
+                                        checked={selectedType === "veg"}
+                                        onChange={handleChange}
+                                    />
+                                    <div
+                                        className={`flex items-center gap-3 md:px-5 px-2 py-3 rounded-xl border cursor-pointer transition-shadow shadow-sm
+              ${selectedType === "veg"
+                                                ? "border-green-600 bg-green-100 shadow-lg"
+                                                : "border-gray-300 hover:border-green-500"
+                                            }`}
+                                    >
+                                        {/* Outer circle */}
+                                        <div
+                                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-300
+                ${selectedType === "veg"
+                                                    ? "border-green-600 bg-green-600"
+                                                    : "border-green-600 bg-transparent"
+                                                }`}
+                                        >
+                                            {/* Inner dot */}
+                                            {/* <div
+                                                className={`w-3 h-3 rounded-full bg-white transition-transform duration-300
+                                                         ${selectedType === "veg" ? "scale-100" : "scale-0"
+                                                    }`}
+                                            /> */}
+                                        </div>
+
+                                        <span
+                                            className={`md:text-md text-sm font-medium transition-colors duration-300
+                                              ${selectedType === "veg"
+                                                    ? "text-green-700"
+                                                    : "text-gray-800"
+                                                }`}
+                                        >
+                                            Veg
+                                        </span>
+                                    </div>
+                                </label>
+
+                                {/* Non-Veg Option */}
+                                <label className="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        value="nonveg"
+                                        {...register('type', { required: 'Please select type' })}
+                                        className="hidden"
+                                        checked={selectedType === "nonveg"}
+                                        onChange={handleChange}
+                                    />
+                                    <div
+                                        className={`flex items-center gap-3 md:px-5 px-2 py-3 rounded-xl border cursor-pointer transition-shadow shadow-sm
+              ${selectedType === "nonveg"
+                                                ? "border-red-600 bg-red-100 shadow-lg"
+                                                : "border-gray-300 hover:border-red-500"
+                                            }`}
+                                    >
+                                        {/* Outer circle */}
+                                        <div
+                                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-300
+                ${selectedType === "nonveg"
+                                                    ? "border-red-600 bg-red-600"
+                                                    : "border-red-600 bg-transparent"
+                                                }`}
+                                        >
+                                            {/* Inner dot */}
+                                            {/* <div
+                                                className={`w-3 h-3 rounded-full bg-white transition-transform duration-300
+                  ${selectedType === "nonveg" ? "scale-100" : "scale-0"
+                                                    }`}
+                                            /> */}
+                                        </div>
+
+                                        <span
+                                            className={`md:text-md text-sm font-medium transition-colors duration-300
+                ${selectedType === "nonveg"
+                                                    ? "text-red-700"
+                                                    : "text-gray-800"
+                                                }`}
+                                        >
+                                            Non-Veg
+                                        </span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {errors.type && (
+                                <p className="text-red-500 text-sm mt-2">{errors.type.message}</p>
+                            )}
                         </div>
-                        {errors.type && (
-                            <p className="text-red-500 text-sm -mt-10">{errors?.type?.message}</p>
-                        )}
+
 
                       
 
@@ -378,7 +499,7 @@ const AddEditItem = () => {
                             <option value="Chinese">Chinese</option>
                             <option value="Italian">Italian</option>
                         </select>
-                        <label className="absolute left-9 -top-2.5 text-sm bg-white px-1 text-black font-semibold">
+                        <label className="absolute left-9 -top-2.5 text-sm bg-white px-1 text-gray-500 font-semibold">
                             Cuisine
                         </label>
                         {errors?.cuisine && (
@@ -387,76 +508,100 @@ const AddEditItem = () => {
                     </div>
 
                     {/* Category with Add new */}
-                    <div>
-                        <label className="mb-1 block font-semibold text-black">Category</label>
-                        <select
-                            {...register('category', { required: 'Category is required' })}
-                            className={`w-full px-4 py-3 border rounded-md text-black ${errors.category ? 'border-red' : 'border-gray-300'
-                                } focus:outline-none focus:border-orange`}
-                        >
-                            <option value="">Select category</option>
-                            {categories?.map((cat) => (
-                                <option key={cat?.id} value={cat?.title?.toUpperCase()}>
-                                    {cat?.title}
-                                </option>
-                            ))}
-                        </select>
-                        {errors?.category && (
-                            <p className="text-red text-sm mt-1">{errors?.category?.message}</p>
-                        )}
+                    <div className='relative -mt-6'>
+                        <label className="mb-1 block font-semibold text-gray-500">Category</label>
+                            <select
+                                {...register('category', { required: 'Category is required' })}
+                                className={`w-full px-4 py-3 border rounded-md text-black ${errors.category ? 'border-red' : 'border-gray-300'
+                                    } focus:outline-none focus:border-orange`}
+                            >
+                                <option value="">Select category</option>
+                                {categories?.map((cat) => (
+                                    <option key={cat?.cat_id} value={cat?.title?.toUpperCase()}>
+                                        {cat?.title?.toUpperCase()}
+                                    </option>
+                                ))}
+                            </select>
+
+
+                            {errors?.category && (
+                                <p className="text-red text-sm mt-1">{errors?.category?.message}</p>
+                            )}
+
 
                         {showCategoryInput ? (
                             <div className="mt-3 space-y-2">
                                 {/* Input and buttons wrapper */}
                                 <div className="flex flex-col md:flex-row md:items-center md:space-x-2 w-full">
                                     {/* Input */}
-                                    <input
-                                        type="text"
-                                        placeholder="Add New Category"
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
-                                        value={newCategory}
-                                        onChange={(e) => setNewCategory(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                handleAddCategory();
-                                            }
-                                        }}
-                                        ref={categoryInputRef}
-                                    />
+                                        <input
+                                            type="text"
+                                            placeholder="Add New Category"
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
+                                            value={newCategory}
+                                            onChange={(e) => setNewCategory(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                const key = e.key;
+                                                const isLetter = /^[a-zA-Z]$/.test(key);
+                                                const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'];
+
+                                                if (!(isLetter || allowedKeys.includes(key))) {
+                                                    e.preventDefault(); // ❌ Prevent anything except letters and navigation keys
+                                                }
+
+                                                if (key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleAddCategory();
+                                                }
+                                            }}
+                                            ref={categoryInputRef}
+                                        />
+
 
                                     {/* Buttons for md screen and up */}
-                                    <div className="hidden md:flex items-center space-x-2">
-                                        <button
-                                            type="button"
-                                            onClick={handleAddCategory}
-                                            className="bg-orange-500 hover:bg-orange text-white px-4 py-2 rounded-md"
-                                        >
-                                            Add
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setShowCategoryInput(false);
-                                                setNewCategory('');
-                                            }}
-                                            className="text-red hover:text-red-700"
-                                            aria-label="Cancel adding category"
-                                        >
-                                            <X />
-                                        </button>
-                                    </div>
+                                        <div className="hidden md:flex items-center space-x-2">
+                                            <button
+                                                type="button"
+                                                onClick={handleAddCategory}
+                                                disabled={!newCategory.trim()} // 🚫 Disable when empty or only spaces
+                                                className={`px-4 py-2 rounded-md text-white 
+      ${!newCategory.trim()
+                                                        ? 'bg-gray-300 cursor-not-allowed'
+                                                        : 'bg-orange-500 hover:bg-orange'}
+    `}
+                                            >
+                                                Add
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowCategoryInput(false);
+                                                    setNewCategory('');
+                                                }}
+                                                className="text-red hover:text-red-700"
+                                                aria-label="Cancel adding category"
+                                            >
+                                                <X />
+                                            </button>
+                                        </div>
+
                                 </div>
 
                                 {/* Buttons for small screen only */}
                                 <div className="flex justify-end space-x-2 md:hidden">
-                                    <button
-                                        type="button"
-                                        onClick={handleAddCategory}
-                                        className="bg-orange-500 hover:bg-orange text-white px-4 py-2 rounded-md"
-                                    >
-                                        Add
-                                    </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleAddCategory}
+                                            disabled={!newCategory.trim()} // 🚫 Disable when empty or only spaces
+                                            className={`px-4 py-2 rounded-md text-white 
+      ${!newCategory.trim()
+                                                    ? 'bg-gray-300 cursor-not-allowed'
+                                                    : 'bg-orange-500 hover:bg-orange'}
+    `}
+                                        >
+                                            Add
+                                        </button>
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -483,53 +628,61 @@ const AddEditItem = () => {
                     </div>
                    </div>
                     {/* Upload Image (Optional) */}
-                    <div className=' w-full mx-auto px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
+                    <div className='  px-6 py-8 bg-white rounded-2xl shadow-lg font-poppins space-y-8'>
                     <div className="grid md:grid-cols-2 gap-4 ">
                         {/* Image Preview Box */}
-                        <div className="relative border-2 border-dashed border-gray-400 rounded-md p-4 flex items-center justify-center text-sm text-gray-500 cursor-pointer h-40">
-                            {previewImage ? (
-                                <>
-                                    <img
-                                        src={URL.createObjectURL(previewImage)}
-                                        alt="Preview"
-                                        className="object-contain h-full w-full"
-                                    />
-                                    <X
-                                        className="absolute top-2 right-2 w-4 h-4 text-red cursor-pointer"
-                                        onClick={() => setPreviewImage(null)}
-                                    />
-                                </>
-                            ) : (
-                                <span className="absolute text-gray-500 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                                    No image uploaded
-                                </span>
-                            )}
-                        </div>
+                            {/* Image Preview + Remove */}
+                            <div className="relative border-2 border-dashed border-gray-400 rounded-md p-4 flex items-center justify-center text-sm text-gray-500 cursor-pointer h-40">
+                                {previewImage ? (
+                                    <>
+                                        <img
+                                            src={URL.createObjectURL(previewImage)}
+                                            alt="Preview"
+                                            className="object-contain h-full w-full"
+                                        />
+                                        <X
+                                            className="absolute top-2 right-2 w-4 h-4 text-red cursor-pointer"
+                                            onClick={() => {
+                                                setPreviewImage(null);
+                                                if (fileInputRef.current) {
+                                                    fileInputRef.current.value = '';
+                                                }
+                                            }}
+                                        />
+                                    </>
+                                ) : (
+                                    <span className="absolute text-gray-500 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                        No image uploaded
+                                    </span>
+                                )}
+                            </div>
 
+                            {/* Upload Input */}
+                            <label className="border p-4 rounded-md flex items-center bg-green justify-center cursor-pointer transition">
+                                <Upload className="w-5 h-5 mr-2" />
+                                Upload Photo
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    {...register("image")}
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                />
+                            </label>
 
-                        {/* Upload Input */}
-                        <label className="border p-4 rounded-md flex items-center bg-green justify-center cursor-pointer transition">
-                            <Upload className="w-5 h-5 mr-2" />
-                            Upload Photo
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                {...register("image")}
-                                onChange={handleFileChange}
-                            />
-                        </label>
                     </div>
                     </div>
                     <button
                         type="submit"
                         onClick={handleClick}
-                        className={`w-full py-3 rounded-lg text-white font-semibold transition ${isValid ? "bg-primary" : "bg-secondary"
+                        className={`w-full py-3 mb-8 rounded-lg text-white font-semibold transition ${isValid ? "bg-primary cursor-pointer" : "bg-secondary cursor-disable"
                             }`}
                     >
                         Submit
                     </button>
                 </div>
+                <BottomNav/>
             
             </div>
             

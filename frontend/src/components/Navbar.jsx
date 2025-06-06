@@ -111,8 +111,8 @@ const Navbar = () => {
                                       
 
                                         {/* Adjust text and switch with left margin to avoid overlapping with icon */}
-                                        <div className="text-white flex items-center gap-2 ">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold px-1 md:py-2 py-1">
+                                        <div className="text-white flex items-center gap-1 md:p-2 p-1 ">
+                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold  ">
                                                 {switchOn ? 'Open' : 'closed'}
                                             </span>
                                             <IOSSwitch checked={switchOn} onChange={(e) => setSwitchOn(e.target.checked)}  />

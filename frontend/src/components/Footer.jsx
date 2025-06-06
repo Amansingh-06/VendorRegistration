@@ -8,7 +8,7 @@ const BottomNav = () => {
     const navigate = useNavigate(); // 🧭 Initialize navigation
 
     const navItems = [
-        { id: "Orders", icon: FiClipboard, label: "Orders", path: "/orders" },
+        { id: "Orders", icon: FiClipboard, label: "Orders", path: "/home" },
         { id: "Manage Items", icon: FiShoppingCart, label: "Manage Items", path: "/manage-items" },
         { id: "Earning", icon: PiMoneyWavyDuotone, label: "Earning", path: "/earning" },
         { id: "Profile", icon: FiUser, label: "Profile", path: "/profile" }

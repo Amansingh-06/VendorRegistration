@@ -161,11 +161,14 @@ function VendorRegistration() {
                 [SHOP_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
                 latitude: selectedAddress?.lat || -1,
                 longitude: selectedAddress?.long || -1,
+                v_id: uuidv4,
+                u_id: session?.user?.id,
+                mobile_number:session?.user?.phone,  
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
             const fullVendorData = {
-                ...vendorData,
+                
                 ...shopData,
             };
 
@@ -263,13 +266,13 @@ function VendorRegistration() {
         } else {
             clearErrors('media');
         }
-        // if (!selectedAddress?.lat || !selectedAddress?.long) {
-        //     toast.error("Please select your location");
-        //     setLocationError(true);
-        //     isValid = false;
-        // } else {
-        //     setLocationError(false);
-        // }
+        if (!selectedAddress?.lat || !selectedAddress?.long) {
+            toast.error("Please select your location");
+            setLocationError(true);
+            isValid = false;
+        } else {
+            setLocationError(false);
+        }
         
         
 
@@ -308,9 +311,11 @@ function VendorRegistration() {
         watchFields?.cuisines?.length === 0 ||
         (!bannerFile && !videoFile) ||
         loading ||
-        // !selectedAddress?.lat || !selectedAddress?.long ||
+        !selectedAddress?.lat || !selectedAddress?.long ||
         filteredErrors.length > 0 
 
+    console.log("vendorData", vendorData)
+    console.log(session)
     // Handle “Current Location” button click
     const handleCurrentLocation = async () => {
         console.log("📍 handleCurrentLocation called");

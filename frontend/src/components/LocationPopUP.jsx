@@ -46,6 +46,9 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
         return null;
     };
 
+   
+    
+
     // Handle “Current Location” button click
     const handleCurrentLocation = async () => {
         const toastId = toast.loading("Getting current Location");
@@ -81,6 +84,12 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
             // handleAddressError(err, "Failed to fetch current location");
         }
     };
+    
+    useEffect(() => {
+        if (show) {
+            handleCurrentLocation();
+        }
+    }, [show]);
     
 console.log(selectedAddress)
     return (
@@ -134,9 +143,9 @@ console.log(selectedAddress)
 
                  {selectedAddress && (
                     <div className="mt-4 text-sm text-gray-800 border-t pt-3">
-                        <p><strong>Selected:</strong> {selectedAddress?.name}</p>
+                        <p><strong>Selected:</strong>{selectedAddress?.landmark}</p>
                         {/* <p><strong>Lat:</strong> {selectedAddress?.lat.toFixed(6)} | <strong>Lng:</strong> {selectedAddress?.lng.toFixed(6)}</p> */}
-                        {selectedAddress?.areaName && <p><strong>Area:</strong> {selectedAddress?.areaName}</p>}
+                        
                     </div>
                 )} 
 

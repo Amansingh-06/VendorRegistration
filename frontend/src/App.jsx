@@ -14,6 +14,7 @@ import Address from './pages/Address/Address';
 import LocationPopup from './components/LocationPopUP';
 import VendorRegistration from './components/VendorRegistration';
 import VendorEarnings from './pages/VendorEarning';
+import ManageItemsPage from './pages/Manage-item';
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
           {/* <Route path="/manage-items" element={<AddEditItem />} /> */}
           <Route
             path="/manage-items"
+            element={
+              <PrivateRoute>
+                <ManageItemsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/Add-items"
             element={
               <PrivateRoute>
                 <AddEditItem />
@@ -89,6 +98,7 @@ function App() {
           } />
 
         </Routes>
+        
       </div>
     </Router>
   );
