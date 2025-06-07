@@ -209,42 +209,60 @@ export default function VendorProfile() {
     const onSubmit = async (formData) => {
         if (!session?.user?.id) return alert('User not logged in');
 
-         const [videoUrl, bannerUrl, qrUrl] = await Promise.all([
-                        uploadFile(videoFile, BUCKET_NAMES?.VIDEO, ),
-                        uploadFile(bannerFile, BUCKET_NAMES?.BANNER,),
-                        uploadFile(qrFile, BUCKET_NAMES?.PAYMENT,)
-                    ]);
-
         setLoading(true);
-        const insertData = {
-            v_name: formData.vendor_name,
-            shop_name: formData.shop_name,
-            shift1_opening_time: formData.shift1_start,
-            shift1_closing_time: formData.shift1_close,
-            shift2_opening_time: formData.shift2_start,
-            shift2_closing_time: formData.shift2_close,
-            street: formData.street,
-            city: formData.city,
-            state: formData.state,
-            pincode: formData.pincode,
-            note_from_vendor: formData.note || '',
-            cuisines_available: selectedCuisines,
-            banner_url: bannerUrl,
-            video_url: videoUrl,
-            payment_url: qrUrl,
-            u_id: session.user.id
-        };
 
-        const { error } = await supabase.from('vendor_request').upsert(insertData, { onConflict: 'u_id' });
+        try {
+            const [
+                uploadedVideoUrl,
+                uploadedBannerUrl,
+                uploadedQrUrl
+            ] = await Promise.all([
+                videoFile ? uploadFile(videoFile, BUCKET_NAMES.VIDEO) : videoUrl,
+                bannerFile ? uploadFile(bannerFile, BUCKET_NAMES.BANNER) : bannerUrl,
+                qrFile ? uploadFile(qrFile, BUCKET_NAMES.PAYMENT) : qrUrl
+            ]);
 
-        if (error) {
-            alert('Save failed: ' + error.message);
-        } else {
-            alert('Profile updated successfully!');
+            // ✅ update preview URLs after upload
+            if (bannerFile) setBannerUrl(uploadedBannerUrl);
+            if (videoFile) setVideoUrl(uploadedVideoUrl);
+            if (qrFile) setQrUrl(uploadedQrUrl);
+
+            const insertData = {
+                v_name: formData.vendor_name,
+                shop_name: formData.shop_name,
+                shift1_opening_time: formData.shift1_start,
+                shift1_closing_time: formData.shift1_close,
+                shift2_opening_time: formData.shift2_start,
+                shift2_closing_time: formData.shift2_close,
+                street: formData.street,
+                city: formData.city,
+                state: formData.state,
+                pincode: formData.pincode,
+                note_from_vendor: formData.note || '',
+                cuisines_available: selectedCuisines,
+                banner_url: uploadedBannerUrl,
+                video_url: uploadedVideoUrl,
+                payment_url: uploadedQrUrl,
+                u_id: session.user.id
+            };
+
+            const { error } = await supabase
+                .from('vendor_request')
+                .upsert(insertData, { onConflict: 'u_id' });
+
+            if (error) {
+                alert('Save failed: ' + error.message);
+            } else {
+                alert('Profile updated successfully!');
+            }
+        } catch (err) {
+            console.error('Upload failed:', err.message);
+            alert('Upload failed: ' + err.message);
         }
+
         setLoading(false);
     };
-
+    
     const bannerInputRef = useRef(null);
     const videoInputRef = useRef(null);
     const qrInputRef = useRef(null);
@@ -361,7 +379,7 @@ export default function VendorProfile() {
                                             <input
                                                 type="text"
                                                 id="shift2_start"
-                                                value={startTime2 ? moment(startTime2, 'HH:mm:ss').format('hh:mm A') : ''}
+                                                value={startTime2 && startTime2 !== '00:00:00' ? moment(startTime2, 'HH:mm:ss').format('hh:mm A') : ''}
                                                 onClick={() => setStartView2(true)}
                                                 readOnly
                                                 {...register('shift2_start')}
@@ -385,7 +403,7 @@ export default function VendorProfile() {
                                             <input
                                                 type="text"
                                                 id="shift2_close"
-                                                value={endTime2 ? moment(endTime2, 'HH:mm:ss').format('hh:mm A') : ''}
+                                                value={endTime2 && endTime2 !== '00:00:00' ? moment(endTime2, 'HH:mm:ss').format('hh:mm A') : ''}
                                                 onClick={() => setEndView2(true)}
                                                 readOnly
                                                 {...register('shift2_close')}

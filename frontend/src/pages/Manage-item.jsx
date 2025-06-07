@@ -6,9 +6,11 @@ import BottomNav from '../components/Footer';
 import { useFetch } from '../context/FetchContext';
 import Loader from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
 
 export default function ManageItemsPage() {
-    const { items, loading,error } = useFetch();
+    const { items, loading, error } = useFetch();
+    const {vendorProfile}= useAuth()
  const navigate=useNavigate()
 
     const toggleAvailability = (id) => {
@@ -19,6 +21,7 @@ export default function ManageItemsPage() {
         );
     };
     console.log(items)
+    console.log(vendorProfile)
 
     return (
         <section className="bg-gray-100 min-h-screen   md:px-0">
@@ -76,7 +79,7 @@ export default function ManageItemsPage() {
 
                                     {/* Edit Button - Bottom Right */}
                                     <div className="mt-2 sm:mt-auto sm:ml-auto">
-                                        <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium">
+                                        <button onClick={() => navigate('/add-items', { state: { itemData: item } })} className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium">
                                             <FaEdit />
                                             <span>Edit</span>
                                         </button>

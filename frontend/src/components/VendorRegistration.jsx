@@ -161,7 +161,7 @@ function VendorRegistration() {
                 [SHOP_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
                 latitude: selectedAddress?.lat || -1,
                 longitude: selectedAddress?.long || -1,
-                v_id: uuidv4,
+                v_id: uuidv4(),
                 u_id: session?.user?.id,
                 mobile_number:session?.user?.phone,  
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
