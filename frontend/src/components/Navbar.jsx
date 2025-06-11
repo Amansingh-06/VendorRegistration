@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdOutlineMessage } from "react-icons/md";
 import { GiChickenOven, GiFrenchFries, GiFullPizza } from 'react-icons/gi';
 import { FaIceCream } from 'react-icons/fa';
@@ -44,12 +44,32 @@ const IOSSwitch = styled((props) => (
     },
 }));
 
-
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
-    const { session,vendorProfile } = useAuth();
+    const { session, vendorProfile } = useAuth();
 
+    // ✅ Initialize switch based on vendorProfile.available
+    useEffect(() => {
+        if (vendorProfile?.available !== undefined && vendorProfile?.available !== null) {
+            setSwitchOn(vendorProfile.available);
+        }
+    }, [vendorProfile]);
+
+    const handleSwitchChange = async (checked) => {
+        setSwitchOn(checked);
+
+        if (!vendorProfile?.v_id) return;
+
+        const { error } = await supabase
+            .from('vendor_request')
+            .update({ available: checked })
+            .eq('v_id', vendorProfile?.v_id);
+
+        if (error) {
+            console.error("Failed to update vendor availability:", error.message);
+        }
+    };
 
     return (
         <div className='w-full top-0 z-20 backdrop-blur-sm rounded-b-lg overflow-hidden bg-gradient-to-br from-orange via-yellow to-orange'>
@@ -73,12 +93,11 @@ const Navbar = () => {
             {/* Content */}
             <div className="relative z-10">
                 {!scrolled && (
-                    <div className={`flex items-center justify-between p-1 lg:p-4 max-w-9xl mx-auto transition-all duration-1200 `}>
+                    <div className={`flex items-center justify-between p-1 lg:p-4 max-w-9xl mx-auto transition-all duration-1200`}>
                         {/* Left Section - Profile */}
                         <div className='flex items-center gap-2 lg:gap-4'>
                             <div className='relative'>
                                 <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
-
                                     {vendorProfile && (vendorProfile?.banner_url && vendorProfile?.banner_url !== 'NA') ? (
                                         <img
                                             src={vendorProfile.banner_url}
@@ -100,43 +119,32 @@ const Navbar = () => {
                                             className='w-full h-full object-cover'
                                         />
                                     )}
-
                                 </div>
                             </div>
 
                             <div className='text-white'>
                                 <div className='flex justify-center items-center md:gap-5 gap-2'>
                                     <div className='text-base lg:text-2xl font-semibold drop-shadow-sm'>{vendorProfile?.shop_name}</div>
-                                    <div className="relative flex items-center bg-white/30 backdrop-blur-sm rounded-full  md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
-                                      
-
-                                        {/* Adjust text and switch with left margin to avoid overlapping with icon */}
-                                        <div className="text-white flex items-center gap-1 md:p-2 p-1 ">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold  ">
-                                                {switchOn ? 'Open' : 'closed'}
+                                    <div className="relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
+                                        <div className="text-white flex items-center gap-1 md:p-2 p-1">
+                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold">
+                                                {switchOn ? 'Open' : 'Closed'}
                                             </span>
-                                            <IOSSwitch checked={switchOn} onChange={(e) => setSwitchOn(e.target.checked)}  />
+                                            <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)} />
                                         </div>
                                     </div>
-
                                 </div>
-                                <div className="md:text-sm text-xs font-thin ">{vendorProfile?.v_name}</div>
+                                <div className="md:text-sm text-xs font-thin">{vendorProfile?.v_name}</div>
                             </div>
-                          
                         </div>
-                        
-                        
 
-                        {/* Right Section - Icons  */}
+                        {/* Right Section - Icons */}
                         <div className='flex items-center gap-4 lg:gap-6'>
                             <button className='p-2 lg:p-3 text-white hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30'>
                                 <MdOutlineMessage className='w-7 lg:w-8 h-6 lg:h-7 group-hover:text-blue-200 transition-colors drop-shadow-sm' />
                                 <span className='text-xs lg:text-sm font-semibold'>Help</span>
                             </button>
-
-                           
                         </div>
-
                     </div>
                 )}
             </div>

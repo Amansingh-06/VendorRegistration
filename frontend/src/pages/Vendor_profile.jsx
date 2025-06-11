@@ -21,6 +21,8 @@ import { useAuth } from '../context/authContext';
 import MediaUploader from '../components/MediaUploader';
 import Header from '../components/Header';
 import BottomNav from '../components/Footer';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const cuisinesList = ['South Indian', 'North Indian', 'Chinese', 'Italian', 'Mexican'];
 
@@ -66,6 +68,7 @@ export default function VendorProfile() {
         setValue,
         formState: { errors }
     } = useForm({ mode: 'onChange' });
+    const navigate = useNavigate();
 
     const watchedFields = watch();
 
@@ -228,22 +231,22 @@ export default function VendorProfile() {
             if (qrFile) setQrUrl(uploadedQrUrl);
 
             const insertData = {
-                v_name: formData.vendor_name,
-                shop_name: formData.shop_name,
-                shift1_opening_time: formData.shift1_start,
-                shift1_closing_time: formData.shift1_close,
-                shift2_opening_time: formData.shift2_start,
-                shift2_closing_time: formData.shift2_close,
-                street: formData.street,
-                city: formData.city,
-                state: formData.state,
+                v_name: formData?.vendor_name,
+                shop_name: formData?.shop_name,
+                shift1_opening_time: formData?.shift1_start,
+                shift1_closing_time: formData?.shift1_close,
+                shift2_opening_time: formData?.shift2_start,
+                shift2_closing_time: formData?.shift2_close,
+                street: formData?.street,
+                city: formData?.city,
+                state: formData?.state,
                 pincode: formData.pincode,
-                note_from_vendor: formData.note || '',
+                note_from_vendor: formData?.note || '',
                 cuisines_available: selectedCuisines,
                 banner_url: uploadedBannerUrl,
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
-                u_id: session.user.id
+                u_id: session?.user?.id
             };
 
             const { error } = await supabase
@@ -251,13 +254,14 @@ export default function VendorProfile() {
                 .upsert(insertData, { onConflict: 'u_id' });
 
             if (error) {
-                alert('Save failed: ' + error.message);
+                toast.error("Update Fail")
             } else {
-                alert('Profile updated successfully!');
+                toast.success('Profile Updated Successfully');
+                navigate('/home')
             }
         } catch (err) {
             console.error('Upload failed:', err.message);
-            alert('Upload failed: ' + err.message);
+            toast.error("Upload failed")
         }
 
         setLoading(false);
@@ -278,19 +282,19 @@ export default function VendorProfile() {
         }
     };
     return (
-        <div className="min-h-screen bg-gray-50 flex justify-center items-start py-8 px-4">
+        <div className="min-h-screen bg-gray-50 flex justify-center items-start ">
             {loading && <Loader />}
             
-            <div className='max-w-2xl shadow-lg rounded-2xl space-y-6'>
+            <div className='max-w-2xl shadow-lg rounded-2xl '>
                 <Header title='Profile' />
-                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-8">
+                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full  p-6">
 
-                    <div className="max-w-2xl mx-auto px-4 py-8">
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+                    <div className="max-w-2xl mx-auto ">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
                             {/* Basic Info */}
-                            <section>
-                                <h2 className="text-xl font-semibold text-gray-700 mb-4">Basic Information</h2>
+                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
+                                <h2 className="text-xl font-semibold text-gray-500 mb-4">Basic Information</h2>
                                 <div className="grid gap-6 md:grid-cols-2">
 
                                     {/* Vendor Name */}
@@ -322,9 +326,9 @@ export default function VendorProfile() {
                                     </div>
 
                                     {/* Shift 1 Start */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {/* Shift 1 Start */}
-                                        <div>
+                                    <div className="grid md:grid-cols-2 gap-6  md:col-span-2">
+                                    {/* Shift 1 Start */}
+                                        <div >
                                             <label className="block mb-1 font-semibold text-gray-700" htmlFor="shift1_start">Shift 1 Start</label>
                                             <input
                                                 type="text"
@@ -340,10 +344,14 @@ export default function VendorProfile() {
                                                 isOpen={startView1}
                                                 onClose={() => setStartView1(false)}
                                                 onTimeSelect={(time) => {
-                                                    const formattedTime = moment(time, 'hh:mm A').format('HH:mm:ss');
-                                                    setStartTime1(formattedTime);
+                                                    console.log(time)
+                                                    // time yaha moment object ho sakta hai ya string, usko moment me parse karo
+                                                    // backend ke liye HH:mm:ss format me bhejo
+                                                    const backendTime = time.format('HH:mm:ss');
+
+                                                    setStartTime1(backendTime);  // state me backend format me save karo (string)
+                                                    setValue('shift1_start', backendTime); // form ke liye backend format (string)
                                                     setStartView1(false);
-                                                    setValue('shift1_start', formattedTime, { shouldDirty: true });
                                                 }}
                                             />
                                         </div>
@@ -365,10 +373,10 @@ export default function VendorProfile() {
                                                 isOpen={endView1}
                                                 onClose={() => setEndView1(false)}
                                                 onTimeSelect={(time) => {
-                                                    const formattedTime = moment(time, 'hh:mm A').format('HH:mm:ss');
-                                                    setEndTime1(formattedTime);
+                                                    const backendTime = time.format('HH:mm:ss');
+                                                    setEndTime1(backendTime);
                                                     setEndView1(false);
-                                                    setValue('shift1_close', formattedTime, { shouldDirty: true });
+                                                    setValue('shift1_close', backendTime);
                                                 }}
                                             />
                                         </div>
@@ -389,10 +397,10 @@ export default function VendorProfile() {
                                                 isOpen={startView2}
                                                 onClose={() => setStartView2(false)}
                                                 onTimeSelect={(time) => {
-                                                    const formattedTime = moment(time, 'hh:mm A').format('HH:mm:ss');
-                                                    setStartTime2(formattedTime);
+                                                    const backendTime = time.format('HH:mm:ss');
+                                                    setStartTime2(backendTime);
                                                     setStartView2(false);
-                                                    setValue('shift2_start', formattedTime, { shouldDirty: true });
+                                                    setValue('shift2_start',backendTime);
                                                 }}
                                             />
                                         </div>
@@ -413,10 +421,10 @@ export default function VendorProfile() {
                                                 isOpen={endView2}
                                                 onClose={() => setEndView2(false)}
                                                 onTimeSelect={(time) => {
-                                                    const formattedTime = moment(time, 'hh:mm A').format('HH:mm:ss');
-                                                    setEndTime2(formattedTime);
+                                                    const backendTime = time.format('HH:mm:ss');
+                                                    setEndTime2(backendTime);
                                                     setEndView2(false);
-                                                    setValue('shift2_close', formattedTime, { shouldDirty: true });
+                                                    setValue('shift2_close',backendTime);
                                                 }}
                                             />
                                         </div>
@@ -426,24 +434,24 @@ export default function VendorProfile() {
                             </section>
 
                             {/* Media Uploads */}
-                            <section>
-                                <div className="flex gap-6 justify-between items-start flex-wrap">
+                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                                     {/* Banner Image */}
-                                    <div className="w-32 flex flex-col items-center">
+                                    <div className="flex flex-col items-center border-dashed border-primary border-2 p-4">
                                         {bannerUrl ? (
                                             <img
                                                 src={bannerUrl}
                                                 alt="banner"
-                                                className="h-32 w-32 object-contain rounded"
+                                                className="h-32 w-full object-contain rounded"
                                             />
                                         ) : (
-                                            <div className="h-32 w-32 bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                                            <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
                                                 No banner selected
                                             </div>
                                         )}
                                         <button
                                             type="button"
-                                            className="mt-3 w-32 px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                                            className="mt-3 w-full px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                                             onClick={() => bannerInputRef.current.click()}
                                         >
                                             Select Banner
@@ -458,21 +466,21 @@ export default function VendorProfile() {
                                     </div>
 
                                     {/* Video */}
-                                    <div className="w-32 flex flex-col items-center">
+                                    <div className="flex flex-col items-center p-4 border-dashed border-primary border-2">
                                         {videoUrl ? (
                                             <video
                                                 src={videoUrl}
                                                 controls
-                                                className="h-32 w-32 object-contain rounded"
+                                                className="h-32 w-full object-contain rounded"
                                             />
                                         ) : (
-                                            <div className="h-32 w-32 bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                                            <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
                                                 No video selected
                                             </div>
                                         )}
                                         <button
                                             type="button"
-                                            className="mt-3 w-32 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
+                                            className="mt-3 w-full px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
                                             onClick={() => videoInputRef.current.click()}
                                         >
                                             Select Video
@@ -487,21 +495,21 @@ export default function VendorProfile() {
                                     </div>
 
                                     {/* QR Code */}
-                                    <div className="w-32 flex flex-col items-center">
+                                    <div className="flex flex-col items-center p-4 border-dashed border-primary border-2">
                                         {qrUrl ? (
                                             <img
                                                 src={qrUrl}
                                                 alt="QR code"
-                                                className="h-32 w-32 object-contain rounded"
+                                                className="h-32 w-full object-contain rounded"
                                             />
                                         ) : (
-                                            <div className="h-32 w-32 bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                                            <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
                                                 No QR selected
                                             </div>
                                         )}
                                         <button
                                             type="button"
-                                            className="mt-3 w-32 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                                            className="mt-3 w-full px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                                             onClick={() => qrInputRef.current.click()}
                                         >
                                             Select QR
@@ -521,9 +529,10 @@ export default function VendorProfile() {
 
 
 
+
                             {/* Address Section */}
-                            <section>
-                                <h2 className="text-xl font-semibold text-gray-700 mb-4">Address</h2>
+                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
+                                <h2 className="text-xl font-semibold text-gray-500 mb-4">Address</h2>
                                 <div className="grid gap-6 md:grid-cols-2">
                                     {/* Street with validation */}
                                     <div>
@@ -578,8 +587,8 @@ export default function VendorProfile() {
                             </section>
 
                             {/* Cuisines */}
-                            <section>
-                                <h2 className="text-xl font-semibold text-gray-700 mb-4">Available Cuisines</h2>
+                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
+                                <h2 className="text-xl font-semibold text-gray-500 mb-4">Available Cuisines</h2>
                                 <div className="flex flex-wrap gap-3">
                                     {cuisinesList.map((cuisine) => (
                                         <button
@@ -598,7 +607,7 @@ export default function VendorProfile() {
                             </section>
 
                             {/* Additional Note */}
-                            <section>
+                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
                                 <label className="block mb-1 font-semibold text-gray-700" htmlFor="note">Additional Note (Optional)</label>
                                 <textarea
                                     id="note"
@@ -613,7 +622,7 @@ export default function VendorProfile() {
                             <button
                                 type="submit"
                                 disabled={loading || isFormIncomplete || !isChanged}
-                                className={`mt-4 px-4 w-full py-2 rounded text-white ${loading || isFormIncomplete || !isChanged
+                                className={`mt-2 mb-15 px-4 w-full py-2 rounded text-white ${loading || isFormIncomplete || !isChanged
                                     ? 'bg-gray-400 cursor-not-allowed'
                                     : 'bg-indigo-600 hover:bg-indigo-700'
                                     }`}

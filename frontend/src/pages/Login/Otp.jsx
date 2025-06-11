@@ -386,9 +386,9 @@ const Otp = () => {
                         name="defaultSignup"
                         className={`${!(isValid && otpValue?.length === 6)
 
-                                ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-70"
+                                ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-70 "
                                 : "cursor-pointer bg-grey-100 text-gray hover:text-white hover:bg-orange/90 hover:scale-95 transition duration-300"
-                            } flex items-center justify-center gap-2 md:gap-3 w-full lg:w-[120px]  py-3  border-orange border-2   rounded-xl  font-semibold transition duration-300 shadow-lg
+                            } flex items-center justify-center gap-2 md:gap-3 w-full   py-3  border-orange border-2   rounded-xl  font-semibold transition duration-300 shadow-lg
             `}
                         disabled={authenticating}
                     >

@@ -47,7 +47,9 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
     };
 
    
-    
+    const hasFetchedRef = useRef(false);
+
+
 
     // Handle “Current Location” button click
     const handleCurrentLocation = async () => {
@@ -86,8 +88,12 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
     };
     
     useEffect(() => {
-        if (show) {
+        if (show && !hasFetchedRef.current) {
+            hasFetchedRef.current = true;
             handleCurrentLocation();
+        }
+        if (!show) {
+            hasFetchedRef.current = false; // Reset on popup close
         }
     }, [show]);
     
@@ -160,7 +166,7 @@ console.log(selectedAddress)
                                 }
                             }}
                             disabled={!selectedAddress}
-                            className={`px-6 py-2 rounded-full text-white font-medium ${selectedAddress
+                            className={`px-6 py-2 rounded-full text-white cursor-pointer font-medium ${selectedAddress
                                     ? "bg-green-600 hover:bg-green-700"
                                     : "bg-gray-400 cursor-not-allowed"
                                 }`}

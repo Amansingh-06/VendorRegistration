@@ -692,7 +692,7 @@
 
 // export default AddEditItem;
 import React, { useState, useRef,useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm,FormProvider } from 'react-hook-form';
 import { FaUtensils, FaRupeeSign, FaRegClock, FaHashtag ,FaTimes} from 'react-icons/fa';
 import FormInput from '../components/FormInput';
 import TypeRadio from '../components/TypeRadio';
@@ -704,222 +704,306 @@ import { toast } from 'react-hot-toast'; // ya tum jahan se use kar rahe ho
 import { supabase } from '../utils/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import BottomNav from '../components/Footer';
+import ItemCategory from '../components/ItemCategory';
+import { SUPABASE_TABLES, MESSAGES, BUCKET_NAMES, ITEM_DEFAULTS, ITEM_FIELDS } from '../utils/vendorConfig';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
+
 
 
 const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
+    const [categories, setCategories] = useState([]);
+    const [newCategory, setNewCategory] = useState('');
+    const [selectedType, setSelectedType] = useState()
+    const [cuisines,setCuisines]=useState([])
+        const [showCategoryInput, setShowCategoryInput] = useState(false);
+        const [previewImage, setPreviewImage] = useState(null);
+        const [loading, setLoading] = useState(false);
+        const categoryInputRef = useRef(null);
+        const { vendorProfile } = useAuth();
+    const fileInputRef = useRef();
+        const navigate = useNavigate()
     const location = useLocation();
     const itemData = location.state?.itemData || null;
     const isEditMode = itemData !== null;
     console.log(itemData)
-    const {vendorProfile} = useAuth()
     console.log(itemData)
-    const { register, handleSubmit, setValue, watch, formState: { errors, isValid } } = useForm({
+
+    const { register, handleSubmit, setValue,watch,reset, formState: { errors ,isValid} } = useForm({
         defaultValues: {
-            itemName: itemData?.item_name || '',
-            price: itemData?.item_price || '',
-            prepTime: itemData?.prep_time || '',
-            quantity: itemData?.item_quantity || '',
-            cuisine: itemData?.item_cuisine || '',
-            category: itemData?.item_category || '',
-            type: itemData?.veg ||'' // ✅ Convert boolean to string
-        },
-        mode: 'onChange'
+            itemName: '',
+            quantity: '',
+            price: '',
+            prepTime: '',
+            category: '',
+            cuisine: [],
+            type: null,
+          },
     });
-   
-    const [previewImage, setPreviewImage] = useState(itemData?.img_url || null);;
-    const [selectedType, setSelectedType] = useState(itemData?.type || '');
-    const [categories, setCategories] = useState([]);
-    const [newCategory, setNewCategory] = useState('');
-    const [showCategoryInput, setShowCategoryInput] = useState(false);
-    const [cuisines, setCuisines] = useState([]);
-    const [selectedCuisine, setSelectedCuisine] = useState(null);
-    const fileInputRef = useRef();
-
-    useEffect(() => {
-        const fetchCuisines = async () => {
-            const { data, error } = await supabase
-                .from('cusion')
-                .select('*')
-                .order('name', { ascending: true });
-
-            if (error) {
-                console.error('Failed to fetch cuisines:', error.message);
-            } else {
-                setCuisines(data);
-            }
-        };
-
-        fetchCuisines();
-    }, []);
-
-    const handleCuisineChange = (e) => {
-        const name = e.target.value;
-        const cuisine = cuisines.find(c => c.name === name);
-        setSelectedCuisine(cuisine); // poora object bhi mil gaya
-    };
       
+    console.log(itemData)
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) setPreviewImage(file);
-    };
     useEffect(() => {
         const fetchCategories = async () => {
             const { data, error } = await supabase
-                .from('item_category')
-                .select('title')
-                .eq('vendor_id', vendorProfile?.v_id); // if vendor-specific
+                .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                .select('*')
+                .eq('vendor_id', vendorProfile?.v_id);  // ✅ correct eq syntax
 
             if (error) {
-                console.error('Failed to fetch categories:', error.message);
+                toast.error(MESSAGES?.FETCH_FAIL);
+                console.error(error);
             } else {
-                const categoryList = data.map((row) => row.title);
-                setCategories(categoryList);
-                console.log(data)
+                setCategories(data);
             }
         };
-
         fetchCategories();
-        console.log("cat", categories)
-        console.log("v",vendorProfile?.v_id)
-    }, [vendorProfile?.id]);
-      
-
-
-    const handleAddCategory = async () => {
-        console.log(vendorProfile);
-        const trimmed = newCategory.trim();
-
-        // 🔍 Validate input: only characters
-        if (!trimmed || !/^[a-zA-Z]+$/.test(trimmed)) {
-            toast.error("Only characters allowed");
-            return;
-        }
-
-        const inputLower = trimmed.toLowerCase();
-
-        // 🔍 Check in local dropdown (case-insensitive)
-        const exists = categories.some(cat => cat.toLowerCase() === inputLower);
-        if (exists) {
-            toast.error("Category already exists");
-            return;
-        }
-
-        // ✅ Check in Supabase before insert
-        const { data: existing, error: fetchError } = await supabase
-            .from('item_category')
-            .select('title')
-            .eq('vendor_id', vendorProfile?.v_id);
-
-        if (fetchError) {
-            toast.error("Failed to check existing categories");
-            return;
-        }
-
-        const serverExists = existing?.some(
-            cat => cat.title.toLowerCase() === inputLower // ✅ fix field name
-        );
-
-        if (serverExists) {
-            toast.error("Category already exists in database");
-            return;
-        }
-
-        // ✅ Insert into Supabase
-        const { data, error } = await supabase
-            .from('item_category')
-            .insert([{ title: trimmed, vendor_id: vendorProfile?.v_id, cat_id : uuidv4() }])
-            .select();
-
-        if (error) {
-            console.error('Insert failed:', error.message);
-            toast.error("Failed to add category");
-            return;
-        }
-
-        const insertedCategory = data[0]?.title;
-        setCategories((prev) => [...prev, insertedCategory]);
-        setValue('category', insertedCategory); // ✅ auto select
-        setNewCategory('');
-        setShowCategoryInput(false);
-        toast.success("Category added");
-    };
-      
-    
-
-    const onSubmit = async (formData) => {
-        console.log(isEditMode)
-        console.log(formData.type)
-        const payload = {
-            item_id:uuidv4(),
-            item_name: formData.itemName,
-            item_price: formData.price,
-            prep_time: formData.prepTime,
-            item_quantity: formData.quantity,
-            item_cuisine: formData.cuisine,
-            item_category: formData.category,
-            veg: formData.type,
-            img_url: previewImage, // ya upload logic ke baad
-            vendor_id: vendorProfile?.v_id, // required for insert
-        };
-        console.log(vendorProfile?.v_id)
-        if (isEditMode) {
-            // 🔁 EDIT LOGIC
-            const { data, error } = await supabase
-                .from('item')
-                .update(payload)
-                .eq('item_id', itemData.item_id);
-
-            if (error) {
-                console.error('Update failed:', error.message);
-            } else {
-                console.log('✅ Item updated');
-                if (onSubmitSuccess) onSubmitSuccess(data);
-            }
-        } else {
-            // ➕ ADD LOGIC
-            const { data, error } = await supabase
-                .from('item')
-                .insert(payload);
-
-            if (error) {
-                console.error('Insert failed:', error.message);
-            } else {
-                console.log('✅ Item added');
-                if (onSubmitSuccess) onSubmitSuccess(data);
-            }
-        }
-    };
-    console.log('type', itemData?.veg)
+    }, [vendorProfile?.v_id]); // ✅ include vendor_id as dependency
 
     useEffect(() => {
-        if (itemData && categories.length > 0) {
-            setValue('type', itemData?.veg);
-            setSelectedType(itemData?.veg);
-            setValue('cuisine', itemData.item_cuisine);
-            setValue('category', itemData.item_category);
-            console.log('category',itemData?.item_category)
-        }
-    }, [itemData, categories, setValue]); // ⬅️ Include categories
-    
-    console.log(selectedCuisine)
+        register('cuisine', {
+            required: 'Cuisine is required',
+        });
+    }, [register]);
       
+    
+    
+    const uploadFile = async (file, bucketName) => {
+                if (!file || !file.name) return null; // 👈 fixed here
+        
+                const fileExt = file.name.split('.').pop();
+                const filePath = `${Date.now()}.${fileExt}`;
+        
+                const { data, error } = await supabase.storage
+                    .from(bucketName)
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: true,
+                    });
+        
+                if (error) {
+                    console.error('Error uploading file:', error?.message);
+                    toast.error(MESSAGES?.UPLOAD_ERROR);
+        
+                    throw new Error(error?.message);
+                }
+        
+                const { data: urlData, error: urlError } = supabase.storage
+                    .from(bucketName)
+                    .getPublicUrl(filePath);
+        
+                if (urlError) {
+                    console.error('Error getting public URL:', urlError?.message);
+                    toast.error(MESSAGES?.PUBLIC_URL_ERROR);
+        
+                    throw new Error(urlError?.message);
+                }
+        
+                return urlData?.publicUrl;
+            };
+      
+
+    // 🍛 Handle cuisine selection
+    const handleCuisineChange = (selectedCuisines) => {
+        setValue('cuisine', selectedCuisines, { shouldValidate: true });
+    };
+
+    const handleAddCategory = async () => {
+                const trimmed = newCategory.trim();
+                if (!trimmed) {
+                    return toast.error(MESSAGES.EMPTY_CATEGORY);
+                }
+        
+                // Check if category already exists (case-insensitive)
+                const { data: existing, error: checkError } = await supabase
+                    .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                    .select('*')
+                    .ilike('title', trimmed);
+        
+                if (checkError) {
+                    toast.error(MESSAGES.CHECK_FAIL);
+                    console.error(checkError);
+                    return;
+                }
+        
+                if (existing.length > 0) {
+                    toast.error(MESSAGES.CATEGORY_EXISTS);
+                    return;
+                }
+        
+                // ✅ Show loading toast only before inserting
+                const toastId = toast.loading('Adding Category');
+        
+                const { data, error } = await supabase
+                    .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                    .insert([
+                        {
+                            cat_id: uuidv4(),
+                            title: trimmed,
+                            vendor_id: vendorProfile?.v_id,
+                        }
+                    ])
+                    .select();
+        
+                toast.dismiss(toastId);
+        
+                if (error) {
+                    toast.error(MESSAGES.CATEGORY_ADD_FAIL);
+                    console.error(error);
+                    return;
+                }
+        
+                const addedCat = {
+                    ...data[0],
+                    title: data[0].title.toUpperCase(), // force uppercase for consistency
+                };
+        
+                // ✅ Update categories first
+                setCategories(prev => [...prev, addedCat]);
+        
+                // ✅ Then set value in form (ensure it matches dropdown <option value>)
+                setValue('category', addedCat.title.toUpperCase());
+                console.log("✅ Category selected after adding:", addedCat.title.toUpperCase());
+        
+                toast.success(MESSAGES.CATEGORY_ADDED);
+        
+                setNewCategory('');
+                setShowCategoryInput(false);
+            };
+
+    useEffect(() => {
+        if (isEditMode && itemData) {
+            reset({
+                itemName: itemData.item_name || '',
+                quantity: itemData.item_quantity || '',
+                price: itemData.item_price || '',
+                prepTime: itemData.prep_time || '',
+                category: itemData.item_category_id || '',
+                cuisine: JSON.parse(itemData.item_cuisine_id || '[]'),
+                type: itemData.veg ? 'veg' : 'nonveg',
+            });
+            if (itemData.img_url) {
+                setPreviewImage(itemData?.img_url); // 👈 Set URL as preview
+            }
+              
+
+            setSelectedType(itemData.veg ? 'veg' : 'nonveg');
+        }
+    }, [isEditMode, itemData, reset]);
+              
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPreviewImage(file);
+        }
+    };
+            
+    
+    const onSubmit = async (data) => {
+        console.log(data)
+        try {
+            setLoading(true);
+    
+            // ✅ Convert type string to boolean
+            const typeBool = data.type === 'veg';
+    
+            // ✅ Common item payload
+            const itemFields = {
+                item_name: data.itemName,
+                prep_time: parseInt(data.prepTime),
+                item_price: data.price,
+                item_quantity: data.quantity,
+                veg: typeBool,
+                item_category_id: data.category,
+                item_cuisine_id: data.cuisine,
+            };
+            let imageUrl = itemData?.img_url || null;
+
+            if (previewImage && typeof previewImage !== 'string') {
+                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG); // 👈 Bucket name replace karo
+            }
+            itemFields.img_url = imageUrl;
+
+    
+            let response;
+    
+            if (isEditMode) {
+                // 🔁 UPDATE logic
+                const updatePayload = {
+                    ...itemFields,
+                    updated_at: new Date(),
+                };
+    
+                response = await supabase
+                    .from(SUPABASE_TABLES?.ITEM)
+                    .update(updatePayload)
+                    .eq('item_id', itemData.item_id);
+    
+            } else {
+                // ➕ INSERT logic
+                const insertPayload = {
+                    ...itemFields,
+                    item_id: uuidv4(),
+                    vendor_id: vendorProfile?.v_id,
+                    created_at: new Date(),
+                };
+    
+                response = await supabase
+                    .from(SUPABASE_TABLES?.ITEM)
+                    .insert([insertPayload]);
+            }
+    
+            const { error } = response;
+    
+            if (error) {
+                toast.error(isEditMode ? "Item update failed!" : "Item save failed!");
+                console.error(error);
+            } else {
+                toast.success(isEditMode ? "Item updated successfully!" : "Item saved successfully!");
+                navigate('/manage-items');
+                onSubmitSuccess?.(); // callback if passed
+            }
+    
+        } catch (err) {
+            console.error("❌ Unexpected error:", err);
+            toast.error("Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+            
+    
+  
+
+ 
+    console.log(vendorProfile?.v_id)
+    console.log("isValid",isValid)
+   
     return (
         <div className='w-full min-h-screen mx-auto flex justify-center bg-gray-100'>
+            {loading && <Loader/>}
             <div className='max-w-2xl w-full mb-15'>
-                <Header title='Add Item'/>
-                <div className='max-w-2xl w-full  space-y-6 rounded-2xl shadow-lg '>
-                    <form onSubmit={handleSubmit(onSubmit)} className="w-full  mx-auto px-6 py-8 space-y-6 bg-white">
+                <Header title={isEditMode ? 'Edit Item' : 'Add Item'} />
+            <div className='max-w-2xl w-full  space-y-6 rounded-2xl shadow-lg '>
+                    
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full  mx-auto md:px-6 p-2 py-8 space-y-6 bg-white">
                         <div className='flex flex-col gap-6 rounded-2xl shadow-lg  p-5'>
-                        <FormInput
-                            id="itemName"
-                            label="Item Name"
-                            icon={FaUtensils}
-                            register={register}
-                            validation={{ required: 'Item name is required' }}
-                            error={errors.itemName}
-                        />
-                        
+                            <FormInput
+                                id="itemName"
+                                label="Item Name"
+                                icon={FaUtensils}
+                                register={register}
+                                validation={{ required: 'Item name is required' }}
+                                error={errors.itemName}
+                                inputProps={{
+                                    onInput: (e) => {
+                                        e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                                    },
+                                }}
+                            />
+
                             <FormInput
                                 id="price"
                                 label="Price"
@@ -927,7 +1011,13 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Price is required' }}
                                 error={errors.price}
+                                inputProps={{
+                                    onInput: (e) => {
+                                        e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                                    },
+                                }}
                             />
+
                             <FormInput
                                 id="prepTime"
                                 label="Preparation Time"
@@ -935,7 +1025,13 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Time is required' }}
                                 error={errors.prepTime}
+                                inputProps={{
+                                    onInput: (e) => {
+                                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                                    },
+                                }}
                             />
+
                             <FormInput
                                 id="quantity"
                                 label="Quantity"
@@ -943,16 +1039,23 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Quantity is required' }}
                                 error={errors.quantity}
+                                inputProps={{
+                                    onInput: (e) => {
+                                        e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '');
+                                    },
+                                }}
                             />
+
                         </div>
                         <TypeRadio
-                            selectedType={selectedType}
-                            setSelectedType={setSelectedType}
                             register={register}
                             setValue={setValue}
                             error={errors.type}
+                            watch={watch}
                         />
-                        <div>
+
+
+                        {/* <div>
                             <label className="block mb-1 font-medium text-gray-700">Select Cuisine</label>
                             <select
                                 {...register('cuisine', { required: 'Cuisine is required' })}
@@ -969,22 +1072,30 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 ))}
                             </select>
                             {errors.cuisine && <p className="text-red text-sm mt-1">{errors.cuisine.message}</p>}
-                        </div>
-                        <div>
-                            <label className="block mb-1 font-medium text-gray-700">Select Category</label>
+                        </div> */}
+                        <ItemCategory
+                            value={watch('cuisine')} // react-hook-form
+                            onChange={(val) => setValue('cuisine', val, { shouldValidate: true })}
+                            error={errors.cuisine?.message}
+                        />
+
+                        <div className="p-4 shadow-lg rounded-2xl w-full bg-white">
+<label className="block mb-2 font-semibold  text-gray-500">Select Category</label>
                             <select
                                 {...register('category', { required: 'Category is required' })}
                                 className="w-full px-4 py-2 border rounded-md"
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    setValue('category', val);
+                                    setValue('category', val, { shouldValidate: true }); // ✅ important
                                 }}
+                                value={watch('category')} // 👈 ensures controlled select input
                             >
                                 <option value="">-- Select Category --</option>
                                 {categories.map((cat, i) => (
-                                    <option key={i} value={cat}>{cat}</option>
+                                    <option key={i} value={cat.cat_id}>{cat.title}</option>
                                 ))}
                             </select>
+
                             {errors.category && <p className="text-red text-sm mt-1">{errors.category.message}</p>}
 
                             <p
@@ -1045,6 +1156,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                             Submit
                         </button>
                     </form>
+                
                 </div>
                 
             </div>

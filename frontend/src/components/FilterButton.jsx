@@ -5,8 +5,9 @@ import CustomButton from './Button';
 const ButtonGroup = ({ active, setActive }) => {
     const buttonList = [
         { text: 'All', color: 'bg-green' },
-        { text: 'Received', color: 'bg-green' },
         { text: 'Accepted', color: 'bg-green' },
+        { text: 'Preparing', color: 'bg-green' },
+        { text: 'Prepared', color: 'bg-green' },
         { text: 'On The Way', color: 'bg-green' },
         { text: 'Delivered', color: 'bg-green' },
     ];

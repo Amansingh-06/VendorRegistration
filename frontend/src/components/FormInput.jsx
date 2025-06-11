@@ -1,13 +1,15 @@
 import React from 'react';
 
-const FormInput = ({ id, icon: Icon, label, register, validation, error, ...rest }) => {
+const FormInput = ({ id, icon: Icon, label, register, validation, inputProps, error, ...rest}) => {
     return (
         <div className="relative">
             <Icon className="absolute left-3 top-4 text-black text-md" />
             <input
                 id={id}
                 {...register(id, validation)}
+                {...inputProps}
                 {...rest}
+                
                 placeholder={label}
                 className={`peer w-full pl-10 pr-3 py-3 rounded-md border ${error ? 'border-red' : 'border-gray-300'} focus:outline-none focus:border-orange placeholder-transparent`}
             />

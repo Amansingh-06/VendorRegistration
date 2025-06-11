@@ -69,6 +69,7 @@ function VendorRegistration() {
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
     const [locationError, setLocationError] = useState(false);
+    const [err,setErr] = useState(null)
 
     const [position, setPosition] = useState({ lat: 26.8467, lng: 80.9462 }); // Default to Lucknow coordinates
     const { selectedAddress, setSelectedAddress } = useSearch();
@@ -173,9 +174,10 @@ function VendorRegistration() {
             };
 
             // Upsert ya insert karo supabase me
-            const { error } = await supabase
+            const { data:insertData, error } = await supabase
                 .from('vendor_request')
-                .upsert(fullVendorData, { onConflict: 'v_id' });
+                .insert(fullVendorData);
+          
     
             if (error) {
                 console.error('Insert Error:', error.message);
@@ -326,19 +328,11 @@ function VendorRegistration() {
             const { success, error: locError } = await getCurrentLocation(
                 ({ lat, lng }) => {
                     // Prevent unnecessary state update
-                    setPosition((prev) => {
-                        if (prev.lat === lat && prev.lng === lng) return prev;
-                        return { lat, lng };
-                    });
+                    setPosition({ lat, lng });
                 },
-                setError,
-                (loc) => {
-                    // same here
-                    setSelectedAddress((prev) => {
-                        if (prev?.lat === loc?.lat && prev?.lng === loc?.lng) return prev;
-                        return loc;
-                    });
-                }
+                setErr,
+                setSelectedAddress,
+                
             );
 
             toast.dismiss(toastId);
@@ -358,8 +352,24 @@ function VendorRegistration() {
     };
       
         
-    console.log(selectedAddress)
+    useEffect(() => {
+        console.log("📍 Selected Address updated:", selectedAddress);
+    }, [selectedAddress]);
 
+    const onFormSubmit = handleSubmit(async (data) => {
+        console.log("yha pahucha")
+        const customValid = validateCustomFields();
+        console.log("Custom Validation", customValid);
+
+        if (!customValid) {
+            toast.error("Please complete required fields.");
+            return;
+        }
+
+        await onSubmit(data); // your actual function
+    });
+      
+    
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
             {loading && <Loader />}
@@ -740,24 +750,16 @@ function VendorRegistration() {
                         {/* Submit */}
                         <button
                             type="button"
-                            onClick={async (e) => {
-                                console.log("button press")
-                                e.preventDefault();
-                                // const formValid = await trigger();
-                                // const customValid = validateCustomFields();
-
-                                // if (formValid && customValid) {
-                                //     handleSubmit(onSubmit)(e); // 👈 pass event here
-                                // }
-                                handleSubmit(onSubmit)(e)
-                            }}
-                            className={`py-3 rounded-lg shadow-lg transition ${isFormIncomplete
+                            onClick={onFormSubmit}
+                            // disabled={isFormIncomplete}
+                            className={`py-3 rounded-lg shadow-lg  transition ${isFormIncomplete
                                 ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-primary hover:bg-indigo-800 text-white'
-                                }`}
+                                : 'bg-primary hover:bg-indigo-800 cursor-pointer text-white'}`}
                         >
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
+
+
 
 
 

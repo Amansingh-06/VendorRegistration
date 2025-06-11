@@ -8,10 +8,17 @@ const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, 
                 {previewImage ? (
                     <>
                         <img
-                            src={URL.createObjectURL(previewImage)}
+                            src={
+                                typeof previewImage === 'string'
+                                    ? previewImage
+                                    : previewImage
+                                        ? URL.createObjectURL(previewImage)
+                                        : ''
+                            }
                             alt="Preview"
                             className="object-contain h-full w-full"
                         />
+
                         <X
                             className="absolute top-2 right-2 w-4 h-4 text-red cursor-pointer"
                             onClick={() => {
