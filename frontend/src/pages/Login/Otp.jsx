@@ -161,18 +161,18 @@ const Otp = () => {
     console.log("Send OTP to:", phone);
     console.log("Verify OTP with:", otpValue);
     
-    // Otp auto detection 
+    // Otp auto detection
     const attemptOtpAutofill = async () => {
-        if ('OTPCredential' in window) {
+        if ("OTPCredential" in window) {
             try {
                 console.log("Starting OTP detection...");
-                // Listen the SMS and get the OTP 
-                const abortController = new AbortController()
-                const timeout = setTimeout(() => abortController.abort(), 60000)
+                // Listen the SMS and get the OTP
+                const abortController = new AbortController();
+                const timeout = setTimeout(() => abortController.abort(), 60000);
 
                 const content = await navigator?.credentials.get({
                     otp: {
-                        transport: ['sms']
+                        transport: ["sms"],
                     },
 
                     signal: abortController?.signal,
@@ -184,7 +184,9 @@ const Otp = () => {
                     setValue("otp", content?.code);
 
                     setTimeout(() => {
-                        const submitButton = document.querySelector('#otp-form button[type="submit"]');
+                        const submitButton = document.querySelector(
+                            '#otp-form button[type="submit"]'
+                        );
                         if (submitButton) {
                             console.log("Focusing submit button");
                             submitButton.focus();
@@ -195,15 +197,15 @@ const Otp = () => {
                     toast.success("OTP Filled Automatically");
                 }
             } catch (error) {
-                if (error.name !== 'AbortError') {
-                    console.error('OTP Autofill Error: ', error)
+                if (error.name !== "AbortError") {
+                    console.error("OTP Autofill Error: ", error);
                 }
             }
         } else {
-            toast.error("OTP Autofill not supported in this browser.");
+            // toast.error("OTP Autofill not supported in this browser.");
             console.warn("OTP Credential API not supported in this browser.");
         }
-    }
+    };
 
     // Runs the OTP autofill function when OTP is sent
     useEffect(() => {
@@ -313,15 +315,13 @@ const Otp = () => {
                     </div>
                 )} */}
 
-                {/* OTP Input */}
+                {/* OTP Input */}{/* OTP Input */}
                 <div className="space-y-2 text-gray mt-4">
-                    <label className="text-base font-medium">Enter OTP</label>
-
+                    <label className="text-xs font-medium ">Enter OTP</label>
                     <OTPInput
                         value={otp}
                         onChange={(value) => {
-                            setValue('otp', value);       // React Hook Form integration
-                            setotpValue(value);           // Local state if needed
+                            setValue("otp", value);
                         }}
                         shouldAutoFocus={isLogin}
                         numInputs={6}
@@ -336,27 +336,27 @@ const Otp = () => {
                             width: "14%",
                             height: "60px",
                             textAlign: "center",
-                            borderBottom: `2px solid ${otp.length === 6 ? "green" : "#d1d5db"}`,
+                            borderBottom: `2px solid ${otp.length === 6 ? "green" : "#d1d5db"
+                                }`,
                             outline: "none",
                             backgroundColor: "#ffffff",
                             color: "#374151",
                             fontSize: "1.125rem",
                         }}
-                        renderInput={(props, index) => (
+                        renderInput={(props) => (
                             <input
                                 {...props}
-                                inputMode="numeric"
-                                autoComplete={index === 0 ? "one-time-code" : undefined}  // ✅ Only on first input
-                                className={`focus:outline-none focus:ring-2 ${otp.length === 6
-                                    ? "focus:ring-green"
-                                    : "focus:ring-orange"
+                                className={`focus:outline-none focus:ring-2 ${otp.length === 6 ? "focus:ring-green" : "focus:ring-orange"
                                     } transition duration-300`}
                             />
                         )}
+                        inputProps={{
+                            inputMode: "numeric",
+                            autoComplete: "one-time-code",
+                        }}
                     />
                 </div>
-
-                <ResendButton fullPhone={phone} setIsResending={setIsResending} />
+                <ResendButton fullPhone={phone} setIsResending={setIsResending} onResendSuccess={() => setValue("otp", "")} />
 
                 <div className="flex w-full items-center justify-between mt-6">
                     {/* Submit Button */}

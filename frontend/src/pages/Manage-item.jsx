@@ -66,8 +66,10 @@ export default function ManageItemsPage() {
 
 
                                 <div className="flex flex-col sm:flex-row items-start gap-4">
+                                    <div className='w-24 h-24 rounded border-dashed p-1 border-orange border-1'>
                                     {/* Image */}
-                                    <img src={item?.img_url} alt={item?.item_name} className="w-24 h-24 rounded-lg object-cover" />
+                                    <img src={item?.img_url} alt={item?.item_name} className="w-full h-full rounded-lg object-cover" />
+                                </div>
 
                                     {/* Item Content */}
                                     <div className="flex-1 space-y-1">

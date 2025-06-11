@@ -1092,11 +1092,11 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                             >
                                 <option value="">-- Select Category --</option>
                                 {categories.map((cat, i) => (
-                                    <option key={i} value={cat.cat_id}>{cat.title}</option>
+                                    <option key={i} value={cat?.cat_id}>{cat?.title}</option>
                                 ))}
                             </select>
 
-                            {errors.category && <p className="text-red text-sm mt-1">{errors.category.message}</p>}
+                            {errors.category && <p className="text-red text-sm mt-1">{errors?.category?.message}</p>}
 
                             <p
                                 className="mt-2 text-sm text-orange-500 cursor-pointer hover:underline"
