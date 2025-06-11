@@ -34,7 +34,7 @@ import ResendButton from "../../components/ResendButton";
 const Otp = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [otpValue, setotpValue] = useState("");
+    // const [otpValue, setotpValue] = useState("");
     const {
         cameFromUserDetailsPage,
         setCameFromUserDetailsPage,
@@ -60,13 +60,14 @@ const Otp = () => {
     useEffect(() => {
         const handleAutoSubmit = async () => {
 
-            if (otpValue?.length === 6 && isLogin && !isResending) {
+            // if (otpValue?.length === 6 && isLogin && !isResending) {
+            if (otp.length === 6 && isLogin && !isResending) {
                 await handleSubmit(onSubmit)();
             }
         };
         handleAutoSubmit();
 
-    }, [otpValue]);
+    }, [isValid,otp.length]);
 
 
     // Prevent user from going back to OTP page when he has already entered the userDetails page
@@ -131,11 +132,11 @@ const Otp = () => {
             //     data.name = trimmedName;
             // }
 
-            if (!validateOtp(otpValue)) return;
+            if (!validateOtp(otp)) return;
 
-            console.log("Verifying OTP for:", phone, "with code:", otpValue);
+            console.log("Verifying OTP for:", phone, "with code:", otp);
 
-            const otpData = await verifyOtp(phone, otpValue);
+            const otpData = await verifyOtp(phone, otp);
             console.log("otpData", otpData);
 
             if (isLogin) {
@@ -159,7 +160,7 @@ const Otp = () => {
     };
     console.log("Phone received:", location?.state?.phone);
     console.log("Send OTP to:", phone);
-    console.log("Verify OTP with:", otpValue);
+    console.log("Verify OTP with:", otp);
     
     // Otp auto detection
     const attemptOtpAutofill = async () => {
@@ -322,7 +323,7 @@ const Otp = () => {
                         value={otp}
                         onChange={(value) => {
                             setValue("otp", value);
-                            setotpValue(value)
+                            // setotpValue(value)
                         }}
                         shouldAutoFocus={isLogin}
                         numInputs={6}
@@ -384,7 +385,7 @@ const Otp = () => {
                     <button
                         type="submit"
                         name="defaultSignup"
-                        className={`${!(isValid && otpValue?.length === 6)
+                        className={`${!(isValid && otp?.length === 6)
 
                                 ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-70 "
                                 : "cursor-pointer bg-grey-100 text-gray hover:text-white hover:bg-orange/90 hover:scale-95 transition duration-300"

@@ -13,6 +13,7 @@ export const validateName = (name) => {
 };
 
 export const validateOtp = (otp) => {
+    console.log("otp",otp)
     if (!otp || otp.length !== 6) {
         toast.error("Please enter a valid 6-digit OTP!");
         return false;
