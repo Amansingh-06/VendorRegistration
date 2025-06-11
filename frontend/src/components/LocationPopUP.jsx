@@ -107,7 +107,7 @@ console.log(selectedAddress)
                 >
                     ✕
                 </button>
-                <h1>setLocatoon</h1>
+                <h1 className="text-gray-500 font-semibold text-lg">Set Location</h1>
 
                 {/* Autocomplete Input */}
                 <div className="relative mb-4">

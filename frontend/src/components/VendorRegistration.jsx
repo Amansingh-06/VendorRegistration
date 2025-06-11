@@ -697,7 +697,7 @@ function VendorRegistration() {
                                     <p className="text-sm text-red-500">Please select your location</p>
                                 ) : (location || selectedAddress) ? (
                                     <p className="mt-2 text-sm text-gray-700">
-                                        Current location: {location?.name || selectedAddress?.name || `${position.lat}, ${position.lng}`}
+                                            Current location: {location?.landmark ||  selectedAddress?.landmark || `${position?.lat}, ${position?.lng}`}
                                     </p>
                                 ) : null}
 
