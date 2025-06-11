@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from './authContext';
 
-// Create context
 const FetchContext = createContext();
 
 export function FetchProvider({ children }) {
@@ -12,7 +11,7 @@ export function FetchProvider({ children }) {
     const { vendorProfile } = useAuth();
 
     const fetchItems = async () => {
-        if (!vendorProfile?.v_id) return; // safety check
+        if (!vendorProfile?.v_id) return;
 
         setLoading(true);
         setError(null);
@@ -32,9 +31,31 @@ export function FetchProvider({ children }) {
         }
     };
 
-    // Call fetchItems when vendorProfile.v_id is available or changes
     useEffect(() => {
-        fetchItems();
+        if (!vendorProfile?.v_id) return;
+
+        fetchItems(); // Initial fetch
+
+        const channel = supabase
+            .channel('realtime-items')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*', // 'INSERT' | 'UPDATE' | 'DELETE' | '*' for all
+                    schema: 'public',
+                    table: 'item',
+                    filter: `vendor_id=eq.${vendorProfile.v_id}`,
+                },
+                (payload) => {
+                    console.log('Realtime payload:', payload);
+                    fetchItems(); // Refresh items on change
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); // Cleanup
+        };
     }, [vendorProfile?.v_id]);
 
     return (
@@ -44,7 +65,6 @@ export function FetchProvider({ children }) {
     );
 }
 
-// Custom hook to use context easily
 export function useFetch() {
     return useContext(FetchContext);
 }

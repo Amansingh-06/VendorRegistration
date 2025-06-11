@@ -315,15 +315,14 @@ const Otp = () => {
                     </div>
                 )} */}
 
-                {/* OTP Input */}
+                {/* OTP Input */}{/* OTP Input */}
                 <div className="space-y-2 text-gray mt-4">
-                    <label className="text-base font-medium">Enter OTP</label>
-
+                    <label className="text-xs font-medium ">Enter OTP</label>
                     <OTPInput
                         value={otp}
                         onChange={(value) => {
-                            setValue('otp', value);       // React Hook Form integration
-                            setotpValue(value);           // Local state if needed
+                            setValue("otp", value);
+                            setotpValue(value)
                         }}
                         shouldAutoFocus={isLogin}
                         numInputs={6}
@@ -338,27 +337,27 @@ const Otp = () => {
                             width: "14%",
                             height: "60px",
                             textAlign: "center",
-                            borderBottom: `2px solid ${otp.length === 6 ? "green" : "#d1d5db"}`,
+                            borderBottom: `2px solid ${otp.length === 6 ? "green" : "#d1d5db"
+                                }`,
                             outline: "none",
                             backgroundColor: "#ffffff",
                             color: "#374151",
                             fontSize: "1.125rem",
                         }}
-                        renderInput={(props, index) => (
+                        renderInput={(props) => (
                             <input
                                 {...props}
-                                inputMode="numeric"
-                                autoComplete={index === 0 ? "one-time-code" : undefined}  // ✅ Only on first input
-                                className={`focus:outline-none focus:ring-2 ${otp.length === 6
-                                    ? "focus:ring-green"
-                                    : "focus:ring-orange"
+                                className={`focus:outline-none focus:ring-2 ${otp.length === 6 ? "focus:ring-green" : "focus:ring-orange"
                                     } transition duration-300`}
                             />
                         )}
+                        inputProps={{
+                            inputMode: "numeric",
+                            autoComplete: "one-time-code",
+                        }}
                     />
                 </div>
-
-                <ResendButton fullPhone={phone} setIsResending={setIsResending} />
+                <ResendButton fullPhone={phone} setIsResending={setIsResending} onResendSuccess={() => setValue("otp", "")} />
 
                 <div className="flex w-full items-center justify-between mt-6">
                     {/* Submit Button */}
