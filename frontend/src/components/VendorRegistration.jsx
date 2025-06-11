@@ -164,7 +164,7 @@ function VendorRegistration() {
                 longitude: selectedAddress?.long || -1,
                 v_id: uuidv4(),
                 u_id: session?.user?.id,
-                mobile_number:session?.user?.phone,  
+                mobile_number: '+' + session?.user?.phone,
                 [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
