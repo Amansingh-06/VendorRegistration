@@ -13,7 +13,7 @@ import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
-
+import CuisineSelector from './CuisineSelector';
 import {
     BUCKET_NAMES,
     DEFAULTS,
@@ -55,6 +55,7 @@ import { useSearch } from '../context/SearchContext';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
+    const [waitloading,setWaitLoading]=useState(false)
     const [bannerFile, setBannerFile] = useState(null);
     const [paymentFile, setPaymentFile] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -269,7 +270,7 @@ function VendorRegistration() {
             clearErrors('media');
         }
         if (!selectedAddress?.lat || !selectedAddress?.long) {
-            toast.error("Please select your location");
+            // toast.error("Please select your location");
             setLocationError(true);
             isValid = false;
         } else {
@@ -317,11 +318,12 @@ function VendorRegistration() {
         filteredErrors.length > 0 
 
     console.log("vendorData", vendorData)
+    console.log(watchFields?.cuisines)
+
     console.log(session)
     // Handle “Current Location” button click
     const handleCurrentLocation = async () => {
-        console.log("📍 handleCurrentLocation called");
-
+        setWaitLoading(true)
         const toastId = toast.loading("Getting current Location");
 
         try {
@@ -344,6 +346,7 @@ function VendorRegistration() {
 
             setLocationError(false);
             console.log("✅ Current location fetched");
+            setWaitLoading(false)
 
         } catch (err) {
             toast.dismiss(toastId);
@@ -672,25 +675,38 @@ function VendorRegistration() {
                                 <div className='flex items-center gap-5  '>
                                     <button
                                         type="button"
-                                        onClick={() => setShowPopup(true)
-
-                                        }
-                                        className="flex items-center gap-2 bg-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition" >
+                                        onClick={() => setShowPopup(true)}
+                                        disabled={waitloading}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition 
+    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue hover:bg-blue-700'}`}
+                                    >
                                         <MdAddLocationAlt className="text-lg" />
-                                        Location
+                                        {selectedAddress?.lat && selectedAddress?.long ? "Location Selected" : "Current Location"}
                                     </button>
+
+                                    {/* Popup */}
                                     {/* {showPopup && (
                                         <LocationPopup
                                             setLocation={(loc) => {
                                                 setLocation(loc);
                                                 setSelectedAddress(loc);
                                                 setShowPopup(false);
-                                          }}
+                                            }}
                                             show={showPopup}
                                             onClose={() => setShowPopup(false)}
                                         />
                                     )} */}
-                                    <button type='button' onClick={handleCurrentLocation} className='flex justify-center items-center rounded-full p-2 bg-teal '><MdGpsFixed className='text-2xl text-white' /></button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleCurrentLocation}
+                                        disabled={waitloading}
+                                        className={`flex justify-center items-center rounded-full p-2 
+    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal'}`
+                                        }
+                                    >
+                                        <MdGpsFixed className="text-2xl text-white" />
+                                    </button>
 
                                 </div>
                                 {locationError ? (
@@ -708,26 +724,8 @@ function VendorRegistration() {
                         </div>
 
                         {/* Card 3: Cuisine */}
-                        <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-6 bg-white">
-                            <h1 className='md:text-2xl text-lg font-semibold text-gray-500 '>Available Cuisines</h1>
-                            <div className="flex gap-6 flex-wrap ">
-                                {['South Indian', 'North Indian', 'Chinese', 'Italian', 'Mexican'].map((cuisine, index) => (
-                                    <div key={index} className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id={cuisine}
-                                            value={cuisine}
-                                            {...register('cuisines', { required: 'Please select at least one cuisine' })}
-                                            className="w-5 h-5 accent-orange text-white"
-                                        />
-                                        <label htmlFor={cuisine} className="text-gray-700 cursor-pointer">{cuisine}</label>
-                                    </div>
-                                ))}
+                        <CuisineSelector register={register} errors={errors} />
 
-                            </div>
-                            {errors?.cuisines && <p className="text-red-500 text-sm">{errors?.cuisines?.message}</p>}
-
-                        </div>
                         {/* Note from Vendor (optional) */}
                         <div className="relative col-span-2">
                             <textarea
@@ -752,6 +750,7 @@ function VendorRegistration() {
                             type="button"
                             onClick={onFormSubmit}
                             // disabled={isFormIncomplete}
+                            disabled={waitloading}
                             className={`py-3 rounded-lg shadow-lg  transition ${isFormIncomplete
                                 ? 'bg-gray-400 cursor-not-allowed'
                                 : 'bg-primary hover:bg-indigo-800 cursor-pointer text-white'}`}

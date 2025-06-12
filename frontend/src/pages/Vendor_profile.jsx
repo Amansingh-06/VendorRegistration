@@ -59,6 +59,8 @@ export default function VendorProfile() {
     const [endView1, setEndView1] = useState(false);
     const [startView2, setStartView2] = useState(false);
     const [endView2, setEndView2] = useState(false);
+    const [cuisines, setCuisines] = useState([]);
+    
 
     const {
         register,
@@ -83,6 +85,21 @@ export default function VendorProfile() {
         !watchedFields.pincode ||
         selectedCuisines.length === 0
     );
+    useEffect(() => {
+            const fetchCuisines = async () => {
+                const { data, error } = await supabase
+                    .from('all_cuisine_available')
+                    .select('cuisine_id, name');
+    
+                if (error) {
+                    console.error('Error fetching cuisines:', error);
+                } else {
+                    setCuisines(data);
+                }
+            };
+    
+            fetchCuisines();
+        }, []);
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -272,15 +289,16 @@ export default function VendorProfile() {
     const qrInputRef = useRef(null);
 
     // Helper to handle file selection and create preview URL
-  
+  console.log(selectedCuisines)
 
-    const toggleCuisine = (cuisine) => {
-        if (selectedCuisines.includes(cuisine)) {
-            setSelectedCuisines(selectedCuisines.filter((c) => c !== cuisine));
+    const toggleCuisine = (cuisineId) => {
+        if (selectedCuisines.includes(cuisineId)) {
+            setSelectedCuisines(selectedCuisines.filter((id) => id !== cuisineId));
         } else {
-            setSelectedCuisines([...selectedCuisines, cuisine]);
+            setSelectedCuisines([...selectedCuisines, cuisineId]);
         }
     };
+  
     return (
         <div className="min-h-screen bg-gray-50 flex justify-center items-start ">
             {loading && <Loader />}
@@ -590,20 +608,21 @@ export default function VendorProfile() {
                             <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
                                 <h2 className="text-xl font-semibold text-gray-500 mb-4">Available Cuisines</h2>
                                 <div className="flex flex-wrap gap-3">
-                                    {cuisinesList.map((cuisine) => (
+                                    {cuisines.map((cuisine) => (
                                         <button
-                                            key={cuisine}
+                                            key={cuisine.cuisine_id}  // ✅ unique key
                                             type="button"
-                                            onClick={() => toggleCuisine(cuisine)}
-                                            className={`px-4 py-2 rounded-full border transition ${selectedCuisines.includes(cuisine)
-                                                ? 'bg-indigo-600 text-white border-indigo-600'
-                                                : 'bg-white text-gray-700 border-gray-300'
+                                            onClick={() => toggleCuisine(cuisine.cuisine_id)}  // ✅ pass only ID
+                                            className={`px-4 py-2 rounded-full border transition ${selectedCuisines.includes(cuisine.cuisine_id)
+                                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                                    : 'bg-white text-gray-700 border-gray-300'
                                                 }`}
                                         >
-                                            {cuisine}
+                                            {cuisine.name} {/* ✅ Show name, not full object */}
                                         </button>
                                     ))}
                                 </div>
+
                             </section>
 
                             {/* Additional Note */}

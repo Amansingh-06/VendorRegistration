@@ -7,6 +7,7 @@ import { useFetch } from '../context/FetchContext';
 import Loader from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
+import { p } from 'framer-motion/client';
 
 export default function ManageItemsPage() {
     const { items, loading, error } = useFetch();
@@ -44,6 +45,12 @@ export default function ManageItemsPage() {
                     
                     {/* Items List */}
                     <div className="grid gap-6">
+                        {items.length === 0 && (
+                            <p className="text-gray-500 text-lg text-center">
+                                No items found. Please add an item.
+                            </p>
+                        )}
+
                       
                         {items?.map((item) => (
                             <div
@@ -55,7 +62,7 @@ export default function ManageItemsPage() {
                                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
                                         checked={item.available}
-                                        onChange={() => toggleAvailability(item.id)}
+                                        onChange={() => toggleAvailability(item.item_id)}
                                         size="small"
                                         color="success"
                                     />

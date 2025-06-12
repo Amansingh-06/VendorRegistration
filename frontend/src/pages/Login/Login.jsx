@@ -292,7 +292,7 @@ const Login = () => {
                 <button
                     type="submit"
                     className="flex cursor-pointer items-center mt-3 justify-center gap-2 w-full bg-primary hover:bg-primary text-white py-3 rounded-xl text-lg font-semibold transition duration-300 shadow-md hover:shadow-lg  
-  disabled:bg-primary/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-gray-300"
+  disabled:bg-primary/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white"
                     disabled={sendingOtp || !isValid}
                 >
                     Next
