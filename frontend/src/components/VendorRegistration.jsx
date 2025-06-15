@@ -1,10 +1,9 @@
 import React, { useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaUserAlt, FaStore, FaRegClock } from 'react-icons/fa';
+import { FaRegUser, FaStore, FaRegClock } from 'react-icons/fa';
 import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
 import { IoImageOutline, IoQrCodeOutline } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa";
 import { AiOutlineShop } from "react-icons/ai";
 import FileUploadButton from './FileUploadButton';
 import { v4 as uuidv4 } from 'uuid';

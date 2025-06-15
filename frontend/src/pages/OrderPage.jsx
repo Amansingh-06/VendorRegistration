@@ -6,7 +6,7 @@ import OrderCard from '../components/OrderCard';
 import Navbar from '../components/Navbar';
 import BottomNav from '../components/Footer';
 import ButtonGroup from '../components/FilterButton';
-
+import {toast} from 'react-hot-toast'
 const OrderPage = () => {
     const [active, setActive] = useState('All');
     const { vendorProfile } = useAuth();
@@ -42,7 +42,7 @@ const OrderPage = () => {
                 *,
                 order_item (
                     *,
-                    items (
+                    item (
                         *
                     )
                 )
@@ -51,11 +51,20 @@ const OrderPage = () => {
             .single();
 
         if (!error) {
-            await refreshOrders(); // ✅ This ensures current tab is re-evaluated
+            // ✅ TEMPORARY: If status is "accepted", assign dummy dp_id
+            if (data.status === 'accepted') {
+                await supabase
+                    .from('orders')
+                    .update({ dp_id: '43c6aeba-34e0-4ad7-9caf-9eb661b2e043' }) // 🟢 koi bhi ID yahan daal sakte ho
+                    .eq('order_id', orderId);
+            }
+
+            await refreshOrders(); // ✅ Always refresh orders after update
         } else {
             console.error('Failed to refresh order:', error);
         }
     };
+    
 
     return (
         <div className="flex flex-col items-center min-h-screen bg-white rounded-lg shadow-lg font-family-poppins">

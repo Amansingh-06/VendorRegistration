@@ -7,20 +7,39 @@ import { useFetch } from '../context/FetchContext';
 import Loader from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import { p } from 'framer-motion/client';
-
+import { supabase } from '../utils/supabaseClient';
 export default function ManageItemsPage() {
-    const { items, loading, error } = useFetch();
+    const { items,setItems, loading, error,fetchItems } = useFetch();
     const {vendorProfile}= useAuth()
  const navigate=useNavigate()
 
-    const toggleAvailability = (id) => {
+    const toggleAvailability = async (id, currentValue) => {
+        // Step 1: Optimistic UI update
         setItems(prevItems =>
             prevItems.map(item =>
-                item.id === id ? { ...item, available: !item.available } : item
+                item.item_id === id ? { ...item, available: !currentValue } : item
             )
         );
+
+        // Step 2: Update only availability in Supabase
+        const { error } = await supabase
+            .from('item')
+            .update({ available: !currentValue })
+            .eq('item_id', id);
+
+        if (error) {
+            console.error("Update failed:", error.message);
+
+            // Revert change in case of error (optional)
+            setItems(prevItems =>
+                prevItems.map(item =>
+                    item.item_id === id ? { ...item, available: currentValue } : item
+                )
+            );
+        }
     };
+
+
     console.log(items)
     console.log(vendorProfile)
 
@@ -62,7 +81,7 @@ export default function ManageItemsPage() {
                                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
                                         checked={item.available}
-                                        onChange={() => toggleAvailability(item.item_id)}
+                                        onChange={() => toggleAvailability(item.item_id,item.available)}
                                         size="small"
                                         color="success"
                                     />

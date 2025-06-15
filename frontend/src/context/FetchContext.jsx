@@ -10,10 +10,11 @@ export function FetchProvider({ children }) {
     const [error, setError] = useState(null);
     const { vendorProfile } = useAuth();
 
-    const fetchItems = async () => {
+    // ✅ Modified fetchItems with `silent` param
+    const fetchItems = async (silent = false) => {
         if (!vendorProfile?.v_id) return;
 
-        setLoading(true);
+        if (!silent) setLoading(true); // don't trigger loader in silent mode
         setError(null);
 
         try {
@@ -27,28 +28,28 @@ export function FetchProvider({ children }) {
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
     useEffect(() => {
         if (!vendorProfile?.v_id) return;
 
-        fetchItems(); // Initial fetch
+        fetchItems(); // Initial fetch with loader
 
         const channel = supabase
             .channel('realtime-items')
             .on(
                 'postgres_changes',
                 {
-                    event: '*', // 'INSERT' | 'UPDATE' | 'DELETE' | '*' for all
+                    event: '*', // INSERT / UPDATE / DELETE
                     schema: 'public',
                     table: 'item',
                     filter: `vendor_id=eq.${vendorProfile.v_id}`,
                 },
                 (payload) => {
                     console.log('Realtime payload:', payload);
-                    fetchItems(); // Refresh items on change
+                    fetchItems(true); // ✅ silent refresh
                 }
             )
             .subscribe();
@@ -59,7 +60,7 @@ export function FetchProvider({ children }) {
     }, [vendorProfile?.v_id]);
 
     return (
-        <FetchContext.Provider value={{ items, loading, error, fetchItems }}>
+        <FetchContext.Provider value={{ items, setItems, loading, error, fetchItems }}>
             {children}
         </FetchContext.Provider>
     );

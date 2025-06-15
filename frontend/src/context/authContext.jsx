@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
                 const { data, error } = await supabase
                     .from("vendor_request")
                     .select("*")
-                    .eq("u_id", session.user.id)
+                    .eq("u_id", session?.user?.id)
                     .single();
 
                 if (error) {
