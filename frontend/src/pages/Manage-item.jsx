@@ -124,7 +124,7 @@ export default function ManageItemsPage() {
 
             {/* Floating Add Button */}
             <button
-                className="fixed bottom-20 right-3 md:bottom-10 md:right-10 w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-50"
+                className="fixed bottom-20 right-3 md:bottom-10 md:right-10 w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-50 cursor-pointer"
                 aria-label="Add Item"
                 onClick={()=>navigate('/add-items')}
             >

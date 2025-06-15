@@ -691,8 +691,8 @@
 // };
 
 // export default AddEditItem;
-import React, { useState, useRef,useEffect } from 'react';
-import { useForm,FormProvider } from 'react-hook-form';
+import React, { useState, useRef,useEffect,useMemo } from 'react';
+import { useForm,Controller } from 'react-hook-form';
 import { FaUtensils, FaRupeeSign, FaRegClock, FaHashtag ,FaTimes} from 'react-icons/fa';
 import FormInput from '../components/FormInput';
 import TypeRadio from '../components/TypeRadio';
@@ -718,7 +718,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     const [cuisines,setCuisines]=useState([])
         const [showCategoryInput, setShowCategoryInput] = useState(false);
         const [previewImage, setPreviewImage] = useState(null);
-        const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
         const categoryInputRef = useRef(null);
         const { vendorProfile } = useAuth();
     const fileInputRef = useRef();
@@ -729,7 +729,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     console.log(itemData)
     console.log(itemData)
 
-    const { register, handleSubmit, setValue,watch,reset, formState: { errors ,isValid} } = useForm({
+    const { register, handleSubmit,control, setValue,watch,reset, formState: { errors ,isValid},trigger } = useForm({
         defaultValues: {
             itemName: '',
             quantity: '',
@@ -740,10 +740,13 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             type: null,
           },
     });
-      
+    const watchedFields = watch()
+
     console.log(itemData)
 
+
     useEffect(() => {
+        if (!vendorProfile?.v_id) return; // ⛔ Don't run until v_id is available
         const fetchCategories = async () => {
             const { data, error } = await supabase
                 .from(SUPABASE_TABLES?.ITEM_CATEGORY)
@@ -766,6 +769,26 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         });
     }, [register]);
       
+    const isFormChanged = useMemo(() => {
+        if (!itemData) return true;
+
+        const hasTextChanged =
+            watchedFields.itemName !== itemData.item_name ||
+            watchedFields.quantity !== itemData.item_quantity?.toString() || // ✅ "15" === "15"
+            watchedFields.price !== itemData.item_price?.toString() ||       // ✅ "125" === "125"
+            watchedFields.prepTime !== itemData.prep_time?.toString() ||    // ✅ "20" === "20"
+            watchedFields.category !== itemData.vendor_created_category_id ||
+            JSON.stringify(watchedFields.cuisine || []) !== JSON.stringify(itemData.item_category_id || []) ||
+            watchedFields.type !== (itemData.veg ? "veg" : "nonveg");
+
+        const hasImageChanged =
+            (previewImage && typeof previewImage === "object") || // ✅ new image uploaded
+            (!previewImage && itemData.img_url); // ✅ image removed
+
+        return hasTextChanged || hasImageChanged;
+    }, [watchedFields, previewImage, itemData]);
+    
+    console.log(isFormChanged,"isform")
     
     
     const uploadFile = async (file, bucketName) => {
@@ -814,7 +837,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     return toast.error(MESSAGES.EMPTY_CATEGORY);
                 }
         
-                // Check if category already exists (case-insensitive)
+        // Check if category already exists (case-insensitive)
                 const { data: existing, error: checkError } = await supabase
                     .from(SUPABASE_TABLES?.ITEM_CATEGORY)
                     .select('*')
@@ -829,10 +852,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 if (existing.length > 0) {
                     toast.error(MESSAGES.CATEGORY_EXISTS);
                     return;
-                }
+        }
+        setLoading(true)
+
         
                 // ✅ Show loading toast only before inserting
-                const toastId = toast.loading('Adding Category');
+                // const toastId = toast.loading('Adding Category');
         
                 const { data, error } = await supabase
                     .from(SUPABASE_TABLES?.ITEM_CATEGORY)
@@ -845,7 +870,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     ])
                     .select();
         
-                toast.dismiss(toastId);
+        // toast.dismiss(toastId);
+        setLoading(false)
         
                 if (error) {
                     toast.error(MESSAGES.CATEGORY_ADD_FAIL);
@@ -862,8 +888,14 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 setCategories(prev => [...prev, addedCat]);
         
                 // ✅ Then set value in form (ensure it matches dropdown <option value>)
-                setValue('category', addedCat.title.toUpperCase());
-                console.log("✅ Category selected after adding:", addedCat.title.toUpperCase());
+        setValue('category', addedCat.cat_id, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+        });
+
+        // ✅ Manually trigger validation
+        await trigger('category');
         
                 toast.success(MESSAGES.CATEGORY_ADDED);
         
@@ -873,15 +905,19 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
     useEffect(() => {
         if (isEditMode && itemData) {
+            console.log(itemData.item_category_id)
             reset({
                 itemName: itemData.item_name || '',
-                quantity: itemData.item_quantity || '',
-                price: itemData.item_price || '',
-                prepTime: itemData.prep_time || '',
-                category: itemData.item_category_id || '',
-                cuisine: JSON.parse(itemData.item_cuisine_id || '[]'),
+                quantity: itemData.item_quantity?.toString() || '',
+                price: itemData.item_price?.toString() || '',
+                prepTime: itemData.prep_time?.toString() || '',
+                category: itemData.vendor_created_category_id || '',
+                cuisine: Array.isArray(itemData.item_category_id)
+                    ? itemData.item_category_id
+                    : JSON.parse(itemData.item_category_id || '[]'),
                 type: itemData.veg ? 'veg' : 'nonveg',
             });
+            
             if (itemData.img_url) {
                 setPreviewImage(itemData?.img_url); // 👈 Set URL as preview
             }
@@ -915,14 +951,17 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 item_price: data.price,
                 item_quantity: data.quantity,
                 veg: typeBool,
-                item_category_id: data.category,
-                item_cuisine_id: data.cuisine,
+                vendor_created_category_id: data.category,
+                item_category_id: data.cuisine,
             };
             let imageUrl = itemData?.img_url || null;
 
-            if (previewImage && typeof previewImage !== 'string') {
-                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG); // 👈 Bucket name replace karo
+            if (previewImage === null) {
+                imageUrl = "NA";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
+            } else if (typeof previewImage !== 'string') {
+                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG);
             }
+
             itemFields.img_url = imageUrl;
 
     
@@ -947,8 +986,10 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     item_id: uuidv4(),
                     vendor_id: vendorProfile?.v_id,
                     created_at: new Date(),
+                    updated_at: new Date(),
                 };
-    
+                console.log("➡️ Insert Payload:", insertPayload);
+
                 response = await supabase
                     .from(SUPABASE_TABLES?.ITEM)
                     .insert([insertPayload]);
@@ -1081,22 +1122,29 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
                         <div className="p-4 shadow-lg rounded-2xl w-full bg-white">
 <label className="block mb-2 font-semibold  text-gray-500">Select Category</label>
-                            <select
-                                {...register('category', { required: 'Category is required' })}
-                                className="w-full px-4 py-2 border rounded-md"
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setValue('category', val, { shouldValidate: true }); // ✅ important
-                                }}
-                                value={watch('category')} // 👈 ensures controlled select input
-                            >
-                                <option value="">-- Select Category --</option>
-                                {categories.map((cat, i) => (
-                                    <option key={i} value={cat?.cat_id}>{cat?.title}</option>
-                                ))}
-                            </select>
+<Controller
+                                name="category"
+                                control={control}
+                                rules={{ required: 'Category is required' }}
+                                render={({ field }) => (
+                                    <select
+                                        {...field}
+                                        className="w-full px-4 py-2 border rounded-md"
+                                    >
+                                        <option value="">-- Select Category --</option>
+                                        {categories.map((cat, i) => (
+                                            <option key={i} value={cat?.cat_id}>{cat?.title}</option>
+                                        ))}
+                                    </select>
+                                )}
+                            />
+                            {errors.category && (
+                                <p className="text-red text-sm mt-1">
+                                    {errors.category.message}
+                                </p>
+                            )}
 
-                            {errors.category && <p className="text-red text-sm mt-1">{errors?.category?.message}</p>}
+
 
                             <p
                                 className="mt-2 text-sm text-orange-500 cursor-pointer hover:underline"
@@ -1151,10 +1199,16 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                         />
                         <button
                             type="submit"
-                            className={`w-full py-3 rounded-lg text-white font-semibold ${isValid ? 'bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                            disabled={!isFormChanged || loading || !isValid}
+                            className={`w-full px-4 py-2 text-white rounded-md transition 
+    ${!isFormChanged || loading || !isValid
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                                }`}
                         >
-                            Submit
+                            {isEditMode ? "Update Item" : "Add Item"}
                         </button>
+
                     </form>
                 
                 </div>

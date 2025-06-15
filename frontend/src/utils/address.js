@@ -161,6 +161,7 @@ const getAddressFromLatLng = async (lat, lng) => {
 };
 
 // getCurrent location
+// getCurrent location
 export const getCurrentLocation = async (
     setLocation,
     setError,
@@ -174,7 +175,7 @@ export const getCurrentLocation = async (
             // console.log("Yaha v ni aa rha h kya?")
             return {
                 success: false,
-                error: new Error("Geolocation not supported")
+                error: new Error("Geolocation not supported"),
             };
         }
 
@@ -192,33 +193,41 @@ export const getCurrentLocation = async (
             setError("Location accuracy is too low (>10 meters).");
             // return; // Don't proceed further
         }
-        // console.log("Current position:", position.coords);
 
         const data = await getAddressFromLatLng(latitude, longitude);
-        // console.log("Address data:", data);
-        const address = data?.results[0]?.formatted_address;
-        const areaName = data?.results[0]?.address_components.find(
+        const address = data?.results[0].formatted_address;
+        const areaName = data?.results[0].address_components.find(
             (component) =>
                 component.types.includes("sublocality") ||
                 component.types.includes("sublocality_level_1")
         )?.long_name;
-        const cityName = data?.results[0]?.address_components.find(
-            component =>
+        const cityName = data?.results[0].address_components.find(
+            (component) =>
                 component.types.includes("locality") ||
                 component.types.includes("administrative_area_level_2")
         )?.long_name;
 
+        let landmark = "";
+
+        if (areaName && cityName) {
+            landmark = `${areaName}, ${cityName }`;
+        } else if (!areaName && cityName) {
+            landmark = cityName;
+        } else if (areaName && !cityName) {
+            landmark = areaName;
+        } else {
+            landmark = "";
+        }
+
         const add = {
-            landmark: `${areaName}, ${cityName}`,
+            landmark: landmark,
             h_no: "NA",
             floor: "NA",
-            name: address,
             lat: latitude,
             long: longitude,
-            accuracy,
         };
 
-        // console.log("address", address);
+        console.log("address", address);
 
         setLocation({
             name: address,
@@ -226,26 +235,26 @@ export const getCurrentLocation = async (
             lng: longitude,
             accuracy,
             areaName: areaName,
-            cityName: cityName
+            cityName: cityName,
+            landmark: landmark,
         });
         setSelectedAddress(add);
-        // console.log(location)
 
         return {
             success: true,
-            error: null
-        }
+            error: null,
+        };
     } catch (error) {
         console.error("Error getting location", error);
-        setError(`Error getting location: ${error.message}`);
+        setError(Error`getting location: ${error.message }`);
         setLocation(null);
         return {
             success: false,
-            error: error
-        }
-        // throw error; // Rethrow so caller knows it failed
+            error: error,
+        };
+        // throw error; // Rethrow so caller knows it failed
     }
-};
+  };
 
 
 //fetch all saved address

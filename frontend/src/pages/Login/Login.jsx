@@ -110,6 +110,7 @@ const Login = () => {
             return;
         }
         const toastId = toast.loading("Sending OTP");
+        console.log(fullPhone,"fullPhone")
         try {
             setSendingOtp(true);
             const { data: userData, error } = await supabase

@@ -115,6 +115,7 @@ export default function VendorProfile() {
             if (error) {
                 console.error('Error fetching vendor:', error.message);
             } else if (data) {
+                console.log("data",data)
                 reset({
                     vendor_name: data.v_name || '',
                     shop_name: data.shop_name || '',
@@ -144,6 +145,7 @@ export default function VendorProfile() {
                 setVideoUrl(data.video_url || '');
                 setQrUrl(data.payment_url || '');
                 setSelectedCuisines(data.cuisines_available || []);
+                console.log(selectedCuisines,"selected quiesine")
 
                 setInitialFormState({
                     vendor_name: data.v_name || '',
@@ -289,7 +291,7 @@ export default function VendorProfile() {
     const qrInputRef = useRef(null);
 
     // Helper to handle file selection and create preview URL
-  console.log(selectedCuisines)
+  console.log("selectedCuisines",selectedCuisines)
 
     const toggleCuisine = (cuisineId) => {
         if (selectedCuisines.includes(cuisineId)) {
@@ -643,7 +645,7 @@ export default function VendorProfile() {
                                 disabled={loading || isFormIncomplete || !isChanged}
                                 className={`mt-2 mb-15 px-4 w-full py-2 rounded text-white ${loading || isFormIncomplete || !isChanged
                                     ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-700'
+                                    : 'bg-primary cursor-pointer'
                                     }`}
                             >
                                 {loading ? 'Saving...' : 'Save Profile'}

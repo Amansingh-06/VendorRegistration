@@ -1,7 +1,7 @@
 import React from 'react';
 import { Upload, X } from 'lucide-react';
 
-const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, onChange }) => {
+const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, onChange,setValue }) => {
     return (
         <div className="grid md:grid-cols-2 gap-4">
             <div className="relative border-2 border-dashed border-gray-400 rounded-md p-4 flex items-center justify-center text-sm text-gray-500 cursor-pointer h-40">
@@ -24,6 +24,7 @@ const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, 
                             onClick={() => {
                                 setPreviewImage(null);
                                 if (fileInputRef.current) fileInputRef.current.value = '';
+                                setValue('image', null);   // <-- ye form se image hata dega
                             }}
                         />
                     </>

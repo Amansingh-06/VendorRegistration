@@ -677,7 +677,7 @@ function VendorRegistration() {
                                         onClick={() => setShowPopup(true)}
                                         disabled={waitloading}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition 
-    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue hover:bg-blue-700'}`}
+    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue cursor-pointer hover:bg-blue-700'}`}
                                     >
                                         <MdAddLocationAlt className="text-lg" />
                                         {selectedAddress?.lat && selectedAddress?.long ? "Location Selected" : "Current Location"}
@@ -701,7 +701,7 @@ function VendorRegistration() {
                                         onClick={handleCurrentLocation}
                                         disabled={waitloading}
                                         className={`flex justify-center items-center rounded-full p-2 
-    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal'}`
+    ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal cursor-pointer'}`
                                         }
                                     >
                                         <MdGpsFixed className="text-2xl text-white" />

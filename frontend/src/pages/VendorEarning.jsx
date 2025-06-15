@@ -290,71 +290,39 @@ const VendorEarnings = () => {
                     {/* Ratings & Reviews */}
                     <section className="bg-white rounded-xl shadow p-4 md:p-6 mb-24">
                         <h2 className="text-lg font-semibold text-gray-500 mb-4">Ratings & Reviews</h2>
-                        <div className="space-y-4">
-                            {ratings.map((rating) => (
-                                <div key={rating.r_id} className="border-primary border-1 p-4 rounded-lg bg-gray-50 space-y-3">
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex items-center gap-3">
-                                            <img src={rating.user?.dp_url ||'/defaultuserImage.jpg'}  className="w-10 h-10 rounded-full" />
-                                            <h3 className="font-semibold text-gray-800">{rating?.user?.name}</h3>
-                                        </div>
-                                        {/* {!review.reply && replyingId !== review.id && (
-                                            <button
-                                                onClick={() => handleReplyClick(review.id)}
-                                                className="text-sm text-blue-600 hover:underline"
-                                            >
-                                                Reply
-                                            </button>
-                                        )} */}
-                                    </div>
 
-                                    <div className="text-sm text-gray-500">
-                                        <span className="font-medium text-gray-600">Items:</span>{' '}
-                                        {rating.order?.order_item?.map((oi) => oi.items?.item_name).join(', ')}
-                                        </div>
-
-                                    <div className="flex justify-between items-center text-sm mt-1">
-                                        <div className="text-yellow-500 leading-tight">
-                                            {'⭐'.repeat(rating?.rating_number) + '☆'.repeat(5 - rating?.rating_number)} ({rating?.rating_number}.0)
-                                        </div>
-                                        <div className="text-green-600 font-semibold whitespace-nowrap">₹{rating.order?.total_amount}</div>
-                                    </div>
-
-                                    {/* {replyingId === review.id && (
-                                        <div className="space-y-2 mt-2">
-                                            <textarea
-                                                value={replyText}
-                                                onChange={handleReplyChange}
-                                                rows="2"
-                                                className="w-full border rounded-md p-2 text-sm"
-                                                placeholder="Write your reply here..."
-                                            />
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => submitReply(review.id)}
-                                                    className="px-4 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
-                                                >
-                                                    Submit
-                                                </button>
-                                                <button
-                                                    onClick={cancelReply}
-                                                    className="px-4 py-1 bg-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-400"
-                                                >
-                                                    Cancel
-                                                </button>
+                        {ratings.length === 0 ? (
+                            <p className="text-gray-500 text-sm">No ratings yet.</p>
+                        ) : (
+                            <div className="space-y-4">
+                                {ratings.map((rating) => (
+                                    <div key={rating.r_id} className="border-primary border-1 p-4 rounded-lg bg-gray-50 space-y-3">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex items-center gap-3">
+                                                <img src={rating.user?.dp_url || '/defaultuserImage.jpg'} className="w-10 h-10 rounded-full" />
+                                                <h3 className="font-semibold text-gray-800">{rating?.user?.name}</h3>
                                             </div>
                                         </div>
-                                    )} */}
 
-                                    {/* {review.reply && replyingId !== review.id && (
-                                        <div className="text-sm text-gray-600 bg-orange-100 p-2 rounded-md mt-2">
-                                            <span className="font-medium text-gray-700">Reply:</span> {review.reply}
+                                        <div className="text-sm text-gray-500">
+                                            <span className="font-medium text-gray-600">Items:</span>{' '}
+                                            {rating.order?.order_item?.map((oi) => oi.items?.item_name).join(', ')}
                                         </div>
-                                    )} */}
-                                </div>
-                            ))}
-                        </div>
+
+                                        <div className="flex justify-between items-center text-sm mt-1">
+                                            <div className="text-yellow-500 leading-tight">
+                                                {'⭐'.repeat(rating?.rating_number) + '☆'.repeat(5 - rating?.rating_number)} ({rating?.rating_number}.0)
+                                            </div>
+                                            <div className="text-green-600 font-semibold whitespace-nowrap">
+                                                ₹{rating.order?.total_amount}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </section>
+
                 </div>
             </div>
             <BottomNav />
