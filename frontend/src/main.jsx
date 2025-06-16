@@ -6,6 +6,8 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/authContext.jsx';
 import { SearchProvider } from './context/SearchContext.jsx';
 import { FetchProvider } from './context/FetchContext.jsx';
+import swDev from '../swDev.js';
+import { initializePWAInstall } from '../pwaInstall.js';
 
 
 
@@ -21,3 +23,8 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </StrictMode>,
 )
+swDev()
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializePWAInstall();
+});
