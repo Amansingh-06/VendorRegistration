@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     const [vendorProfile, setVendorProfile] = useState(null); // ✅ NEW STATE
 
     // ✅ Automatically fetch vendor_profile if session exists
+    console.log(session?.user?.id,"Id")
     useEffect(() => {
         const fetchVendorProfile = async () => {
             if (session?.user?.id) {

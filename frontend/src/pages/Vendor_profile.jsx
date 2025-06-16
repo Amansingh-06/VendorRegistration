@@ -6,6 +6,7 @@ import TimeClockFull from '../components/ClockPopup';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import { BUCKET_NAMES } from '../utils/vendorConfig';
+import ItemCategory from '../components/ItemCategory';
 
 import {
     nameValidation,
@@ -24,12 +25,13 @@ import BottomNav from '../components/Footer';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const cuisinesList = ['South Indian', 'North Indian', 'Chinese', 'Italian', 'Mexican'];
 
 
 export default function VendorProfile() {
-    const { session } = useAuth();
+    const { session,vendorProfile } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [selectedCuisineIds, setSelectedCuisineIds] = useState([]);
+
     const [selectedCuisines, setSelectedCuisines] = useState([]);
     const [isFormReady, setIsFormReady] = useState(false);
     const [initialFormState, setInitialFormState] = useState(null);
@@ -83,23 +85,9 @@ export default function VendorProfile() {
         !watchedFields.city ||
         !watchedFields.state ||
         !watchedFields.pincode ||
-        selectedCuisines.length === 0
+        selectedCuisineIds.length === 0
     );
-    useEffect(() => {
-            const fetchCuisines = async () => {
-                const { data, error } = await supabase
-                    .from('all_cuisine_available')
-                    .select('cuisine_id, name');
-    
-                if (error) {
-                    console.error('Error fetching cuisines:', error);
-                } else {
-                    setCuisines(data);
-                }
-            };
-    
-            fetchCuisines();
-        }, []);
+  
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -144,8 +132,7 @@ export default function VendorProfile() {
                 setBannerUrl(data.banner_url || '');
                 setVideoUrl(data.video_url || '');
                 setQrUrl(data.payment_url || '');
-                setSelectedCuisines(data.cuisines_available || []);
-                console.log(selectedCuisines,"selected quiesine")
+                setSelectedCuisineIds(data.categories_available || []);
 
                 setInitialFormState({
                     vendor_name: data.v_name || '',
@@ -159,7 +146,7 @@ export default function VendorProfile() {
                     state: data.state || '',
                     pincode: data.pincode || '',
                     note: data.note_from_vendor || '',
-                    cuisines: data.cuisines_available || [],
+                    cuisines: data.categories_available || [],
                     banner: data.banner_url || '',
                     video: data.video_url || '',
                     qr: data.payment_url || ''
@@ -176,6 +163,14 @@ export default function VendorProfile() {
     const isChanged = useMemo(() => {
         if (!initialFormState) return false;
 
+        const areCuisinesSame = (() => {
+            const a = [...selectedCuisineIds].map(String).sort();
+            const b = [...(initialFormState.cuisines || [])].map(String).sort();
+
+            if (a.length !== b.length) return false;
+            return a.every((val, index) => val === b[index]);
+        })();
+
         return (
             watchedFields.vendor_name !== initialFormState.vendor_name ||
             watchedFields.shop_name !== initialFormState.shop_name ||
@@ -191,10 +186,11 @@ export default function VendorProfile() {
             bannerUrl !== initialFormState.banner ||
             videoUrl !== initialFormState.video ||
             qrUrl !== initialFormState.qr ||
-            JSON.stringify(selectedCuisines) !== JSON.stringify(initialFormState.cuisines)
+            !areCuisinesSame
         );
-    }, [watchedFields, selectedCuisines, bannerUrl, videoUrl, qrUrl, initialFormState]);
-
+    }, [watchedFields, selectedCuisineIds, bannerUrl, videoUrl, qrUrl, initialFormState]);
+    
+    
     const uploadFile = async (file, bucketName) => {
         if (!file) return null;
 
@@ -261,45 +257,61 @@ export default function VendorProfile() {
                 state: formData?.state,
                 pincode: formData.pincode,
                 note_from_vendor: formData?.note || '',
-                cuisines_available: selectedCuisines,
+                categories_available: selectedCuisineIds,
                 banner_url: uploadedBannerUrl,
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
                 u_id: session?.user?.id
             };
 
+            // ✅ Log insertData to inspect values
+            console.log("🟡 insertData being sent to Supabase:", insertData);
+
+            // ✅ Check type of selectedCuisineIds
+            console.log("🟢 selectedCuisineIds:", selectedCuisineIds, typeof selectedCuisineIds[0]);
+
             const { error } = await supabase
                 .from('vendor_request')
                 .upsert(insertData, { onConflict: 'u_id' });
 
             if (error) {
-                toast.error("Update Fail")
+                console.error("❌ Supabase error:", error);
+                toast.error("Update Fail");
             } else {
                 toast.success('Profile Updated Successfully');
-                navigate('/home')
+                navigate('/home');
             }
         } catch (err) {
             console.error('Upload failed:', err.message);
-            toast.error("Upload failed")
+            toast.error("Upload failed");
         }
 
         setLoading(false);
     };
+    
     
     const bannerInputRef = useRef(null);
     const videoInputRef = useRef(null);
     const qrInputRef = useRef(null);
 
     // Helper to handle file selection and create preview URL
-  console.log("selectedCuisines",selectedCuisines)
+  console.log("selectedCuisines",selectedCuisineIds)
 
-    const toggleCuisine = (cuisineId) => {
-        if (selectedCuisines.includes(cuisineId)) {
-            setSelectedCuisines(selectedCuisines.filter((id) => id !== cuisineId));
-        } else {
-            setSelectedCuisines([...selectedCuisines, cuisineId]);
+    useEffect(() => {
+        if (vendorProfile?.categories_available?.length > 0) {
+            setSelectedCuisineIds(vendorProfile.categories_available.map(String)); // Ensure all IDs are strings
         }
-    };
+    }, [vendorProfile]);
+
+    console.log({
+        isFormIncomplete,
+        isChanged,
+        loading,
+        vendor_name: watchedFields.vendor_name,
+        shop_name: watchedFields.shop_name,
+        selectedCuisineIds,
+    });
+      
   
     return (
         <div className="min-h-screen bg-gray-50 flex justify-center items-start ">
@@ -607,25 +619,12 @@ export default function VendorProfile() {
                             </section>
 
                             {/* Cuisines */}
-                            <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
-                                <h2 className="text-xl font-semibold text-gray-500 mb-4">Available Cuisines</h2>
-                                <div className="flex flex-wrap gap-3">
-                                    {cuisines.map((cuisine) => (
-                                        <button
-                                            key={cuisine.cuisine_id}  // ✅ unique key
-                                            type="button"
-                                            onClick={() => toggleCuisine(cuisine.cuisine_id)}  // ✅ pass only ID
-                                            className={`px-4 py-2 rounded-full border transition ${selectedCuisines.includes(cuisine.cuisine_id)
-                                                    ? 'bg-indigo-600 text-white border-indigo-600'
-                                                    : 'bg-white text-gray-700 border-gray-300'
-                                                }`}
-                                        >
-                                            {cuisine.name} {/* ✅ Show name, not full object */}
-                                        </button>
-                                    ))}
-                                </div>
+                            <ItemCategory
+                                value={selectedCuisineIds}
+                                onChange={setSelectedCuisineIds}
+                                error={!selectedCuisineIds.length ? "Please select at least one." : ""}
+                            />
 
-                            </section>
 
                             {/* Additional Note */}
                             <section className='flex flex-col rounded-2xl shadow-lg px-6 py-8'>
@@ -643,13 +642,23 @@ export default function VendorProfile() {
                             <button
                                 type="submit"
                                 disabled={loading || isFormIncomplete || !isChanged}
+                                title={
+                                    loading
+                                        ? "Saving..."
+                                        : isFormIncomplete
+                                            ? "Please fill all required fields"
+                                            : !isChanged
+                                                ? "No changes made"
+                                                : ""
+                                }
                                 className={`mt-2 mb-15 px-4 w-full py-2 rounded text-white ${loading || isFormIncomplete || !isChanged
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-primary cursor-pointer'
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-primary cursor-pointer'
                                     }`}
                             >
                                 {loading ? 'Saving...' : 'Save Profile'}
                             </button>
+
 
                         </form>
                     </div>

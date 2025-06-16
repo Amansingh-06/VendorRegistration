@@ -20,7 +20,7 @@ export default function ItemCategory({
     useEffect(() => {
         const fetchCategories = async () => {
             const { data, error } = await supabase
-                .from("cuisine_category")
+                .from("item_category")
                 .select("c_id, name"); // 👈 change field names if different
 
             if (error) {
@@ -36,8 +36,16 @@ export default function ItemCategory({
     // ✅ Sync selected value from parent
     useEffect(() => {
         const validIds = Array.isArray(value) ? value.map(String) : [];
-        setSelectedIds(validIds);
+        const current = selectedIds;
+
+        const areSame = validIds.length === current.length &&
+            validIds.every((val, i) => val === current[i]);
+
+        if (!areSame) {
+            setSelectedIds(validIds);
+        }
     }, [value]);
+    
 
     // ✅ Filter suggestions when query changes
     useEffect(() => {

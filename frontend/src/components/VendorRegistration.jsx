@@ -12,7 +12,6 @@ import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
-import CuisineSelector from './CuisineSelector';
 import {
     BUCKET_NAMES,
     DEFAULTS,
@@ -51,6 +50,7 @@ import Header from './Header';
 import { useAuth } from '../context/authContext';
 import InputField from './InputField';
 import { useSearch } from '../context/SearchContext';
+import ItemCategory from './ItemCategory';
 
 function VendorRegistration() {
     const [videoFile, setVideoFile] = useState(null);
@@ -90,6 +90,7 @@ function VendorRegistration() {
         cuisines: watch(FORM_FIELDS?.CUISINES),
         startTime1: watch('startTime1'),
         endTime1: watch('endTime1'),
+
     };
     console.log("Registration session", session)
 
@@ -275,6 +276,16 @@ function VendorRegistration() {
         } else {
             setLocationError(false);
         }
+        if (!watchFields?.cuisines || watchFields?.cuisines?.length === 0) {
+            setError(FORM_FIELDS?.CUISINES, {
+                type: 'manual',
+                message: 'At least one cuisine is required',
+            });
+            isValid = false;
+        } else {
+            clearErrors(FORM_FIELDS?.CUISINES);
+        }
+          
         
         
 
@@ -723,7 +734,17 @@ function VendorRegistration() {
                         </div>
 
                         {/* Card 3: Cuisine */}
-                        <CuisineSelector register={register} errors={errors} />
+                        {/* <CuisineSelector register={register} errors={errors} /> */}
+                        <ItemCategory
+                            value={watch(FORM_FIELDS?.CUISINES)}
+                            onChange={(val) => {
+                                setValue(FORM_FIELDS?.CUISINES, val, { shouldValidate: true });
+                                if (val?.length > 0) {
+                                    clearErrors(FORM_FIELDS?.CUISINES);
+                                }
+                            }}
+                            error={errors?.[FORM_FIELDS?.CUISINES]?.message}
+                        />
 
                         {/* Note from Vendor (optional) */}
                         <div className="relative col-span-2">

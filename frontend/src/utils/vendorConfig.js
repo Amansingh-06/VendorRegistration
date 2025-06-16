@@ -36,7 +36,7 @@ export const SHOP_DATA_KEYS = {
     SHIFT1_CLOSE: 'shift1_closing_time',
     SHIFT2_START: 'shift2_opening_time',
     SHIFT2_CLOSE: 'shift2_closing_time',
-    CUISINES: 'cuisines_available',
+    CUISINES: 'categories_available',
     VIDEO_URL: 'video_url',
     BANNER_URL: 'banner_url',
     PAYMENT_QR_URL: 'payment_url',
@@ -46,7 +46,7 @@ export const SHOP_DATA_KEYS = {
 
 export const SUPABASE_TABLES = {
     TABLE: 'vendor_request',
-    ITEM_CATEGORY: 'item_category',
+    ITEM_CATEGORY: 'category_created_by_vendor',
     ITEM: 'item',
 };
 
