@@ -15,6 +15,7 @@ import LocationPopup from './components/LocationPopUP';
 import VendorRegistration from './components/VendorRegistration';
 import VendorEarnings from './pages/VendorEarning';
 import ManageItemsPage from './pages/Manage-item';
+import InstallPrompt from './components/InstallPrompt';
 
 function App() {
   return (
@@ -97,7 +98,11 @@ function App() {
             </PrivateRoute>
           } />
 
+          
+
+
         </Routes>
+        <InstallPrompt />
         
       </div>
     </Router>
