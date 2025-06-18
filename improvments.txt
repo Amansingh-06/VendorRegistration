@@ -69,6 +69,27 @@ preprtion time(in min)--done
  on off ki jagah open closed--done
 preprtion time(in min)--done
 
+pop kholte hi user current location set krna hai--done
+selected location me area city--done
+toggle swith me left right se padding dena hai top and down v--done
+type heading dena hai veg non veg ke liye--done
+cuisine ko database se fetch krna (connect ravi)--done
+add category button pr validation lgana hai--done
+add krte hi category auto select ho jana chahiye--not done
+img is not compulasary(cuisin me jo img hai us img ka use krna hai)
+quantity ko string me krna hai---done
+checkbox me checkkrna select hone pr--done
+submit button ka validation jb user img ko select krne ke bd dlt kre --done
+item page se item registred krne ke bd navigate krna home page pr aur submit pr cursor lgana hai--done
+item page pr footer add krna hai--done
+manage item list bnana hai---done
+item ke aage edit icon aur onoff krne ka button hoga edit button krne ke bd add/edit page open hoga --done
+profile page ko pura sahi krna hai and ui ko sahi krna hai---done
+insight me date jaha likha hai calend selected bnana hai---done
+
+pending---vendwr-accept---preparin--prepared-on the way--deleverd
+
+listner--data listner,child added
 
 
 

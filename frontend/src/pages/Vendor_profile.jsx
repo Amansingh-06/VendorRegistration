@@ -827,7 +827,7 @@ console.log(location)
                                                                     </div>
                                     {selectedAddress || location || fetchedAddress ? (
                                         <p className="mt-2 text-sm text-gray-700">
-                                            Current location:{" "}
+                                            Selected Location:{" "}
                                             {selectedAddress?.landmark ||
                                                 location?.landmark ||
                                                 `${fetchedAddress?.area || ""}, ${fetchedAddress?.city || ""}`}
