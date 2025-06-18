@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient"; // ✅ Make sure to import
+import { SUPABASE_TABLES } from "../utils/vendorConfig";
 
 const AuthContext = createContext();
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         const fetchVendorProfile = async () => {
             if (session?.user?.id) {
                 const { data, error } = await supabase
-                    .from("vendor_request")
+                    .from(SUPABASE_TABLES.VENDOR)
                     .select("*")
                     .eq("u_id", session?.user?.id)
                     .single();

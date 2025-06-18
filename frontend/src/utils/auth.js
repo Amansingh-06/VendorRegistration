@@ -58,9 +58,9 @@ export const verifyOtp = async (phone, otpValue) => {
 
 export const handleLogin = async (phone, navigate) => {
 
-    // await supabase.auth.updateUser({
-    //     data: { isRegistered: true },
-    // });
+    await supabase.auth.updateUser({
+        data: { isRegistered: true },
+    });
 
     // console.log("User updated:", data);
     // console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);

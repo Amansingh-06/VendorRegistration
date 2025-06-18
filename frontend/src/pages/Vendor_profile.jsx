@@ -5,7 +5,7 @@ import Loader from '../components/Loader';
 import TimeClockFull from '../components/ClockPopup';
 import dayjs from 'dayjs';
 import moment from 'moment';
-import { BUCKET_NAMES } from '../utils/vendorConfig';
+import { BUCKET_NAMES, SUPABASE_TABLES } from '../utils/vendorConfig';
 import ItemCategory from '../components/ItemCategory';
 import { getCurrentLocation } from '../utils/address';
 import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
@@ -419,7 +419,7 @@ console.log(location)
             console.log("🟢 selectedCuisineIds:", selectedCuisineIds, typeof selectedCuisineIds[0]);
 
             const { error } = await supabase
-                .from('vendor_request')
+                .from(SUPABASE_TABLES.VENDOR)
                 .upsert(insertData, { onConflict: 'u_id' });
 
             if (error) {

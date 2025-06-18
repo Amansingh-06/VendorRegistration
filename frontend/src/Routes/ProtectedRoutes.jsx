@@ -74,7 +74,7 @@ const PrivateRoute = ({ children }) => {
 
     if (session && isRegistered === false) {
         logout(setSession); // this clears supabase + context
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/" replace />;
         // or if you want to collect user details:
         // return <Navigate to="/userdetails" replace />;
     }

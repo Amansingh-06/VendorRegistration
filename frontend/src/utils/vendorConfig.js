@@ -25,7 +25,7 @@ export const FORM_FIELDS = {
     NOTE: 'note'
 };
 
-export const SHOP_DATA_KEYS = {
+export const VENDOR_DATA_KEYS = {
     VENDOR_NAME: 'v_name',
     SHOP_NAME: 'shop_name',
     STREET: 'street',
@@ -45,7 +45,7 @@ export const SHOP_DATA_KEYS = {
   
 
 export const SUPABASE_TABLES = {
-    TABLE: 'vendor_request',
+    VENDOR: 'vendor_request',
     ITEM_CATEGORY: 'category_created_by_vendor',
     ITEM: 'item',
 };

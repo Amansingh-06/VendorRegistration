@@ -19,7 +19,8 @@ import {
     SUPABASE_TABLES,
     MESSAGES,
     TIME_FORMAT,
-    SHOP_DATA_KEYS
+    
+    VENDOR_DATA_KEYS
 } from '../utils/vendorConfig';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -129,6 +130,8 @@ function VendorRegistration() {
         return urlData?.publicUrl;
     };
 
+//changing time to hh:mm A
+
     const formatTime = (time) => time ? time?.format(TIME_FORMAT) : DEFAULTS.TIME;
 
     const onSubmit = async (data) => {
@@ -147,26 +150,26 @@ function VendorRegistration() {
 
             const shopData = {
                 // u_id: user_id,
-                [SHOP_DATA_KEYS?.VENDOR_NAME]: data[FORM_FIELDS?.NAME],
-                [SHOP_DATA_KEYS?.SHOP_NAME]: data[FORM_FIELDS?.SHOP_NAME],
-                [SHOP_DATA_KEYS?.STREET]: data[FORM_FIELDS?.STREET],
-                [SHOP_DATA_KEYS?.CITY]: data[FORM_FIELDS?.CITY],
-                [SHOP_DATA_KEYS?.STATE]: data[FORM_FIELDS?.STATE],
-                [SHOP_DATA_KEYS?.PINCODE]: data[FORM_FIELDS?.PINCODE],
-                [SHOP_DATA_KEYS?.SHIFT1_START]: formatTime(startTime1),
-                [SHOP_DATA_KEYS?.SHIFT1_CLOSE]: formatTime(endTime1),
-                [SHOP_DATA_KEYS?.SHIFT2_START]: formatTime(startTime2),
-                [SHOP_DATA_KEYS?.SHIFT2_CLOSE]: formatTime(endTime2),
-                [SHOP_DATA_KEYS?.CUISINES]: data[FORM_FIELDS.CUISINES] || [],
-                [SHOP_DATA_KEYS?.VIDEO_URL]: videoUrl || DEFAULTS?.VIDEO_URL,
-                [SHOP_DATA_KEYS?.BANNER_URL]: bannerUrl || DEFAULTS?.BANNER_URL,
-                [SHOP_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
+                [VENDOR_DATA_KEYS?.VENDOR_NAME]: data[FORM_FIELDS?.NAME],
+                [VENDOR_DATA_KEYS?.SHOP_NAME]: data[FORM_FIELDS?.SHOP_NAME],
+                [VENDOR_DATA_KEYS?.STREET]: data[FORM_FIELDS?.STREET],
+                [VENDOR_DATA_KEYS?.CITY]: data[FORM_FIELDS?.CITY],
+                [VENDOR_DATA_KEYS?.STATE]: data[FORM_FIELDS?.STATE],
+                [VENDOR_DATA_KEYS?.PINCODE]: data[FORM_FIELDS?.PINCODE],
+                [VENDOR_DATA_KEYS?.SHIFT1_START]: formatTime(startTime1),
+                [VENDOR_DATA_KEYS?.SHIFT1_CLOSE]: formatTime(endTime1),
+                [VENDOR_DATA_KEYS?.SHIFT2_START]: formatTime(startTime2),
+                [VENDOR_DATA_KEYS?.SHIFT2_CLOSE]: formatTime(endTime2),
+                [VENDOR_DATA_KEYS?.CUISINES]: data[FORM_FIELDS.CUISINES] || [],
+                [VENDOR_DATA_KEYS?.VIDEO_URL]: videoUrl || DEFAULTS?.VIDEO_URL,
+                [VENDOR_DATA_KEYS?.BANNER_URL]: bannerUrl || DEFAULTS?.BANNER_URL,
+                [VENDOR_DATA_KEYS?.PAYMENT_QR_URL]: paymentQRUrl,
                 latitude: selectedAddress?.lat || -1,
                 longitude: selectedAddress?.long || -1,
                 v_id: uuidv4(),
                 u_id: session?.user?.id,
                 mobile_number: '+' + session?.user?.phone,
-                [SHOP_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
+                [VENDOR_DATA_KEYS?.NOTE]: data[FORM_FIELDS?.NOTE]?.trim() || DEFAULTS?.NOTE,
               };
 
             const fullVendorData = {
@@ -174,9 +177,9 @@ function VendorRegistration() {
                 ...shopData,
             };
 
-            // Upsert ya insert karo supabase me
+            //  insert 
             const { data:insertData, error } = await supabase
-                .from('vendor_request')
+                .from(SUPABASE_TABLES.VENDOR)
                 .insert(fullVendorData);
           
     
