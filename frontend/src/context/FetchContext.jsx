@@ -10,18 +10,19 @@ export function FetchProvider({ children }) {
     const [error, setError] = useState(null);
     const { vendorProfile } = useAuth();
 
-    // ✅ Modified fetchItems with `silent` param
+    // ✅ Fetch items from DB
     const fetchItems = async (silent = false) => {
         if (!vendorProfile?.v_id) return;
 
-        if (!silent) setLoading(true); // don't trigger loader in silent mode
+        if (!silent) setLoading(true);
         setError(null);
 
         try {
             const { data, error } = await supabase
                 .from('item')
                 .select('*')
-                .eq('vendor_id', vendorProfile.v_id);
+                .eq('vendor_id', vendorProfile.v_id)
+                .eq('is_deleted', false); // ✅ Only fetch non-deleted items
 
             if (error) throw error;
             setItems(data || []);
@@ -34,29 +35,7 @@ export function FetchProvider({ children }) {
 
     useEffect(() => {
         if (!vendorProfile?.v_id) return;
-
-        fetchItems(); // Initial fetch with loader
-
-        const channel = supabase
-            .channel('realtime-items')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*', // INSERT / UPDATE / DELETE
-                    schema: 'public',
-                    table: 'item',
-                    filter: `vendor_id=eq.${vendorProfile.v_id}`,
-                },
-                (payload) => {
-                    console.log('Realtime payload:', payload);
-                    fetchItems(true); // ✅ silent refresh
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel); // Cleanup
-        };
+        fetchItems(); // ✅ Initial fetch on mount
     }, [vendorProfile?.v_id]);
 
     return (

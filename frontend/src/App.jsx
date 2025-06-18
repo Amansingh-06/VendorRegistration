@@ -99,6 +99,7 @@ function App() {
           } />
 
           
+          {/* <Route path='/registration' element={<RegistrationPage />} /> */}
 
 
         </Routes>

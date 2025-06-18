@@ -723,7 +723,8 @@ function VendorRegistration() {
                                     <p className="text-sm text-red-500">Please select your location</p>
                                 ) : (location || selectedAddress) ? (
                                     <p className="mt-2 text-sm text-gray-700">
-                                            Current location: {location?.landmark ||  selectedAddress?.landmark || `${position?.lat}, ${position?.lng}`}
+                                            Current location: {selectedAddress?.landmark ||location?.landmark }
+                                            {console.log(location,selectedAddress)}
                                     </p>
                                 ) : null}
 
@@ -790,7 +791,7 @@ function VendorRegistration() {
                             setLocation={(loc) => {
                                 setLocation(loc);
                                 setSelectedAddress(loc);
-                                setShowPopup(false);
+                                // setShowPopup(false);
                             }}
                             show={showPopup}
                             onClose={() => setShowPopup(false)}

@@ -70,6 +70,7 @@ const Navbar = () => {
             console.error("Failed to update vendor availability:", error.message);
         }
     };
+    
 
     return (
         <div className='w-full top-0 z-20 backdrop-blur-sm rounded-b-lg overflow-hidden bg-gradient-to-br from-orange via-yellow to-orange'>

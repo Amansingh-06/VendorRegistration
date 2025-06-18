@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, Receipt } from 'lucide-react';
 import { updateOrderStatus } from '../utils/updateOrderStatus';
 import toast from 'react-hot-toast';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 
 const OrderCard = ({ order, onStatusUpdate }) => {
     const [localStatus, setLocalStatus] = useState(order?.status);
@@ -46,107 +46,98 @@ const OrderCard = ({ order, onStatusUpdate }) => {
             price: i.final_price
         }))
         : [];
-console.log(order)
+    
     return (
         <>
-            <div className="rounded-lg shadow-md border border-gray-200 bg-white p-4 text-sm space-y-3">
-                <div className="flex justify-between items-start gap-2 ">
-                    <p className="font-semibold text-gray-700 break-all w-[150px] md:w-[450px] ">
-                        ID:<span className="text-black text-xs md:text-sm px-1 py-0.5 rounded">{order.user_order_id}</span>
-                    </p>
-                    <div className="flex items-center gap-1 text-gray-500 mt-1">
-                        <Clock className="w-4 h-4" />
-                        {/* <span className="text-xs">
-                            {new Date(order?.created_ts).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            })}
-                        </span> */}
-                        <span className="text-xs text-gray-500">
-                            Placed {formatDistanceToNow(new Date(order?.created_ts), { addSuffix: true })}
-                        </span>
+            <div className="rounded-xl shadow-md border border-gray-200 bg-white p-3 md:p-4 space-y-3 text-sm">
+                {/* Top Row */}
+                <div className="flex justify-between items-start gap-2 flex-wrap">
+                    <div className="flex items-center gap-1 text-gray-700 w-full sm:w-auto">
+                        <p className="font-semibold break-all text-xs md:text-sm">
+                            ID: <span className="text-black font-normal">{order.user_order_id}</span>
+                        </p>
+                    </div>
 
+                    <div className="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
+                        <Clock className="w-4 h-4" />
+                        <span>
+                            Placed {formatDistanceToNowStrict(new Date(order?.created_ts), { addSuffix: true })}
+                        </span>
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center -mt-1">
-                    <span className={`
-                        text-xs px-2 py-1 rounded-full font-semibold
-                        ${localStatus === 'preparing' || localStatus === 'on the way'
+                {/* Status & Delivery Type */}
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full font-semibold
+      ${localStatus === 'preparing' || localStatus === 'on the way'
                             ? 'bg-yellow-50 text-yellow-600'
                             : localStatus === 'delivered' || localStatus === 'prepared'
                                 ? 'bg-green-50 text-green-600'
-                                : 'bg-red-100 text-red-600'}
-                    `}>
+                                : 'bg-red-100 text-red-600'}`}>
                         {localStatus}
                     </span>
-                    <span className={`
-                        text-xs font-medium
-                        ${order?.delivery_type === 'Schedule'
+
+                    <span className={`text-xs font-medium
+      ${order?.delivery_type === 'Schedule'
                             ? 'text-green-600'
                             : order?.delivery_type === 'Standard'
                                 ? 'text-yellow-500'
                                 : order?.delivery_type === 'Rapid'
                                     ? 'text-red-500'
-                                    : 'text-gray-500'}
-                    `}>
+                                    : 'text-gray-500'}`}>
                         {order?.delivery_type}
                     </span>
                 </div>
 
+                {/* Items List */}
                 <div>
                     <h4 className="font-medium text-gray-600 mb-1">Items:</h4>
-                    <div className="flex flex-wrap gap-2 text-gray-800">
+                    <div className="flex flex-wrap gap-2 text-gray-800 text-xs">
                         {itemCounts?.map((item, i) => (
-                            <span key={i} className=" px-2 py-1 rounded flex flex-wrap ">
+                            <span key={i} className="bg-gray-100 px-2 py-1 rounded">
                                 {item?.quantity} x {item?.name}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2 text-gray-700">
+                {/* Price */}
+                <div className="flex justify-between items-center flex-wrap text-gray-700 text-sm">
+                    <div className="flex items-center gap-2">
                         <Receipt className="w-4 h-4 text-gray-500" />
-                        <span className="font-semibold">
-                            <p className="text-sm">
-                                Total: <span className="  mr-2">₹{order.transaction.amount}</span>
-                            </p>
-                        </span>
+                        <p className="font-semibold">
+                            Total: <span className="text-black">₹{order.transaction.amount}</span>
+                        </p>
                     </div>
-                    {/* <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
-                        PAID
-                    </span> */}
                 </div>
 
+                {/* Action Button */}
                 {action && (
                     <div className="text-center">
                         <button
                             onClick={handleAction}
                             disabled={loading}
-                            className={`
-                                ${action.color}
-                                text-white py-1.5 px-3 rounded-lg md:w-1/2 font-semibold text-sm cursor-pointer
-                                ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-                            `}
+                            className={`${action.color} text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
                         >
                             {loading ? 'Updating...' : action.label}
                         </button>
                     </div>
                 )}
 
+                {/* OTP Button */}
                 {currentStatus === 'prepared' && (
                     <div className="text-center mt-2">
                         <button
                             onClick={() => setShowOtpPopup(true)}
-                            className="bg-purple-600 text-white py-1.5 px-3 rounded-lg md:w-1/2 font-semibold text-sm"
+                            className="bg-purple-600 text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm"
                         >
                             Hand Over Order (Verify OTP)
                         </button>
                     </div>
                 )}
             </div>
+
 
             {/* OTP POPUP */}
             {showOtpPopup && (
@@ -182,7 +173,7 @@ console.log(order)
 
                                     setSubmittingOtp(true);
 console.log(otp,"order?.otp")
-                                    if (parseInt(otp) !== parseInt(order?.otp)) {
+                                    if (parseInt(otp) !== parseInt(order?.dp_otp)) {
                                         setSubmittingOtp(false);
                                         toast.error("Invalid OTP. Please try again.");
                                         return;

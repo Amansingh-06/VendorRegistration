@@ -7,6 +7,10 @@ import dayjs from 'dayjs';
 import moment from 'moment';
 import { BUCKET_NAMES } from '../utils/vendorConfig';
 import ItemCategory from '../components/ItemCategory';
+import { getCurrentLocation } from '../utils/address';
+import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
+import { getAddressFromLatLng } from '../utils/address';
+import LocationPopup from '../components/LocationPopUP';
 
 import {
     nameValidation,
@@ -24,6 +28,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/Footer';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useSearch } from '../context/SearchContext';
 
 
 
@@ -31,6 +36,20 @@ export default function VendorProfile() {
     const { session,vendorProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [selectedCuisineIds, setSelectedCuisineIds] = useState([]);
+      const [locationError, setLocationError] = useState(false);
+    const [err, setErr] = useState(null)
+    //   const [loading, setLoading] = useState(false);
+        const [showPopup, setShowPopup] = useState(false);
+    const [location, setLocation] = useState(null);
+        const [waitloading,setWaitLoading]=useState(false)
+    // 1. Default null
+    const [position, setPosition] = useState(null);
+    const [fetchedAddress, setFetchedAddress] = useState('');
+
+
+    // 2. Inside fetchVendor useEffect:
+    
+        const { selectedAddress, setSelectedAddress } = useSearch();
 
     const [selectedCuisines, setSelectedCuisines] = useState([]);
     const [isFormReady, setIsFormReady] = useState(false);
@@ -87,7 +106,55 @@ export default function VendorProfile() {
         !watchedFields.pincode ||
         selectedCuisineIds.length === 0
     );
-  
+console.log("Address",selectedAddress)
+    useEffect(() => {
+        const fetchCuisines = async () => {
+            const { data, error } = await supabase
+                .from('item_category')
+                .select('c_id, name');
+
+            if (error) {
+                console.error("Error fetching cuisines:", error.message);
+            } else {
+                setCuisines(data || []);
+            }
+        };
+
+        fetchCuisines();
+    }, []);
+    
+    const handleCurrentLocation = async () => {
+        setWaitLoading(true)
+        const toastId = toast.loading("Getting current Location");
+
+        try {
+            const { success, error: locError } = await getCurrentLocation(
+                ({ lat, lng }) => {
+                    // Prevent unnecessary state update
+                    setPosition({ lat, lng });
+                    setLocation({ lat, lng });
+                },
+                setErr,
+                setSelectedAddress,
+
+            );
+
+            toast.dismiss(toastId);
+
+            if (!success || locError) {
+                console.log("location returned", locError)
+                return;
+            }
+
+            setLocationError(false);
+            console.log("✅ Current location fetched");
+            setWaitLoading(false)
+
+        } catch (err) {
+            toast.dismiss(toastId);
+            console.error("❌ Location Error:", err);
+        }
+    };
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -117,6 +184,15 @@ export default function VendorProfile() {
                     pincode: data.pincode || '',
                     note: data.note_from_vendor || ''
                 });
+                if (data.latitude && data.longitude) {
+                    const loc = {
+                        lat: Number(data.latitude),
+                        lng: Number(data.longitude)
+                    };
+                    setPosition(loc);
+                    setLocation(loc); // 👈 Important for form comparison and submit
+                }
+    
 
                 // ✅ Set time values to states
                 setStartTime1(data.shift1_opening_time || '');
@@ -149,7 +225,9 @@ export default function VendorProfile() {
                     cuisines: data.categories_available || [],
                     banner: data.banner_url || '',
                     video: data.video_url || '',
-                    qr: data.payment_url || ''
+                    qr: data.payment_url || '',
+                    longitude: data.longitude || '',
+                    latitude:data.latitude || ''
                 });
 
                 setIsFormReady(true);
@@ -159,6 +237,60 @@ export default function VendorProfile() {
 
         fetchVendor();
     }, [session?.user?.id, reset]);
+
+    useEffect(() => {
+        console.log("📍 Checking lat/lng:", initialFormState?.latitude, initialFormState?.longitude);
+
+        const fetchReadableAddress = async () => {
+            if (initialFormState.latitude && initialFormState.longitude) {
+                console.log("📦 Coordinates found, fetching address...");
+                const response = await getAddressFromLatLng(initialFormState.latitude, initialFormState.longitude);
+                const addressData = response?.results?.[0];
+
+                if (addressData) {
+                    console.log("✅ addressData:", addressData);
+                    const components = addressData.address_components;
+
+                    const getComponent = (type) =>
+                        components.find((c) => c.types.includes(type))?.long_name || '';
+
+                    const area = getComponent('sublocality_level_1') || getComponent('locality');
+                    const city = getComponent('administrative_area_level_2');
+                    const state = getComponent('administrative_area_level_1');
+                    const pincode = getComponent('postal_code');
+                    const formatted = addressData.formatted_address;
+
+                    const addressToSet = {
+                        area,
+                        city,
+                        state,
+                        pincode,
+                        full: formatted,
+                    };
+
+                    setFetchedAddress(addressToSet);
+                    setSelectedAddress(addressToSet); // ✅ Use the same object here
+                      
+                    console.log("✅ fetchedAddress:", {
+                        area,
+                        city,
+                        state,
+                        pincode,
+                        full: formatted
+                    });
+                } else {
+                    console.log("⚠️ No address data found");
+                }
+            } else {
+                console.log("❌ Latitude or Longitude missing");
+            }
+        };
+
+        fetchReadableAddress();
+    }, [initialFormState?.latitude, initialFormState?.longitude]);
+    
+    
+    
 
     const isChanged = useMemo(() => {
         if (!initialFormState) return false;
@@ -170,6 +302,17 @@ export default function VendorProfile() {
             if (a.length !== b.length) return false;
             return a.every((val, index) => val === b[index]);
         })();
+
+        const isLocationSame = location
+            ? Number(initialFormState.latitude).toFixed(6) === Number(position.lat).toFixed(6)
+            && Number(initialFormState.longitude).toFixed(6) === Number(position.lng).toFixed(6)
+            : true;
+      
+        console.log("initial lat/lng:", initialFormState.latitude, initialFormState.longitude);
+        console.log("current lat/lng:", position?.lat, position?.lng);
+console.log(location)                  
+      
+
 
         return (
             watchedFields.vendor_name !== initialFormState.vendor_name ||
@@ -186,9 +329,11 @@ export default function VendorProfile() {
             bannerUrl !== initialFormState.banner ||
             videoUrl !== initialFormState.video ||
             qrUrl !== initialFormState.qr ||
-            !areCuisinesSame
+            !areCuisinesSame ||
+            !isLocationSame  // ✅ Location check added
         );
-    }, [watchedFields, selectedCuisineIds, bannerUrl, videoUrl, qrUrl, initialFormState]);
+    }, [watchedFields, selectedCuisineIds, bannerUrl, videoUrl, qrUrl, location, initialFormState]);
+    
     
     
     const uploadFile = async (file, bucketName) => {
@@ -223,6 +368,7 @@ export default function VendorProfile() {
         return urlData?.publicUrl;
     };
 
+    console.log(cuisines,"cusine")
 
     const onSubmit = async (formData) => {
         if (!session?.user?.id) return alert('User not logged in');
@@ -261,6 +407,8 @@ export default function VendorProfile() {
                 banner_url: uploadedBannerUrl,
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
+                latitude: location?.lat || null, // 👈
+                longitude: location?.lng || null, // 👈
                 u_id: session?.user?.id
             };
 
@@ -295,13 +443,36 @@ export default function VendorProfile() {
     const qrInputRef = useRef(null);
 
     // Helper to handle file selection and create preview URL
-  console.log("selectedCuisines",selectedCuisineIds)
-
+    console.log("🍜 All cuisines:", cuisines); // should contain c_id and name
+    console.log("✅ Selected IDs:", selectedCuisineIds); // should be array of strings
+    
     useEffect(() => {
-        if (vendorProfile?.categories_available?.length > 0) {
-            setSelectedCuisineIds(vendorProfile.categories_available.map(String)); // Ensure all IDs are strings
+        console.log("🍜 All cuisines:", cuisines);
+        console.log("✅ Selected IDs:", selectedCuisineIds);
+
+        if (cuisines.length > 0 && selectedCuisineIds.length > 0) {
+            const cuisineIds = cuisines.map(c => c?.c_id?.toString().trim());
+            const selectedIds = selectedCuisineIds.map(id => id?.toString().trim());
+
+            console.log("🔍 All cuisine IDs:", cuisineIds);
+            console.log("🔍 SelectedCuisineIds (trimmed):", selectedIds);
+
+            const matched = cuisines.filter(cuisine =>
+                selectedIds.includes(cuisine?.c_id?.toString().trim())
+            );
+
+            console.log("✅ Matched Cuisines:", matched);
+
+            setSelectedCuisines(matched);
+        } else {
+            console.warn("⛔ Skipped matching - one of the arrays is empty");
         }
-    }, [vendorProfile]);
+    }, [selectedCuisineIds, cuisines]);
+    
+    
+
+    console.log("selected",selectedCuisines)
+
 
     console.log({
         isFormIncomplete,
@@ -310,6 +481,8 @@ export default function VendorProfile() {
         vendor_name: watchedFields.vendor_name,
         shop_name: watchedFields.shop_name,
         selectedCuisineIds,
+        selectedAddress,
+        fetchedAddress
     });
       
   
@@ -319,7 +492,7 @@ export default function VendorProfile() {
             
             <div className='max-w-2xl shadow-lg rounded-2xl '>
                 <Header title='Profile' />
-                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full  p-6">
+                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full  md:p-6 p-3">
 
                     <div className="max-w-2xl mx-auto ">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -615,6 +788,52 @@ export default function VendorProfile() {
                                         />
                                         {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode.message}</p>}
                                     </div>
+                                     <div className='flex items-center gap-5  '>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setShowPopup(true)}
+                                                                            disabled={waitloading}
+                                                                            className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition 
+                                        ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue cursor-pointer hover:bg-blue-700'}`}
+                                                                        >
+                                                                            <MdAddLocationAlt className="text-lg" />
+                                                                            {selectedAddress?.lat && selectedAddress?.long ? "Location Selected" : "Current Location"}
+                                                                        </button>
+                                    
+                                                                        {/* Popup */}
+                                        {showPopup && (
+                                            <LocationPopup
+                                                setLocation={(loc) => {
+                                                    setLocation(loc);
+                                                    setSelectedAddress(loc);
+                                                    // setShowPopup(false);
+                                                }}
+                                                show={showPopup}
+                                                onClose={() => setShowPopup(false)}
+                                            />
+                                        )}
+                                    
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={handleCurrentLocation}
+                                                                            disabled={waitloading}
+                                                                            className={`flex justify-center items-center rounded-full p-2 
+                                        ${waitloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal cursor-pointer'}`
+                                                                            }
+                                                                        >
+                                                                            <MdGpsFixed className="text-2xl text-white" />
+                                                                        </button>
+                                    
+                                                                    </div>
+                                    {selectedAddress || location || fetchedAddress ? (
+                                        <p className="mt-2 text-sm text-gray-700">
+                                            Current location:{" "}
+                                            {selectedAddress?.landmark ||
+                                                location?.landmark ||
+                                                `${fetchedAddress?.area || ""}, ${fetchedAddress?.city || ""}`}
+                                        </p>
+                                    ) : null}
+
                                 </div>
                             </section>
 
@@ -662,7 +881,8 @@ export default function VendorProfile() {
 
                         </form>
                     </div>
-                    <BottomNav/>
+                    <BottomNav />
+                    
 
                 </div>
 

@@ -52,6 +52,11 @@ const ProtectedGuestRoute = ({ children }) => {
         getUserData();
     }, [retryCount, setSession]);
 
+    console.log("session:", session);
+    console.log("isRegistered:", isRegistered);
+    console.log("isLoading:", isLoading);
+
+
     if (isLoading || isRegistered === null) {
         return <Loader />;
     }
@@ -65,10 +70,19 @@ const ProtectedGuestRoute = ({ children }) => {
         return <NetworkError />;
     }
 
+    
+
     // Agar login ho chuka and registered hai toh home pe bhejo
     if (session && isRegistered) {
         return <Navigate to="/home" replace />;
     }
+
+    // if (!session && !isRegistered) {
+    //     if (location.pathname !== '/') {
+    //         return <Navigate to='/' replace />;
+    //     }
+    //   }
+      
 
     // Agar login ho chuka lekin registered nahi hai, toh registration page pe rehne do
     if (session && !isRegistered) {

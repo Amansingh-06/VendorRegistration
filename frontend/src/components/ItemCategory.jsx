@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
-import { supabase } from "../utils/supabaseClient"; // ✅ import your client
+import { supabase } from "../utils/supabaseClient";
 
 export default function ItemCategory({
     name = "category",
@@ -9,19 +9,18 @@ export default function ItemCategory({
     error,
 }) {
     const [query, setQuery] = useState("");
-    const [allOptions, setAllOptions] = useState([]); // ✅ All categories
+    const [allOptions, setAllOptions] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedIds, setSelectedIds] = useState([]);
 
     const maxSuggestions = 10;
     const maxSelections = 5;
 
-    // ✅ Fetch all cuisine_category data on mount
     useEffect(() => {
         const fetchCategories = async () => {
             const { data, error } = await supabase
                 .from("item_category")
-                .select("c_id, name"); // 👈 change field names if different
+                .select("c_id, name");
 
             if (error) {
                 console.error("Failed to fetch cuisines:", error);
@@ -33,33 +32,33 @@ export default function ItemCategory({
         fetchCategories();
     }, []);
 
-    // ✅ Sync selected value from parent
     useEffect(() => {
         const validIds = Array.isArray(value) ? value.map(String) : [];
-        const current = selectedIds;
-
-        const areSame = validIds.length === current.length &&
-            validIds.every((val, i) => val === current[i]);
+        const areSame = validIds.length === selectedIds.length &&
+            validIds.every((val, i) => val === selectedIds[i]);
 
         if (!areSame) {
             setSelectedIds(validIds);
         }
     }, [value]);
-    
 
-    // ✅ Filter suggestions when query changes
     useEffect(() => {
-        if (query.trim() === "") {
-            setSuggestions([]);
-        } else {
-            const timer = setTimeout(() => {
-                const filtered = allOptions.filter(item =>
-                    item.name.toLowerCase().includes(query.toLowerCase())
-                );
-                setSuggestions(filtered.slice(0, maxSuggestions));
-            }, 300);
-            return () => clearTimeout(timer);
-        }
+        const timer = setTimeout(() => {
+            let filtered = [];
+
+            if (query.trim() === "") {
+                filtered = allOptions.slice(0, maxSuggestions);
+            } else {
+                filtered = allOptions
+                    .filter(item =>
+                        item.name.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .slice(0, maxSuggestions);
+            }
+
+            setSuggestions(filtered);
+        }, 200);
+        return () => clearTimeout(timer);
     }, [query, allOptions]);
 
     const handleInputChange = (e) => {
@@ -82,8 +81,7 @@ export default function ItemCategory({
 
         setSelectedIds(updated);
         onChange(updated);
-        setQuery("");
-        setSuggestions([]);
+        // Don't clear input or suggestions
     };
 
     const getNameById = (c_id) => {

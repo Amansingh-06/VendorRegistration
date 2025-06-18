@@ -133,7 +133,7 @@ export async function saveAddress({
 }
 
 //*******************backend call **************/
-const getAddressFromLatLng = async (lat, lng) => {
+export const getAddressFromLatLng = async (lat, lng) => {
     try {
         console.log(lat, lng);
         const response = await fetch(

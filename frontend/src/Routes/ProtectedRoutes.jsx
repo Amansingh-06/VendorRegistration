@@ -46,13 +46,15 @@ const PrivateRoute = ({ children }) => {
 
                 setError(err);
                 setIsLoading(false);
+            } finally {
+                setIsLoading(false)
             }
         };
 
         getUserData();
     }, [retryCount, setSession]);
 
-    if (isLoading || isRegistered === null) {
+    if (isLoading) {
         return <Loader />;
     }
 
@@ -67,16 +69,23 @@ const PrivateRoute = ({ children }) => {
 
     // If session not there, redirect to login/home
     if (!session) {
-        return <Navigate to="/" replace state={{ from: location }} />;
+        return <Navigate to="/" replace />;
     }
 
-    // If session there but not registered, redirect to registration page
-    if (!isRegistered) {
-        return <Navigate to="/vendor-registration" replace />;
+    if (session && isRegistered === false) {
+        logout(setSession); // this clears supabase + context
+        return <Navigate to="/login" replace />;
+        // or if you want to collect user details:
+        // return <Navigate to="/userdetails" replace />;
     }
 
-    // If registered and logged in, show children (protected content)
-    return children;
+    // All good
+    if (session && isRegistered) {
+        return children;
+    }
+
+    // Fallback: defensive (shouldn't reach here)
+    return <Loader />;
 };
 
 export default PrivateRoute;

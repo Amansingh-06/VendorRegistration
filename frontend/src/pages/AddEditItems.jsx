@@ -708,6 +708,7 @@ import ItemCategory from '../components/ItemCategory';
 import { SUPABASE_TABLES, MESSAGES, BUCKET_NAMES, ITEM_DEFAULTS, ITEM_FIELDS } from '../utils/vendorConfig';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
+import { useFetch } from '../context/FetchContext';
 
 
 
@@ -728,6 +729,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     const isEditMode = itemData !== null;
     console.log(itemData)
     console.log(itemData)
+    const {fetchItems}=useFetch()
 
     const { register, handleSubmit,control, setValue,watch,reset, formState: { errors ,isValid},trigger } = useForm({
         defaultValues: {
@@ -957,7 +959,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             let imageUrl = itemData?.img_url || null;
 
             if (previewImage === null) {
-                imageUrl = "NA";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
+                imageUrl = "https://tse1.mm.bing.net/th?id=OIP.tVc_xUGv5Lb_IJeY74eqQgHaHa&pid=Api&P=0&h=180";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
             } else if (typeof previewImage !== 'string') {
                 imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG);
             }
@@ -996,16 +998,17 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             }
     
             const { error } = response;
-    
             if (error) {
                 toast.error(isEditMode ? "Item update failed!" : "Item save failed!");
                 console.error(error);
             } else {
                 toast.success(isEditMode ? "Item updated successfully!" : "Item saved successfully!");
+
+                // ✅ Fetch latest items before going to manage page
+                await fetchItems(true); // background fetch, no loader
                 navigate('/manage-items');
-                onSubmitSuccess?.(); // callback if passed
+                onSubmitSuccess?.();
             }
-    
         } catch (err) {
             console.error("❌ Unexpected error:", err);
             toast.error("Something went wrong!");

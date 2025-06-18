@@ -11,7 +11,7 @@ const SearchInput = ({ placeholder, py }) => {
     const [googleSuggestions, setGoogleSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const { setSelectedAddress,selectedAddres } = useSearch();
+    const { setSelectedAddress,selectedAddress } = useSearch();
     const ref = useRef(null);
     const navigate = useNavigate();
 
@@ -75,6 +75,7 @@ const SearchInput = ({ placeholder, py }) => {
             const data = await fetchAddressFromPlaceId(suggestion?.place_id);
 
             const address = {
+                full_address:data?.full_address,
                 address_id: "",
                 landmark: data?.city,
                 lat: data?.latitude,
@@ -82,13 +83,13 @@ const SearchInput = ({ placeholder, py }) => {
                 floor: "NA",
                 h_no: "NA",
             };
-console.lof(data)
+console.log("Address,data",address)
             setSelectedAddress(address);
             // navigate("/edit_address", { state: { isEdit: true } });
             setQuery('');
             setShowSuggestions(false);
             console.log(setSelectedAddress)
-            console.log("Select",selectedAddres)
+            console.log("Select", selectedAddress);
         } catch (error) {
             console.error("❌ Error getting place details:", error);
             handleAddressError(error, "Could not get location details");
