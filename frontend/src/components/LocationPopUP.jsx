@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents } from "react-leaflet";
 import { toast } from "react-hot-toast";
 import { getCurrentLocation } from "../utils/address";
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import SearchInput from "./SearchInput";
+import { getAddressFromLatLng } from "../utils/address";
 
 // Default marker icon fix for leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -32,6 +33,72 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
         return null;
     };
 
+    const getAddressFromMarker = async (latitude, longitude) => {
+        try {
+            console.log("uaha")
+            const data = await getAddressFromLatLng(latitude, longitude);
+            console.log("yaha v")
+            const address = data?.results[0].formatted_address;
+            const areaName = data?.results[0].address_components.find(
+                (component) =>
+                    component.types.includes("sublocality") ||
+                    component.types.includes("sublocality_level_1")
+            )?.long_name;
+            const cityName = data?.results[0].address_components.find(
+                (component) =>
+                    component.types.includes("locality") ||
+                    component.types.includes("administrative_area_level_2")
+            )?.long_name;
+
+            let landmark = "";
+
+            if (areaName && cityName) {
+                landmark = `${areaName}, ${cityName }`;
+            } else if (!areaName && cityName) {
+                landmark = cityName;
+            } else if (areaName && !cityName) {
+                landmark = areaName;
+            } else {
+                landmark = "";
+            }
+
+            const add = {
+                landmark: landmark,
+                h_no: "NA",
+                floor: "NA",
+                lat: latitude,
+                long: longitude,
+            };
+console.log("landmark",landmark)
+            setSelectedAddress((prev) => ({
+                ...prev,
+                landmark: add?.landmark,
+                h_no: add?.h_no,
+                floor: add?.floor,
+                lat: add?.lat,
+                long: add?.long,
+            }));
+        } catch (error) { }
+      };
+    
+    const ClickHandler = ({ setPosition }) => {
+        useMapEvents({
+            click(e) {
+                console.log(e);
+                const { lat, lng } = e.latlng;
+                setPosition([lat, lng]); // update marker position
+                // getAddressFromLatLng(lat,lng);
+                getAddressFromMarker(lat, lng);
+            },
+        });
+        return null;
+    };
+    useEffect(() => {
+        if(selectedAddress?.lat && selectedAddress?.long)
+        setPosition({lat:selectedAddress?.lat,lng:selectedAddress?.long})
+
+    },[selectedAddress])
+    
     const handleCurrentLocation = async () => {
         // setWaitLoading(true); // if you show spinner
         const toastId = toast.loading("Getting current Location");
@@ -110,6 +177,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                             <Marker position={position}>
                                 <Popup>Selected Location</Popup>
                             </Marker>
+                            <ClickHandler setPosition={setPosition} />
                             <ChangeMapView position={position} />
                         </MapContainer>
 

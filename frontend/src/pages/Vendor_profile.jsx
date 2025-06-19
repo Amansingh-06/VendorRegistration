@@ -191,6 +191,7 @@ console.log("Address",selectedAddress)
                     };
                     setPosition(loc);
                     setLocation(loc); // 👈 Important for form comparison and submit
+                    setSelectedAddress(loc)
                 }
     
 
@@ -303,13 +304,13 @@ console.log("Address",selectedAddress)
             return a.every((val, index) => val === b[index]);
         })();
 
-        const isLocationSame = location
-            ? Number(initialFormState.latitude).toFixed(6) === Number(position.lat).toFixed(6)
-            && Number(initialFormState.longitude).toFixed(6) === Number(position.lng).toFixed(6)
+        const isLocationSame = selectedAddress
+            ? Number(initialFormState.latitude).toFixed(6) === Number(selectedAddress.lat).toFixed(6)
+            && Number(initialFormState.longitude).toFixed(6) === Number(selectedAddress.lng).toFixed(6)
             : true;
       
         console.log("initial lat/lng:", initialFormState.latitude, initialFormState.longitude);
-        console.log("current lat/lng:", position?.lat, position?.lng);
+        console.log("current lat/lng:", selectedAddress?.lat, selectedAddress?.lng);
 console.log(location)                  
       
 
@@ -332,7 +333,7 @@ console.log(location)
             !areCuisinesSame ||
             !isLocationSame  // ✅ Location check added
         );
-    }, [watchedFields, selectedCuisineIds, bannerUrl, videoUrl, qrUrl, location, initialFormState]);
+    }, [watchedFields, selectedCuisineIds, bannerUrl, videoUrl, qrUrl, selectedAddress, initialFormState]);
     
     
     
@@ -407,8 +408,8 @@ console.log(location)
                 banner_url: uploadedBannerUrl,
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
-                latitude: location?.lat || null, // 👈
-                longitude: location?.lng || null, // 👈
+                latitude: selectedAddress?.lat || null, // 👈
+                longitude: selectedAddress?.lng || null, // 👈
                 u_id: session?.user?.id
             };
 

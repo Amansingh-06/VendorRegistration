@@ -96,13 +96,23 @@ const Login = () => {
     const onSubmit = async (data) => {
         // console.log("Phone Number:", selectedCountryCode + data.phoneNumber);
         // console.log('referral',referral);
+        const isFormValid = await trigger();
 
-        if (!data.phoneNumber) {
+        if (!data?.phoneNumber || !data?.phoneNumber.trim()) {
+            toast.error("Please enter a phone number!");
+            return;
+        }
+        if (!/^[0-9]{10}$/.test(data?.phoneNumber)) {
+            toast.error("Phone number should contain exactly 10 digits with no spaces or symbols.");
+            return;
+          }
+
+        if (!data?.phoneNumber) {
             toast.error("Please enter a phone number!");
             return;
         }
 
-        const fullPhone = selectedCountryCode + data.phoneNumber;
+        const fullPhone = selectedCountryCode + data?.phoneNumber;
         console.log("FullPhone");
         if (!isValidPhoneNumber(fullPhone)) {
             // console.log("yaha aaya ?");
@@ -192,12 +202,12 @@ const Login = () => {
 
                 </div>
 
-                <h2 className="text-2xl-300 text-3xl  md:text-2xl lg:text-4xl text-gray font-extrabold  mb-3 tracking-wide">
-                    Enter your number
-                </h2>
-                <p className=" text-sm mb-3 text-gray">
-                    To continue your order experience!
+                <p className=" text-[13px] lg:text-base mb-3 text-slate-700 font-semibold">
+                    Try Xtra Affordable & Tasty Foods With XMeals
                 </p>
+                <h2 className="text-lg md:text-2xl lg:text-2xl font-medium text-slate-700  mb-1 lg:mb-3 ">
+                    Enter Your Mobile Number
+                </h2>
 
                 {/* Phone Input */}
                 <div className="flex w-full">
@@ -205,8 +215,8 @@ const Login = () => {
                         <button
                             type="button"
                             onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            className={`flex items-center justify-center p-3.5 rounded-l-lg border text-gray-700 border-r-0
-    ${isValid ? "border-green" : "border-gray"}
+                            className={`flex items-center justify-center p-3.5 rounded-l-lg border text-slate-700 border-r-0
+    ${isValid ? "border-green" : "border-slate-700"}
   `}
                         >
                             <span className="font-medium">{selectedCountryCode}</span>
@@ -229,15 +239,15 @@ const Login = () => {
                         {/* Country code dropdown */}
                         {showCountryDropdown && (
                             <div
-                                className={`absolute z-10 w-48 mt-1 overflow-scroll bg-white text-gray-700 rounded-md shadow-lg max-h-60 border border-gray-300`}
+                                className={`absolute z-10 w-48 mt-1 overflow-scroll bg-white text-slate-700 rounded-md shadow-lg max-h-60 border border-slate-700`}
                             >
                                 <ul className="py-1">
                                     {countryCodes.map((country) => (
                                         <li key={country.code}>
                                             <button
                                                 type="button"
-                                                className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${selectedCountryCode === country.code
-                                                        ? "bg-blue-100"
+                                                className={`w-full text-left px-4 py-3 hover:bg-orange-100 ${selectedCountryCode === country.code
+                                                        ? "bg-orange-100"
                                                         : ""
                                                     }`}
                                                 onClick={() => {
@@ -271,10 +281,12 @@ const Login = () => {
                                 value.trim() !== "" ||
                                 "Phone number cannot be empty or spaces only",
                         })}
+
                         onInput={(e) => {
                             e.target.value = e.target.value.replace(/[^0-9]/g, "");
                         }}
-                        className={`w-full rounded-r-lg p-3 border text-lg mb-2 placeholder-gray-400 focus:outline-none transition duration-300 focus:ring-2
+                        style={{ border: '1px solid #808080' }}
+                        className={`w-full rounded-r-lg p-3 text-slate-700border text-lg mb-2 placeholder-gray-400 focus:outline-none transition duration-300 focus:ring-2
     ${errors.phoneNumber
                                 ? "border-red-500 focus:ring-red-500"
                                 : isValid
@@ -290,13 +302,23 @@ const Login = () => {
                 )}
 
                 {/* Submit Button */}
+                {/* Submit Button */}
                 <button
                     type="submit"
-                    className="flex cursor-pointer items-center mt-3 justify-center gap-2 w-full bg-primary hover:bg-primary text-white py-3 rounded-xl text-lg font-semibold transition duration-300 shadow-md hover:shadow-lg  
-  disabled:bg-primary/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white"
-                    disabled={sendingOtp || !isValid}
+                    onClick={(e) => {
+                        // Allow click even when form is invalid
+                        if (!isValid) {
+                            e.preventDefault();
+                            handleSubmit(onSubmit)();
+                        }
+                    }}
+                    className={`flex items-center mt-3 justify-center gap-2 w-full py-3 rounded-xl text-lg font-semibold transition duration-300 ${sendingOtp || !isValid
+                        ? 'bg-orange-200 cursor-not-allowed text-white z-50'
+                        : 'bg-primary hover:bg-primary cursor-pointer hover:scale-95 text-white z-50'
+                        }`}
+                    disabled={sendingOtp} // Only actually disable when sending OTP
                 >
-                    Next
+                    Continue
                     <FaArrowRight className="text-xl" />
                 </button>
 

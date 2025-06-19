@@ -73,11 +73,12 @@ const SearchInput = ({ placeholder, py }) => {
     const handleGoogleSuggestionClick = async (suggestion) => {
         try {
             const data = await fetchAddressFromPlaceId(suggestion?.place_id);
+            console.log("Data from fetchAddress",data)
 
             const address = {
                 full_address:data?.full_address,
                 address_id: "",
-                landmark: data?.city,
+                landmark: data?.landmark ? `${data.landmark}, ${data.city}` : data.city,
                 lat: data?.latitude,
                 long: data?.longitude,
                 floor: "NA",

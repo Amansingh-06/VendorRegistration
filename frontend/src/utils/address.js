@@ -254,7 +254,9 @@ export const getCurrentLocation = async (
         };
         // throw error; // Rethrow so caller knows it failed
     }
-  };
+};
+  
+
 
 
 //fetch all saved address
@@ -427,7 +429,7 @@ export const fetchAddressFromPlaceId = async (placeId) => {
         `${import.meta.env.VITE_BACKEND_URL}/address-from-placeid?placeId=${placeId}`
     );
     const data = await response.json();
-    console.log(data);
+    console.log("address from placeId",data);
     return data;
 };
 
