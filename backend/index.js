@@ -80,7 +80,6 @@ app.get("/address-from-placeid", async (req, res) => {
         );
 
         const data = googleRes.data;
-        // console.log("data",data);
 
         if (data.status !== "OK") {
             return res.status(400).json({ error: data.status });
@@ -101,6 +100,15 @@ app.get("/address-from-placeid", async (req, res) => {
         const country = getComponent(["country"]);
         const postalCode = getComponent(["postal_code"]);
 
+        // 🆕 Landmark extraction
+        const landmarkComponent = addressComponents.find((c) =>
+            c.types.some((t) =>
+                ["sublocality", "sublocality_level_1", "neighborhood", "route"].includes(t)
+            )
+        );
+
+        const landmark = landmarkComponent?.long_name || "";
+
         res.json({
             full_address: formattedAddress,
             city,
@@ -109,12 +117,14 @@ app.get("/address-from-placeid", async (req, res) => {
             postal_code: postalCode,
             latitude: location.lat,
             longitude: location.lng,
+            landmark, // ✅ new field added
         });
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 
 app.listen(process.env.PORT || 4000, () =>
     console.log("Server running on port", process.env.PORT || 4000)
