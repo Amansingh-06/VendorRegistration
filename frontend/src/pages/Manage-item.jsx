@@ -69,7 +69,7 @@ export default function ManageItemsPage() {
     };
 
     return (
-        <section className="bg-gray-100 min-h-screen border-2 md:px-0">
+        <section className="bg-gray-100 min-h-screen  md:px-0">
             <div className="max-w-2xl mx-auto rounded-2xl shadow-lg">
                 <Header title='Manage-item' />
 
