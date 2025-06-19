@@ -168,21 +168,21 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row items-center min-h-screen h-full bg-white">
+        <div className="flex flex-col lg:flex-row items-center min-h-screen h-screen bg-white overflow-hidden">
             {/* Image */}
             <div className="w-full lg:w-[68%] overflow-hidden">
                 <img
                     src={LoginBGimage}
                     alt="Login Visual"
-                    className="object-cover w-full h-[60vh] lg:h-screen"
+                    className="object-cover w-full h-[68vh] lg:h-screen"
                 />
             </div>
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="relative p-4 lg:p-10 w-full lg:w-[32%] rounded-t-3xl lg:rounded-t-[0px] flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-screen lg:h-screen -mt-5 lg:mt-0"
-                style={{ minHeight: "42vh" }}
+                className="relative p-4 lg:p-10 w-full lg:w-[32%] rounded-t-3xl lg:rounded-t-[0px] flex flex-col items-start justify-start md:justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-screen lg:h-screen -mt-5 lg:mt-0"
+                style={{ minHeight: "32vh" }}
             >
                 {/* Floating Food Icons */}
                 <div>
@@ -239,14 +239,14 @@ const Login = () => {
                         {/* Country code dropdown */}
                         {showCountryDropdown && (
                             <div
-                                className={`absolute z-10 w-48 mt-1 overflow-scroll bg-white text-slate-700 rounded-md shadow-lg max-h-60 border border-slate-700`}
+                                className={`absolute z-10 w-48 mt-1 overflow-scroll scrollbar-hide bg-white text-slate-700 rounded-md shadow-lg max-h-60 border border-slate-700`}
                             >
                                 <ul className="py-1">
                                     {countryCodes.map((country) => (
                                         <li key={country.code}>
                                             <button
                                                 type="button"
-                                                className={`w-full text-left px-4 py-3 hover:bg-orange-100 ${selectedCountryCode === country.code
+                                                className={`w-full text-left px-4 py-3 hover:bg-orange-100 ${selectedCountryCode === country?.code
                                                         ? "bg-orange-100"
                                                         : ""
                                                     }`}
@@ -255,7 +255,7 @@ const Login = () => {
                                                     setShowCountryDropdown(false);
                                                 }}
                                             >
-                                                <span className="font-medium">{country.code}</span>{" "}
+                                                <span className="font-medium">{country?.code}</span>{" "}
                                                 {country.country}
                                             </button>
                                         </li>
@@ -286,7 +286,7 @@ const Login = () => {
                             e.target.value = e.target.value.replace(/[^0-9]/g, "");
                         }}
                         style={{ border: '1px solid #808080' }}
-                        className={`w-full rounded-r-lg p-3 text-slate-700border text-lg mb-2 placeholder-gray-400 focus:outline-none transition duration-300 focus:ring-2
+                        className={`w-full text-slate-700 bg-white rounded-r-lg p-3 border text-lg mb-2 placeholder-gray-500  focus:outline-none transition duration-300 focus:ring-2 z-50
     ${errors.phoneNumber
                                 ? "border-red-500 focus:ring-red-500"
                                 : isValid
