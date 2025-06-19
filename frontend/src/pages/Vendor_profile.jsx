@@ -192,6 +192,7 @@ console.log("Address",selectedAddress)
                     setPosition(loc);
                     setLocation(loc); // 👈 Important for form comparison and submit
                     setSelectedAddress(loc)
+                    console.log("Long,lat",data?.longitude,data?.latitude)
                 }
     
 
@@ -247,6 +248,7 @@ console.log("Address",selectedAddress)
                 console.log("📦 Coordinates found, fetching address...");
                 const response = await getAddressFromLatLng(initialFormState.latitude, initialFormState.longitude);
                 const addressData = response?.results?.[0];
+                console.log("addressData",addressData)
 
                 if (addressData) {
                     console.log("✅ addressData:", addressData);
@@ -260,9 +262,16 @@ console.log("Address",selectedAddress)
                     const state = getComponent('administrative_area_level_1');
                     const pincode = getComponent('postal_code');
                     const formatted = addressData.formatted_address;
+console.log(getComponent)
+                    // ✅ Try to extract landmark
+                    const landmark =
+                        getComponent('point_of_interest') ||
+                        getComponent('premise') ||
+                        getComponent('establishment');
 
                     const addressToSet = {
                         area,
+                        landmark,
                         city,
                         state,
                         pincode,
@@ -270,15 +279,9 @@ console.log("Address",selectedAddress)
                     };
 
                     setFetchedAddress(addressToSet);
-                    setSelectedAddress(addressToSet); // ✅ Use the same object here
-                      
-                    console.log("✅ fetchedAddress:", {
-                        area,
-                        city,
-                        state,
-                        pincode,
-                        full: formatted
-                    });
+                    setSelectedAddress(addressToSet);
+
+                    console.log("✅ fetchedAddress:", addressToSet);
                 } else {
                     console.log("⚠️ No address data found");
                 }
@@ -289,6 +292,7 @@ console.log("Address",selectedAddress)
 
         fetchReadableAddress();
     }, [initialFormState?.latitude, initialFormState?.longitude]);
+    
     
     
     
@@ -304,13 +308,16 @@ console.log("Address",selectedAddress)
             return a.every((val, index) => val === b[index]);
         })();
 
-        const isLocationSame = selectedAddress
-            ? Number(initialFormState.latitude).toFixed(6) === Number(selectedAddress.lat).toFixed(6)
-            && Number(initialFormState.longitude).toFixed(6) === Number(selectedAddress.lng).toFixed(6)
+        console.log("selectedAddresssssss",selectedAddress)
+        const isLocationSame = selectedAddress?.lat != null && selectedAddress?.long != null
+            ? String(initialFormState?.latitude) === String(selectedAddress?.lat) &&
+            String(initialFormState?.longitude) === String(selectedAddress?.long)
             : true;
+    
+    
       
         console.log("initial lat/lng:", initialFormState.latitude, initialFormState.longitude);
-        console.log("current lat/lng:", selectedAddress?.lat, selectedAddress?.lng);
+        console.log("current lat/lng:", selectedAddress?.lat, selectedAddress?.long);
 console.log(location)                  
       
 
@@ -409,7 +416,7 @@ console.log(location)
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
                 latitude: selectedAddress?.lat || null, // 👈
-                longitude: selectedAddress?.lng || null, // 👈
+                longitude: selectedAddress?.long || null, // 👈
                 u_id: session?.user?.id
             };
 
