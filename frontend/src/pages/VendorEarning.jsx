@@ -215,7 +215,7 @@ const VendorEarnings = () => {
         <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
             <div className="max-w-2xl mx-auto w-full space-y-6 rounded-lg shadow-lg">
                 <Header title="Earnings" />
-                <div className='max-w-2xl mx-auto w-full px-4 py-6 space-y-6'>
+                <div className='max-w-2xl mx-auto w-full px-4 py-15 mt-15 space-y-6'>
                     {/* Delivered Orders */}
                     <section className="bg-white rounded-xl shadow p-4 md:p-6">
                         <h2 className="text-lg font-semibold text-gray-500 mb-4">Delivered Orders</h2>

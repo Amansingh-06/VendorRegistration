@@ -90,7 +90,7 @@ export default function ItemCategory({
     };
 
     return (
-        <div className="p-4 shadow-lg rounded-2xl w-full bg-white">
+        <div className="p-4 shadow-lg border border-gray-300 rounded-2xl w-full bg-white">
             <h1 className="text-base font-semibold text-gray-500 mb-3">Select Cuisine</h1>
 
             <div className="relative">

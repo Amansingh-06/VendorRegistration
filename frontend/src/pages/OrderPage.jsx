@@ -70,7 +70,7 @@ const OrderPage = () => {
         <div className="flex flex-col items-center min-h-screen bg-white rounded-lg shadow-lg font-family-poppins">
             <div className="w-full max-w-2xl flex flex-col gap-4">
                 <Navbar />
-                <div className="w-full max-w-2xl px-4 md:px-6 flex flex-col min-h-[75vh]  gap-4 shadow-lg">
+                <div className="w-full max-w-2xl px-4 md:px-6 flex flex-col min-h-[85vh] md:mt-20 mt-10 py-15 gap-4 shadow-lg">
                     <h1 className="text-xl font-bold text-left text-gray-500">Orders</h1>
                     <div className="flex flex-wrap">
                         <ButtonGroup active={active} setActive={setActive} />

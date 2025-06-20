@@ -69,7 +69,7 @@ export default function ManageItemsPage() {
     };
 
     return (
-        <section className="bg-gray-100 min-h-screen  md:px-0">
+        <section className="bg-gray-100 min-h-screen   md:px-0">
             <div className="max-w-2xl mx-auto rounded-2xl shadow-lg">
                 <Header title='Manage-item' />
 
@@ -79,7 +79,7 @@ export default function ManageItemsPage() {
                     </div>
                 )}
 
-                <div className='max-w-2xl px-6 py-8 shadow-lg min-h-[86vh] rounded-2xl pb-20'>
+                <div className='max-w-2xl px-6 py-15 mt-15  shadow-lg min-h-[86vh] rounded-2xl pb-20'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">

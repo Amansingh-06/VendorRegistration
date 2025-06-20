@@ -276,6 +276,8 @@ console.log(getComponent)
                         state,
                         pincode,
                         full: formatted,
+                        lat: initialFormState?.latitude,
+                        long:initialFormState?.longitude
                     };
 
                     setFetchedAddress(addressToSet);
@@ -293,7 +295,7 @@ console.log(getComponent)
         fetchReadableAddress();
     }, [initialFormState?.latitude, initialFormState?.longitude]);
     
-    
+   
     
     
 
@@ -500,7 +502,7 @@ console.log(location)
             
             <div className='max-w-2xl shadow-lg rounded-2xl '>
                 <Header title='Profile' />
-                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full  md:p-6 p-3">
+                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mt-18 py-10  md:p-6 p-3">
 
                     <div className="max-w-2xl mx-auto ">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

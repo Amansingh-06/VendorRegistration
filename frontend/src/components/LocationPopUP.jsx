@@ -79,7 +79,7 @@ console.log("landmark",landmark)
                 long: add?.long,
             }));
         } catch (error) { }
-      };
+    };
     
     const ClickHandler = ({ setPosition }) => {
         useMapEvents({

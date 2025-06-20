@@ -391,7 +391,7 @@ function VendorRegistration() {
             {loading && <Loader />}
             <div className="border border-gray-300 bg-white w-full max-w-2xl  rounded-lg shadow-lg">
                 <Header title="Registration" />
-                <div className='md:p-6 p-2 rounded-lg shadow-lg'>
+                <div className='md:p-6 p-2 rounded-lg shadow-lg mt-20 '>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7  py-4" noValidate>
                         {/* Card 1: Name, Shop Name, Timings, Upload */}
                         <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">

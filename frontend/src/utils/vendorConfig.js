@@ -11,7 +11,7 @@ export const DEFAULTS = {
     NOTE: 'NA',
     TIME: "00:00:00",
     VIDEO_URL: 'NA',
-    BANNER_URL: 'NA'
+    BANNER_URL: './defaultuserImage.jsx'
 };
 
 export const FORM_FIELDS = {
@@ -24,6 +24,7 @@ export const FORM_FIELDS = {
     CUISINES: 'cuisines',
     NOTE: 'note'
 };
+
 
 export const VENDOR_DATA_KEYS = {
     VENDOR_NAME: 'v_name',

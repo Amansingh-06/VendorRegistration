@@ -29,33 +29,21 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
             }, (payload) => {
                 const { new: updatedOrder } = payload;
 
-                // ✅ Fixed: Check if the updated order still belongs in the current tab
+                // ✅ Reload orders when update affects current tab
                 if (
                     activeStatus === 'All' ||
                     updatedOrder?.status?.toUpperCase() === activeStatus?.toUpperCase()
                 ) {
                     loadOrders();
                 } else {
-                    // ✅ Also refresh to remove it from current tab if status changed
+                    // ✅ Remove from current tab if status changed
                     loadOrders();
                 }
             })
             .subscribe();
 
-        const orderItemChannel = supabase
-            .channel('realtime-order-items')
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'order_item'
-            }, () => {
-                loadOrders(); // order items affect nested data
-            })
-            .subscribe();
-
         return () => {
             supabase.removeChannel(ordersChannel);
-            supabase.removeChannel(orderItemChannel);
         };
     }, [vendorId, activeStatus, loadOrders]);
 

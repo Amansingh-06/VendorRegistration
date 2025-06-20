@@ -843,7 +843,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 const { data: existing, error: checkError } = await supabase
                     .from(SUPABASE_TABLES?.ITEM_CATEGORY)
                     .select('*')
-                    .ilike('title', trimmed);
+            .ilike('title', trimmed)
+            .eq('vendor_id', vendorProfile?.v_id); // ✅ vendor-specific check
         
                 if (checkError) {
                     toast.error(MESSAGES.CHECK_FAIL);
@@ -1030,7 +1031,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             {loading && <Loader/>}
             <div className='max-w-2xl w-full mb-15'>
                 <Header title={isEditMode ? 'Edit Item' : 'Add Item'} />
-            <div className='max-w-2xl w-full  space-y-6 rounded-2xl shadow-lg '>
+            <div className='max-w-2xl w-full mt-15 py-8  space-y-6 rounded-2xl shadow-lg '>
                     
                     <form onSubmit={handleSubmit(onSubmit)} className="w-full  mx-auto md:px-6 p-2 py-8 space-y-6 bg-white">
                         <div className='flex flex-col gap-6 rounded-2xl shadow-lg  p-5'>
