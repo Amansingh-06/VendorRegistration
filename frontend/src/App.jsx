@@ -16,6 +16,7 @@ import VendorRegistration from './components/VendorRegistration';
 import VendorEarnings from './pages/VendorEarning';
 import ManageItemsPage from './pages/Manage-item';
 import InstallPrompt from './components/InstallPrompt';
+import AdminProtectedRoute from './Routes/AdminAccess';
 
 function App() {
   return (
@@ -26,33 +27,7 @@ function App() {
 
         {/* ✅ Routes */}
         <Routes>
-          <Route path="/home" element={
-            <PrivateRoute>
-              <OrderPage />
-            </PrivateRoute>
-          } />
-          {/* <Route path="/manage-items" element={<AddEditItem />} /> */}
-          <Route
-            path="/manage-items"
-            element={
-              <PrivateRoute>
-                <ManageItemsPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/Add-items"
-            element={
-              <PrivateRoute>
-                <AddEditItem />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/earning'
-            element={<PrivateRoute>
-              <VendorEarnings />
-            </PrivateRoute>} />
+
           
           <Route
             path="/vendor-registration"
@@ -75,27 +50,71 @@ function App() {
               </ProtectedGuestRoute>
             }
           />
-          {/* Add more routes as needed */}
-          <Route
-            path="/address"
-            element={
+          
+
+          {/* ✅ Protected Routes (Admin + Vendor) */}
+          <Route path="/home" element={
+            <AdminProtectedRoute fallback={
+              <PrivateRoute>
+                <OrderPage />
+              </PrivateRoute>
+            }>
+              <OrderPage />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/manage-items" element={
+            <AdminProtectedRoute fallback={
+              <PrivateRoute>
+                <ManageItemsPage />
+              </PrivateRoute>
+            }>
+              <ManageItemsPage />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/Add-items" element={
+            <AdminProtectedRoute fallback={
+              <PrivateRoute>
+                <AddEditItem />
+              </PrivateRoute>
+            }>
+              <AddEditItem />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/earning" element={
+            <AdminProtectedRoute fallback={
+              <PrivateRoute>
+                <VendorEarnings />
+              </PrivateRoute>
+            }>
+              <VendorEarnings />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/address" element={
+            <AdminProtectedRoute fallback={
               <PrivateRoute>
                 <Address />
               </PrivateRoute>
-            }
-          />
-          <Route
-            path="/edit_address"
-            element={
+            }>
+              <Address />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/edit_address" element={
+            <AdminProtectedRoute fallback={
               <PrivateRoute>
                 <EditAddress />
               </PrivateRoute>
-            }
-          />
+            }>
+              <EditAddress />
+            </AdminProtectedRoute>
+          } />
           <Route path="/profile" element={
-            <PrivateRoute>
+            <AdminProtectedRoute fallback={
+              <PrivateRoute>
+                <VendorProfile />
+              </PrivateRoute>
+            }>
               <VendorProfile />
-            </PrivateRoute>
+            </AdminProtectedRoute>
           } />
 
           

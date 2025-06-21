@@ -33,7 +33,9 @@ import { useSearch } from '../context/SearchContext';
 
 
 export default function VendorProfile() {
-    const { session,vendorProfile } = useAuth();
+ const { vendorProfile, selectedVendorId ,session} = useAuth();
+    const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
+
     const [loading, setLoading] = useState(false);
     const [selectedCuisineIds, setSelectedCuisineIds] = useState([]);
       const [locationError, setLocationError] = useState(false);
@@ -157,14 +159,14 @@ console.log("Address",selectedAddress)
     };
 
     useEffect(() => {
-        if (!session?.user?.id) return;
+        if (!vendorId) return;
 
         async function fetchVendor() {
             setLoading(true);
             const { data, error } = await supabase
                 .from('vendor_request')
                 .select('*')
-                .eq('u_id', session.user.id)
+                .eq('v_id', vendorId)
                 .single();
 
             if (error) {
@@ -238,7 +240,7 @@ console.log("Address",selectedAddress)
         }
 
         fetchVendor();
-    }, [session?.user?.id, reset]);
+    }, [vendorId, reset]);
 
     useEffect(() => {
         console.log("📍 Checking lat/lng:", initialFormState?.latitude, initialFormState?.longitude);
@@ -419,7 +421,7 @@ console.log(location)
                 payment_url: uploadedQrUrl,
                 latitude: selectedAddress?.lat || null, // 👈
                 longitude: selectedAddress?.long || null, // 👈
-                u_id: session?.user?.id
+                v_id: vendorId
             };
 
             // ✅ Log insertData to inspect values
@@ -430,7 +432,7 @@ console.log(location)
 
             const { error } = await supabase
                 .from(SUPABASE_TABLES.VENDOR)
-                .upsert(insertData, { onConflict: 'u_id' });
+                .upsert(insertData, { onConflict: 'v_id' });
 
             if (error) {
                 console.error("❌ Supabase error:", error);

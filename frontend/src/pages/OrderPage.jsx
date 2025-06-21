@@ -9,9 +9,11 @@ import ButtonGroup from '../components/FilterButton';
 import {toast} from 'react-hot-toast'
 const OrderPage = () => {
     const [active, setActive] = useState('All');
-    const { vendorProfile } = useAuth();
+    // const { vendorProfile } = useAuth();
+    const { vendorProfile, selectedVendorId ,session} = useAuth();
+    const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
 
-    const { orders, setOrders, refreshOrders } = useVendorOrders(vendorProfile?.v_id, active);
+    const { orders, setOrders, refreshOrders } = useVendorOrders(vendorId, active);
 
     // Check user session on mount
     useEffect(() => {
@@ -26,13 +28,14 @@ const OrderPage = () => {
         };
         checkUser();
     }, []);
+    console.log(session)
 
     // Refresh orders when filter changes or vendor is available
     useEffect(() => {
         if (vendorProfile?.v_id) {
             refreshOrders(); // Uses vendorId + active filter
         }
-    }, [active, vendorProfile?.v_id, refreshOrders]);
+    }, [active, vendorId, refreshOrders]);
 
     // Refresh full list after status update (instead of updating just one order)
     const handleRefreshOrder = async (orderId) => {

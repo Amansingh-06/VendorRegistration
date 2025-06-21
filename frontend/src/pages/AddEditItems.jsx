@@ -721,7 +721,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         const [previewImage, setPreviewImage] = useState(null);
     const [loading, setLoading] = useState(false);
         const categoryInputRef = useRef(null);
-        const { vendorProfile } = useAuth();
+    const { vendorProfile, selectedVendorId ,session} = useAuth();
+    const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
     const fileInputRef = useRef();
         const navigate = useNavigate()
     const location = useLocation();
@@ -748,12 +749,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
 
     useEffect(() => {
-        if (!vendorProfile?.v_id) return; // ⛔ Don't run until v_id is available
+        if (!vendorId) return; // ⛔ Don't run until v_id is available
         const fetchCategories = async () => {
             const { data, error } = await supabase
                 .from(SUPABASE_TABLES?.ITEM_CATEGORY)
                 .select('*')
-                .eq('vendor_id', vendorProfile?.v_id);  // ✅ correct eq syntax
+                .eq('vendor_id', vendorId);  // ✅ correct eq syntax
 
             if (error) {
                 toast.error(MESSAGES?.FETCH_FAIL);
@@ -763,7 +764,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             }
         };
         fetchCategories();
-    }, [vendorProfile?.v_id]); // ✅ include vendor_id as dependency
+    }, [vendorId]); // ✅ include vendor_id as dependency
 
     useEffect(() => {
         register('cuisine', {
@@ -844,7 +845,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     .from(SUPABASE_TABLES?.ITEM_CATEGORY)
                     .select('*')
             .ilike('title', trimmed)
-            .eq('vendor_id', vendorProfile?.v_id); // ✅ vendor-specific check
+                    .eq('vendor_id', vendorId); // ✅ vendor-specific check
         
                 if (checkError) {
                     toast.error(MESSAGES.CHECK_FAIL);
@@ -868,7 +869,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                         {
                             cat_id: uuidv4(),
                             title: trimmed,
-                            vendor_id: vendorProfile?.v_id,
+                            vendor_id: vendorId,
                         }
                     ])
                     .select();
@@ -960,7 +961,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             let imageUrl = itemData?.img_url || null;
 
             if (previewImage === null) {
-                imageUrl = "https://tse1.mm.bing.net/th?id=OIP.tVc_xUGv5Lb_IJeY74eqQgHaHa&pid=Api&P=0&h=180";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
+                imageUrl = "NA";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
             } else if (typeof previewImage !== 'string') {
                 imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG);
             }
@@ -987,7 +988,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 const insertPayload = {
                     ...itemFields,
                     item_id: uuidv4(),
-                    vendor_id: vendorProfile?.v_id,
+                    vendor_id: vendorId,
                     created_at: new Date(),
                     updated_at: new Date(),
                 };
@@ -1023,7 +1024,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
   
 
  
-    console.log(vendorProfile?.v_id)
+    // console.log(vendorProfile?.v_id)
     console.log("isValid",isValid)
    
     return (

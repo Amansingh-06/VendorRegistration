@@ -10,30 +10,49 @@ export const AuthProvider = ({ children }) => {
     const [cameFromUserDetailsPage, setCameFromUserDetailsPage] = useState(false);
     const [proceedToUserDetails, setProceedToUserDetails] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [selectedVendorId, setSelectedVendorId] = useState(null);
 
     const [vendorProfile, setVendorProfile] = useState(null); // ✅ NEW STATE
+    
 
     // ✅ Automatically fetch vendor_profile if session exists
-    console.log(session?.user?.id,"Id")
+    console.log(session?.user?.id, "Id")
+    console.log("Select",selectedVendorId)
     useEffect(() => {
         const fetchVendorProfile = async () => {
-            if (session?.user?.id) {
+            let queryField = null;
+            let value = null;
+
+            if (selectedVendorId) {
+                queryField = "v_id";
+                value = selectedVendorId;
+            } else if (session?.user?.id) {
+                queryField = "u_id";
+                value = session.user.id;
+            }
+
+            if (queryField && value) {
                 const { data, error } = await supabase
                     .from(SUPABASE_TABLES.VENDOR)
                     .select("*")
-                    .eq("u_id", session?.user?.id)
+                    .eq(queryField, value)
                     .single();
 
                 if (error) {
-                    console.error("Error fetching vendor profile:", error.message);
+                    console.error("❌ Error fetching vendor profile:", error.message);
                 } else {
-                    setVendorProfile(data); // ✅ Save to state
+                    console.log("✅ Vendor Profile:", data);
+                    setVendorProfile(data);
                 }
+            } else {
+                console.warn("⚠️ No valid vendor identifier found");
             }
         };
 
         fetchVendorProfile();
-    }, [session]);
+    }, [session, selectedVendorId]);
+    
+    
 
     return (
         <AuthContext.Provider
@@ -47,7 +66,9 @@ export const AuthProvider = ({ children }) => {
                 vendorData,
                 setVendorData,
                 vendorProfile,             // ✅ Exported
-                setVendorProfile           // (optional) for manual updates
+                setVendorProfile ,          // (optional) for manual updates
+                selectedVendorId,
+                setSelectedVendorId
             }}
         >
             {children}

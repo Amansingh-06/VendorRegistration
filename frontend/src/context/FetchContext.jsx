@@ -9,7 +9,8 @@ export function FetchProvider({ children }) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { vendorProfile } = useAuth();
+    const { vendorProfile, selectedVendorId ,session} = useAuth();
+    const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
 
     // ✅ Fetch items from DB
     const fetchItems = async (silent = false) => {
@@ -22,7 +23,7 @@ export function FetchProvider({ children }) {
             const { data, error } = await supabase
                 .from(SUPABASE_TABLES.ITEM)
                 .select('*')
-                .eq('vendor_id', vendorProfile.v_id)
+                .eq('vendor_id', vendorId)
                 .eq('is_deleted', false); // ✅ Only fetch non-deleted items
 
             if (error) throw error;
@@ -35,9 +36,9 @@ export function FetchProvider({ children }) {
     };
 
     useEffect(() => {
-        if (!vendorProfile?.v_id) return;
+        if (!vendorId) return;
         fetchItems(); // ✅ Initial fetch on mount
-    }, [vendorProfile?.v_id]);
+    }, [vendorId]);
 
     return (
         <FetchContext.Provider value={{ items, setItems, loading, error, fetchItems }}>
