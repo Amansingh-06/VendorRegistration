@@ -25,6 +25,14 @@ export const FORM_FIELDS = {
     NOTE: 'note'
 };
 
+export const truncateLetters = (text, charLimit = 30) => {
+    if (!text) return '';
+    return text.length > charLimit ? text.slice(0, charLimit) + '...' : text;
+};
+  
+  
+  
+
 
 export const VENDOR_DATA_KEYS = {
     VENDOR_NAME: 'v_name',

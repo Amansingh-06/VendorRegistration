@@ -79,7 +79,7 @@ export default function ManageItemsPage() {
                     </div>
                 )}
 
-                <div className='max-w-2xl px-6 py-15 mt-15  shadow-lg min-h-[86vh] rounded-2xl pb-20'>
+                <div className='max-w-2xl px-6 py-15 mt-15  shadow-lg min-h-[86vh] rounded-2xl pb-20 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -140,6 +140,16 @@ export default function ManageItemsPage() {
                                 </div>
                             </div>
                         ))}
+                        <div>
+                        <button
+                                className="absolute  bottom-12 md:bottom-15 right-4  w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
+                            aria-label="Add Item"
+                            onClick={() => navigate('/add-items')}
+                        >
+                            <FaPlus />
+                        </button>
+                        </div>
+                       
                     </div>
                 </div>
 
@@ -147,13 +157,7 @@ export default function ManageItemsPage() {
             </div>
 
             {/* Add Item Floating Button */}
-            <button
-                className="fixed bottom-20 right-3 md:bottom-20 md:right-110 w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
-                aria-label="Add Item"
-                onClick={() => navigate('/add-items')}
-            >
-                <FaPlus />
-            </button>
+     
 
             {/* Custom Confirmation Modal */}
             {showModal && (

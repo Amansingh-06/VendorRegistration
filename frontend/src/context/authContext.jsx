@@ -1,58 +1,57 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "../utils/supabaseClient"; // ✅ Make sure to import
+import { supabase } from "../utils/supabaseClient";
 import { SUPABASE_TABLES } from "../utils/vendorConfig";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
     const [session, setSession] = useState(null);
     const [cameFromUserDetailsPage, setCameFromUserDetailsPage] = useState(false);
     const [proceedToUserDetails, setProceedToUserDetails] = useState(false);
     const [vendorData, setVendorData] = useState(null);
     const [selectedVendorId, setSelectedVendorId] = useState(null);
+    const [vendorProfile, setVendorProfile] = useState(null);
 
-    const [vendorProfile, setVendorProfile] = useState(null); // ✅ NEW STATE
-    
+    // 🔁 Common reusable function
+    const fetchVendorProfile = async () => {
+        let queryField = null;
+        let value = null;
 
-    // ✅ Automatically fetch vendor_profile if session exists
-    console.log(session?.user?.id, "Id")
-    console.log("Select",selectedVendorId)
-    useEffect(() => {
-        const fetchVendorProfile = async () => {
-            let queryField = null;
-            let value = null;
+        if (selectedVendorId) {
+            queryField = "v_id";
+            value = selectedVendorId;
+        } else if (session?.user?.id) {
+            queryField = "u_id";
+            value = session.user.id;
+        }
 
-            if (selectedVendorId) {
-                queryField = "v_id";
-                value = selectedVendorId;
-            } else if (session?.user?.id) {
-                queryField = "u_id";
-                value = session.user.id;
-            }
+        if (queryField && value) {
+            const { data, error } = await supabase
+                .from(SUPABASE_TABLES.VENDOR)
+                .select("*")
+                .eq(queryField, value)
+                .single();
 
-            if (queryField && value) {
-                const { data, error } = await supabase
-                    .from(SUPABASE_TABLES.VENDOR)
-                    .select("*")
-                    .eq(queryField, value)
-                    .single();
-
-                if (error) {
-                    console.error("❌ Error fetching vendor profile:", error.message);
-                } else {
-                    console.log("✅ Vendor Profile:", data);
-                    setVendorProfile(data);
-                }
+            if (error) {
+                console.error("❌ Error fetching vendor profile:", error.message);
             } else {
-                console.warn("⚠️ No valid vendor identifier found");
+                console.log("✅ Vendor Profile:", data);
+                setVendorProfile(data);
             }
-        };
+        } else {
+            console.warn("⚠️ No valid vendor identifier found");
+        }
+    };
 
+    // 🔄 Auto fetch on load
+    useEffect(() => {
         fetchVendorProfile();
     }, [session, selectedVendorId]);
-    
-    
+
+    // ✅ Manual refetch available globally
+    const refreshVendorProfile = async () => {
+        await fetchVendorProfile();
+    };
 
     return (
         <AuthContext.Provider
@@ -65,10 +64,11 @@ export const AuthProvider = ({ children }) => {
                 setProceedToUserDetails,
                 vendorData,
                 setVendorData,
-                vendorProfile,             // ✅ Exported
-                setVendorProfile ,          // (optional) for manual updates
+                vendorProfile,
+                setVendorProfile,
                 selectedVendorId,
-                setSelectedVendorId
+                setSelectedVendorId,
+                refreshVendorProfile // ✅ Exported for manual use
             }}
         >
             {children}

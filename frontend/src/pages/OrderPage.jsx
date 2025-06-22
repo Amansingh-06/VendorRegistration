@@ -32,10 +32,11 @@ const OrderPage = () => {
 
     // Refresh orders when filter changes or vendor is available
     useEffect(() => {
-        if (vendorProfile?.v_id) {
+        if (vendorId && vendorProfile?.status === "verified") {
             refreshOrders(); // Uses vendorId + active filter
         }
-    }, [active, vendorId, refreshOrders]);
+    }, [active, vendorId, vendorProfile?.status, refreshOrders]);
+    
 
     // Refresh full list after status update (instead of updating just one order)
     const handleRefreshOrder = async (orderId) => {
@@ -68,34 +69,60 @@ const OrderPage = () => {
         }
     };
     
-
+console.log("Vendor verified",vendorProfile?.status)
     return (
         <div className="flex flex-col items-center min-h-screen bg-white rounded-lg shadow-lg font-family-poppins">
             <div className="w-full max-w-2xl flex flex-col gap-4">
                 <Navbar />
+
                 <div className="w-full max-w-2xl px-4 md:px-6 flex flex-col min-h-[85vh] md:mt-20 mt-10 py-15 gap-4 shadow-lg">
                     <h1 className="text-xl font-bold text-left text-gray-500">Orders</h1>
-                    <div className="flex flex-wrap">
-                        <ButtonGroup active={active} setActive={setActive} />
-                    </div>
-                    <div className="flex flex-col gap-4 pb-24">
-                        {orders.length > 0 ? (
-                            orders.map((order) => (
-                                <OrderCard
-                                    key={order.order_id}
-                                    order={order}
-                                    onStatusUpdate={handleRefreshOrder}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-500">No orders found.</p>
-                        )}
-                    </div>
+
+                    {/* ✅ Vendor Not Verified Handling */}
+                    {vendorProfile?.status !== "verified" ? (
+                        <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
+                            <h2 className="font-semibold text-lg text-center mb-2">Account Status</h2>
+
+                            <p className="mb-2">
+  <strong>Status:</strong>{" "}
+  {vendorProfile?.status === "not_verified" ? "Not Verified" : vendorProfile?.status}
+</p>
+
+
+                            {vendorProfile?.request_status === "NA" ? (
+                                <p>Your account verification is under process. Please wait.</p>
+                            ) : (
+                                <p><strong>Rejected:</strong> {vendorProfile?.request_status}</p>
+                            )}
+                  </div>
+                    ) : (
+                        <>
+                            <div className="flex flex-wrap">
+                                <ButtonGroup active={active} setActive={setActive} />
+                            </div>
+
+                            <div className="flex flex-col gap-4 pb-24">
+                                {orders.length > 0 ? (
+                                    orders.map((order) => (
+                                        <OrderCard
+                                            key={order.order_id}
+                                            order={order}
+                                            onStatusUpdate={handleRefreshOrder}
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-center text-gray-500">No orders found.</p>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
+
             <BottomNav />
         </div>
     );
+  
 };
 
 export default OrderPage;

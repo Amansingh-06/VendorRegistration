@@ -33,7 +33,7 @@ import { useSearch } from '../context/SearchContext';
 
 
 export default function VendorProfile() {
- const { vendorProfile, selectedVendorId ,session} = useAuth();
+    const { vendorProfile, selectedVendorId, session, refreshVendorProfile } = useAuth();
     const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
 
     const [loading, setLoading] = useState(false);
@@ -250,25 +250,27 @@ console.log("Address",selectedAddress)
                 console.log("📦 Coordinates found, fetching address...");
                 const response = await getAddressFromLatLng(initialFormState.latitude, initialFormState.longitude);
                 const addressData = response?.results?.[0];
-                console.log("addressData",addressData)
+                console.log("addressData", addressData);
 
                 if (addressData) {
-                    console.log("✅ addressData:", addressData);
                     const components = addressData.address_components;
 
                     const getComponent = (type) =>
                         components.find((c) => c.types.includes(type))?.long_name || '';
 
+                    // ✅ Extract parts
                     const area = getComponent('sublocality_level_1') || getComponent('locality');
-                    const city = getComponent('administrative_area_level_2');
+                    const city = getComponent('locality') || getComponent('administrative_area_level_2');
                     const state = getComponent('administrative_area_level_1');
                     const pincode = getComponent('postal_code');
                     const formatted = addressData.formatted_address;
-console.log(getComponent)
-                    // ✅ Try to extract landmark
+
+                    // ✅ More accurate landmark like "Fazalganj Industrial Estate"
                     const landmark =
-                        getComponent('point_of_interest') ||
+                        getComponent('neighborhood') ||
                         getComponent('premise') ||
+                        getComponent('sublocality_level_2') ||
+                        getComponent('point_of_interest') ||
                         getComponent('establishment');
 
                     const addressToSet = {
@@ -279,7 +281,7 @@ console.log(getComponent)
                         pincode,
                         full: formatted,
                         lat: initialFormState?.latitude,
-                        long:initialFormState?.longitude
+                        long: initialFormState?.longitude
                     };
 
                     setFetchedAddress(addressToSet);
@@ -296,6 +298,7 @@ console.log(getComponent)
 
         fetchReadableAddress();
     }, [initialFormState?.latitude, initialFormState?.longitude]);
+    
     
    
     
@@ -388,17 +391,12 @@ console.log(location)
         setLoading(true);
 
         try {
-            const [
-                uploadedVideoUrl,
-                uploadedBannerUrl,
-                uploadedQrUrl
-            ] = await Promise.all([
+            const [uploadedVideoUrl, uploadedBannerUrl, uploadedQrUrl] = await Promise.all([
                 videoFile ? uploadFile(videoFile, BUCKET_NAMES.VIDEO) : videoUrl,
                 bannerFile ? uploadFile(bannerFile, BUCKET_NAMES.BANNER) : bannerUrl,
                 qrFile ? uploadFile(qrFile, BUCKET_NAMES.PAYMENT) : qrUrl
             ]);
 
-            // ✅ update preview URLs after upload
             if (bannerFile) setBannerUrl(uploadedBannerUrl);
             if (videoFile) setVideoUrl(uploadedVideoUrl);
             if (qrFile) setQrUrl(uploadedQrUrl);
@@ -419,16 +417,12 @@ console.log(location)
                 banner_url: uploadedBannerUrl,
                 video_url: uploadedVideoUrl,
                 payment_url: uploadedQrUrl,
-                latitude: selectedAddress?.lat || null, // 👈
-                longitude: selectedAddress?.long || null, // 👈
-                v_id: vendorId
+                latitude: selectedAddress?.lat || null,
+                longitude: selectedAddress?.long || null,
+                v_id: vendorId,
+                u_id: vendorProfile.u_id,
+                updated_at: new Date()
             };
-
-            // ✅ Log insertData to inspect values
-            console.log("🟡 insertData being sent to Supabase:", insertData);
-
-            // ✅ Check type of selectedCuisineIds
-            console.log("🟢 selectedCuisineIds:", selectedCuisineIds, typeof selectedCuisineIds[0]);
 
             const { error } = await supabase
                 .from(SUPABASE_TABLES.VENDOR)
@@ -439,6 +433,10 @@ console.log(location)
                 toast.error("Update Fail");
             } else {
                 toast.success('Profile Updated Successfully');
+
+                // ✅ Refresh the vendor profile after update
+                await refreshVendorProfile();
+
                 navigate('/home');
             }
         } catch (err) {
@@ -760,7 +758,7 @@ console.log(location)
                                             placeholder="Street"
                                             className={`input-field w-full rounded-md border p-2 ${errors.street ? 'border-red-500' : 'border-gray-300'}`}
                                             onKeyDown={streetKeyDown}
-                                            onBlur={streetInputClean}
+                                            onInput={streetInputClean}
                                         />
                                         {errors.street && <p className="text-red-500 text-sm">{errors.street.message}</p>}
                                     </div>
@@ -840,10 +838,18 @@ console.log(location)
                                     {selectedAddress || location || fetchedAddress ? (
                                         <p className="mt-2 text-sm text-gray-700">
                                             Selected Location:{" "}
-                                            {selectedAddress?.landmark ||
-                                                location?.landmark ||
-                                                `${fetchedAddress?.area || ""}, ${fetchedAddress?.city || ""}`}
+                                            {
+                                                (selectedAddress?.area && selectedAddress?.city)
+                                                    ? `${selectedAddress.area}, ${selectedAddress.city}`
+                                                    : selectedAddress?.landmark
+                                                        ? selectedAddress.landmark
+                                                        : (fetchedAddress?.area && fetchedAddress?.city)
+                                                            ? `${fetchedAddress.area}, ${fetchedAddress.city}`
+                                                            : fetchedAddress?.landmark || "N/A"
+                                            }
                                         </p>
+                                    
+                                        
                                     ) : null}
 
                                 </div>
