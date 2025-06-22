@@ -111,14 +111,26 @@ const VendorEarnings = () => {
                 if (!success || !orders) return;
 
                 const today = new Date();
-                const weekRange = { start: startOfWeek(today, { weekStartsOn: 1 }), end: endOfWeek(today, { weekStartsOn: 1 }) };
-                const monthRange = { start: startOfMonth(today), end: endOfMonth(today) };
+                const weekRange = {
+                    start: startOfWeek(today, { weekStartsOn: 1 }),
+                    end: endOfWeek(today, { weekStartsOn: 1 }),
+                };
+                const monthRange = {
+                    start: startOfMonth(today),
+                    end: endOfMonth(today),
+                };
 
-                let weekOrders = 0, weekAmount = 0;
-                let monthOrders = 0, monthAmount = 0;
-                let todayOrders = 0, todayAmount = 0;
+                let weekOrders = 0,
+                    weekAmount = 0;
+                let monthOrders = 0,
+                    monthAmount = 0;
+                let todayOrders = 0,
+                    todayAmount = 0;
 
-                orders.forEach(order => {
+                orders.forEach((order) => {
+                    // ✅ Only include delivered orders
+                    if (order.status?.toLowerCase() !== "delivered") return;
+
                     const orderDate = new Date(order.created_ts);
                     const amount = order.transaction?.amount || 0;
 
@@ -126,10 +138,12 @@ const VendorEarnings = () => {
                         weekOrders++;
                         weekAmount += amount;
                     }
+
                     if (isWithinInterval(orderDate, monthRange)) {
                         monthOrders++;
                         monthAmount += amount;
                     }
+
                     if (
                         orderDate.getFullYear() === today.getFullYear() &&
                         orderDate.getMonth() === today.getMonth() &&
@@ -149,6 +163,7 @@ const VendorEarnings = () => {
         }
     }, [vendorId, vendorProfile?.status]);
     
+    
 
     useEffect(() => {
         if (vendorId && vendorProfile?.status === "verified" && Array.isArray(dateRange)) {
@@ -157,19 +172,27 @@ const VendorEarnings = () => {
                 if (!success || !orders) return;
 
                 const [start, end] = dateRange;
-                let earnings = 0, orderCount = 0, rejectedAmount = 0, rejectedCount = 0;
+                let earnings = 0,
+                    orderCount = 0,
+                    rejectedAmount = 0,
+                    rejectedCount = 0;
 
-                orders.forEach(order => {
+                orders.forEach((order) => {
                     const orderDate = new Date(order.created_ts);
                     const amount = order.transaction?.amount || 0;
 
+                    // ✅ Must be in selected date range
                     if (orderDate >= start && orderDate <= end) {
-                        orderCount++;
-                        earnings += amount;
-
-                        if (order.status === 'rejected') {
+                        // ✅ Count rejected orders separately
+                        if (order.status?.toLowerCase() === 'rejected') {
                             rejectedCount++;
                             rejectedAmount += amount;
+                        }
+
+                        // ✅ Only include delivered orders in earnings and order count
+                        if (order.status?.toLowerCase() === 'delivered') {
+                            orderCount++;
+                            earnings += amount;
                         }
                     }
                 });
@@ -187,6 +210,7 @@ const VendorEarnings = () => {
             calculateStatsForDateRange();
         }
     }, [vendorId, dateRange, vendorProfile?.status]);
+    
 
 
     // Track state changes separately
