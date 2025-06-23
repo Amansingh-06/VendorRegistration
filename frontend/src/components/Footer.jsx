@@ -1,17 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FiClipboard, FiShoppingCart, FiUser } from "react-icons/fi";
-import { PiMoneyWavyDuotone } from "react-icons/pi";
+import { navItems } from "../utils/vendorConfig";
 
 const BottomNav = () => {
     const navigate = useNavigate();
     const location = useLocation(); // 🔍 Get current route path
 
-    const navItems = [
-        { id: "Home", icon: FiClipboard, label: "Home", path: "/home" },
-        { id: "Manage Items", icon: FiShoppingCart, label: "Manage Items", path: "/manage-items" },
-        { id: "Earning", icon: PiMoneyWavyDuotone, label: "Earning", path: "/earning" },
-        { id: "Profile", icon: FiUser, label: "Profile", path: "/profile" }
-    ];
+  
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-2xl flex justify-around items-center max-w-2xl mx-auto h-[70px] z-40">

@@ -8,7 +8,8 @@ import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
-import { truncateLetters } from '../utils/vendorConfig';
+import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
+import { SUPABASE_TABLES } from '../utils/vendorConfig';
 
 const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -63,9 +64,9 @@ const Navbar = () => {
         if (!vendorProfile?.v_id) return;
 
         const { error } = await supabase
-            .from('vendor_request')
+            .from(SUPABASE_TABLES?.VENDOR)
             .update({ available: checked })
-            .eq('v_id', vendorProfile?.v_id);
+            .eq(VENDOR_DATA_KEYS?.V_ID, vendorProfile?.v_id);
 
         if (error) {
             console.error("Failed to update vendor availability:", error.message);

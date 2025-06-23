@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { supabase } from "../utils/supabaseClient";
+import { SUPABASE_TABLES } from "../utils/vendorConfig";
 
 export default function ItemCategory({
     name = "category",
@@ -19,7 +20,7 @@ export default function ItemCategory({
     useEffect(() => {
         const fetchCategories = async () => {
             const { data, error } = await supabase
-                .from("item_category")
+                .from(SUPABASE_TABLES.ITEM_CATEGORY)
                 .select("c_id, name");
 
             if (error) {

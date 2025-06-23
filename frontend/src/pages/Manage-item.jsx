@@ -67,7 +67,7 @@ export default function ManageItemsPage() {
         setDeleteItemId(null);
         setDeleteItemName("");
     };
-
+console.log(items)
     return (
         <section className="bg-gray-100 min-h-screen   md:px-0">
             <div className="max-w-2xl mx-auto rounded-2xl shadow-lg">
@@ -142,7 +142,7 @@ export default function ManageItemsPage() {
                         ))}
                         <div>
                         <button
-                                className="absolute  bottom-12 md:bottom-15 right-4  w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
+                                className="fixed   bottom-20 md:bottom-20 lg:right-110 md:right-20 right-10 w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
                             aria-label="Add Item"
                             onClick={() => navigate('/add-items')}
                         >

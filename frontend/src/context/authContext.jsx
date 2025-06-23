@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
-import { SUPABASE_TABLES } from "../utils/vendorConfig";
+import { SELECTED_COLUMN, SUPABASE_TABLES, VENDOR_DATA_KEYS } from "../utils/vendorConfig";
 
 const AuthContext = createContext();
 
@@ -18,17 +18,18 @@ export const AuthProvider = ({ children }) => {
         let value = null;
 
         if (selectedVendorId) {
-            queryField = "v_id";
+            queryField = VENDOR_DATA_KEYS?.V_ID;
             value = selectedVendorId;
         } else if (session?.user?.id) {
-            queryField = "u_id";
+            queryField = VENDOR_DATA_KEYS?.U_ID;
             value = session.user.id;
         }
+        console.log("selectedVendorId",selectedVendorId)
 
         if (queryField && value) {
             const { data, error } = await supabase
                 .from(SUPABASE_TABLES.VENDOR)
-                .select("*")
+                .select(SELECTED_COLUMN?.ALL)
                 .eq(queryField, value)
                 .single();
 

@@ -3,6 +3,7 @@ import { Clock, Receipt } from 'lucide-react';
 import { updateOrderStatus } from '../utils/updateOrderStatus';
 import toast from 'react-hot-toast';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { ORDER_STATUS } from '../utils/vendorConfig';
 
 const OrderCard = ({ order, onStatusUpdate }) => {
     const [localStatus, setLocalStatus] = useState(order?.status);
@@ -18,12 +19,12 @@ const OrderCard = ({ order, onStatusUpdate }) => {
     const currentStatus = localStatus?.toLowerCase();
 
     let action = null;
-    if (currentStatus === 'pending') {
-        action = { label: 'Accept Order', nextStatus: 'accepted', color: 'bg-blue-500' };
-    } else if (currentStatus === 'accepted') {
-        action = { label: 'Start Preparing', nextStatus: 'preparing', color: 'bg-yellow-500' };
-    } else if (currentStatus === 'preparing') {
-        action = { label: 'Mark as Prepared', nextStatus: 'prepared', color: 'bg-green-500' };
+    if (currentStatus === ORDER_STATUS?.PENDING) {
+        action = { label: ORDER_STATUS?.ACCEPT_LABLE, nextStatus: ORDER_STATUS?.ACCEPTED, color: ORDER_STATUS?.ACCEPTED_COLOR };
+    } else if (currentStatus === ORDER_STATUS?.ACCEPTED) {
+        action = { label: ORDER_STATUS?.PREPARING_LABEL, nextStatus: ORDER_STATUS?.PREPARING, color: ORDER_STATUS?.PREPARING_COLOR };
+    } else if (currentStatus === ORDER_STATUS?.PREPARED) {
+        action = { label: ORDER_STATUS?.PREPARED_LABEL, nextStatus:ORDER_STATUS?.PREPARED, color: ORDER_STATUS?.PREPARED_COLOR };
     }
 
     const handleAction = async () => {

@@ -709,6 +709,7 @@ import { SUPABASE_TABLES, MESSAGES, BUCKET_NAMES, ITEM_DEFAULTS, ITEM_FIELDS } f
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useFetch } from '../context/FetchContext';
+import { uploadFile } from '../utils/uploadFile';
 
 
 
@@ -716,7 +717,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
     const [selectedType, setSelectedType] = useState()
-    const [cuisines,setCuisines]=useState([])
+    // const [cuisines,setCuisines]=useState([])
         const [showCategoryInput, setShowCategoryInput] = useState(false);
         const [previewImage, setPreviewImage] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -752,9 +753,9 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         if (!vendorId) return; // ⛔ Don't run until v_id is available
         const fetchCategories = async () => {
             const { data, error } = await supabase
-                .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                .from(SUPABASE_TABLES?.ITEM_CATEGORY_BY_VENDOR)
                 .select('*')
-                .eq('vendor_id', vendorId);  // ✅ correct eq syntax
+                .eq(ITEM_FIELDS?.VENDOR_ID, vendorId);  // ✅ correct eq syntax
 
             if (error) {
                 toast.error(MESSAGES?.FETCH_FAIL);
@@ -794,39 +795,39 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     console.log(isFormChanged,"isform")
     
     
-    const uploadFile = async (file, bucketName) => {
-                if (!file || !file.name) return null; // 👈 fixed here
+    // const uploadFile = async (file, bucketName) => {
+    //             if (!file || !file.name) return null; // 👈 fixed here
         
-                const fileExt = file.name.split('.').pop();
-                const filePath = `${Date.now()}.${fileExt}`;
+    //             const fileExt = file.name.split('.').pop();
+    //             const filePath = `${Date.now()}.${fileExt}`;
         
-                const { data, error } = await supabase.storage
-                    .from(bucketName)
-                    .upload(filePath, file, {
-                        cacheControl: '3600',
-                        upsert: true,
-                    });
+    //             const { data, error } = await supabase.storage
+    //                 .from(bucketName)
+    //                 .upload(filePath, file, {
+    //                     cacheControl: '3600',
+    //                     upsert: true,
+    //                 });
         
-                if (error) {
-                    console.error('Error uploading file:', error?.message);
-                    toast.error(MESSAGES?.UPLOAD_ERROR);
+    //             if (error) {
+    //                 console.error('Error uploading file:', error?.message);
+    //                 toast.error(MESSAGES?.UPLOAD_ERROR);
         
-                    throw new Error(error?.message);
-                }
+    //                 throw new Error(error?.message);
+    //             }
         
-                const { data: urlData, error: urlError } = supabase.storage
-                    .from(bucketName)
-                    .getPublicUrl(filePath);
+    //             const { data: urlData, error: urlError } = supabase.storage
+    //                 .from(bucketName)
+    //                 .getPublicUrl(filePath);
         
-                if (urlError) {
-                    console.error('Error getting public URL:', urlError?.message);
-                    toast.error(MESSAGES?.PUBLIC_URL_ERROR);
+    //             if (urlError) {
+    //                 console.error('Error getting public URL:', urlError?.message);
+    //                 toast.error(MESSAGES?.PUBLIC_URL_ERROR);
         
-                    throw new Error(urlError?.message);
-                }
+    //                 throw new Error(urlError?.message);
+    //             }
         
-                return urlData?.publicUrl;
-            };
+    //             return urlData?.publicUrl;
+    //         };
       
 
     // 🍛 Handle cuisine selection
@@ -842,7 +843,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         
         // Check if category already exists (case-insensitive)
                 const { data: existing, error: checkError } = await supabase
-                    .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                    .from(SUPABASE_TABLES?.ITEM_CATEGORY_BY_VENDOR)
                     .select('*')
             .ilike('title', trimmed)
                     .eq('vendor_id', vendorId); // ✅ vendor-specific check
@@ -864,7 +865,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 // const toastId = toast.loading('Adding Category');
         
                 const { data, error } = await supabase
-                    .from(SUPABASE_TABLES?.ITEM_CATEGORY)
+                    .from(SUPABASE_TABLES?.ITEM_CATEGORY_BY_VENDOR)
                     .insert([
                         {
                             cat_id: uuidv4(),
@@ -963,7 +964,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             if (previewImage === null) {
                 imageUrl = "NA";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
             } else if (typeof previewImage !== 'string') {
-                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG);
+                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG,itemFields?.item_name||"unknown");
             }
 
             itemFields.img_url = imageUrl;

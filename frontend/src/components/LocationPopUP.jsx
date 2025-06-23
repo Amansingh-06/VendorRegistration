@@ -69,7 +69,6 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                 lat: latitude,
                 long: longitude,
             };
-console.log("landmark",landmark)
             setSelectedAddress((prev) => ({
                 ...prev,
                 landmark: add?.landmark,

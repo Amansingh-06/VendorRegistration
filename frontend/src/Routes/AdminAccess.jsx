@@ -4,10 +4,10 @@ import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/authContext";
 
 export default function AdminProtectedRoute({ children, fallback = null }) {
-    const { vendorId } = useParams();
+    // const { vendorId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-
+    const vendorId = new URLSearchParams(location.search).get("vendorId");
     const token = new URLSearchParams(location.search).get("token");
     const refreshToken = new URLSearchParams(location.search).get("refresh");
 
@@ -40,7 +40,9 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
             }
 
             const { data: { user }, error: userError } = await supabase.auth.getUser();
+            console.log("user",user)
             if (!user || userError) {
+                
                 console.error("❌ Failed to fetch user:", userError?.message);
                 navigate("/unauthorized");
                 return;
@@ -60,6 +62,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
 
             // ✅ Admin verified
             setSelectedVendorId(vendorId);
+            
             setIsAllowed(true);
         };
 

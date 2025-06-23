@@ -1,15 +1,16 @@
 import React from 'react';
 import { FaCheck } from 'react-icons/fa';
 import CustomButton from './Button';
+import { FILTER_BUTTON } from '../utils/vendorConfig';
 
 const ButtonGroup = ({ active, setActive }) => {
     const buttonList = [
-        { text: 'All', color: 'bg-green' },
-        { text: 'Accepted', color: 'bg-green' },
-        { text: 'Preparing', color: 'bg-green' },
-        { text: 'Prepared', color: 'bg-green' },
-        { text: 'On The Way', color: 'bg-green' },
-        { text: 'Delivered', color: 'bg-green' },
+        { text: FILTER_BUTTON?.ALL, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.ACCEPTED, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.PREPARING, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.PREPARED, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.ON_THE_WAY, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.DELIVERED, color: FILTER_BUTTON?.COLOR },
     ];
 
     return (

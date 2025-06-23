@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link, useLocation, useNavigationType } from "react-router-dom";
 import { FaRegUser, FaStore, FaRegClock } from 'react-icons/fa';
 import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
@@ -12,6 +13,7 @@ import { PiCityLight } from "react-icons/pi";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from '../utils/address';
+import { uploadFile } from '../utils/uploadFile';
 import {
     BUCKET_NAMES,
     DEFAULTS,
@@ -93,42 +95,16 @@ function VendorRegistration() {
         endTime1: watch('endTime1'),
 
     };
-    console.log("Registration session", session)
+
+    const navType = useNavigationType(); // "PUSH" | "REPLACE" | "POP"
+
+    useEffect(() => {      
+        if (navType === "POP") {
+            navigate("/", { replace: true });
+        } 
+    }, [navType, navigate]);
 
 
-    // File upload function
-    const uploadFile = async (file, bucketName, vendor_name) => {
-        if (!file) return null;
-
-        const fileExt = file?.name?.split('.')?.pop();
-        const cleanVendorName = vendor_name?.replace(/\s+/g, '_'); // spaces to underscore
-        const filePath = `${Date.now()}_${cleanVendorName}.${fileExt}`;
-
-
-        const { data, error } = await supabase.storage
-            .from(bucketName)
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true,
-            });
-
-        if (error) {
-            console.error('Error uploading file:', error?.message);
-            toast.error("Error uploading file");
-            throw new Error(error?.message); // Throw error to stop further processing
-        }
-
-        const { data: urlData, error: urlError } = supabase.storage
-            .from(bucketName)
-            .getPublicUrl(filePath);
-
-        if (urlError) {
-            console.error('Error getting public URL:', urlError?.message);
-            throw new Error(urlError?.message); // Throw error to stop further processing
-        }
-
-        return urlData?.publicUrl;
-    };
 
 //changing time to hh:mm A
 
@@ -212,15 +188,10 @@ function VendorRegistration() {
             // 👇 Fetch fresh session
             const { data:sessionData } = await supabase.auth.getSession();
             if (sessionData?.session?.user?.user_metadata?.isRegistered) {
-                // setSession(data.session); // context
                 navigate("/home");
             } else {
-                toast.error("User session not updated with registration info");
+                toast.error(MESSAGES.SESSION_NOT_UPDATED);
             }
-
-
-            // navigate('/home');
-
         } catch (err) {
             console.error('Unexpected Error:', err);
             toast.error(MESSAGES.UNEXPECTED_ERROR);
@@ -295,6 +266,8 @@ function VendorRegistration() {
         return isValid;
     };
 
+
+    // block click when loading
     React.useEffect(() => {
         if (showPopup || loading) {
             document.body.style.overflow = 'hidden';
@@ -313,6 +286,8 @@ function VendorRegistration() {
         if (value?.ref === undefined) return false;
         return true; // ✅ Count all other errors
     });
+
+    //for validation
     const isFormIncomplete =
         !watchFields?.name ||
         !watchFields?.shopName ||
@@ -330,13 +305,10 @@ function VendorRegistration() {
         !selectedAddress?.lat || !selectedAddress?.long ||
         filteredErrors.length > 0 
 
-    console.log("vendorData", vendorData)
-    console.log(watchFields?.cuisines)
-
-    console.log(session)
-    // Handle “Current Location” button click
+   
+    //current location
     const handleCurrentLocation = async () => {
-        setWaitLoading(true)
+        setWaitLoading(true) //for disable
         const toastId = toast.loading("Getting current Location");
 
         try {
@@ -366,17 +338,12 @@ function VendorRegistration() {
             console.error("❌ Location Error:", err);
         }
     };
-      
-        
-    useEffect(() => {
-        console.log("📍 Selected Address updated:", selectedAddress);
-    }, [selectedAddress]);
+
+
+    //submit function
 
     const onFormSubmit = handleSubmit(async (data) => {
-        console.log("yha pahucha")
         const customValid = validateCustomFields();
-        console.log("Custom Validation", customValid);
-
         if (!customValid) {
             toast.error("Please complete required fields.");
             return;

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from './authContext';
-import { SUPABASE_TABLES } from '../utils/vendorConfig';
+import { ITEM_FIELDS, SELECTED_COLUMN, SUPABASE_TABLES } from '../utils/vendorConfig';
 
 const FetchContext = createContext();
 
@@ -22,9 +22,9 @@ export function FetchProvider({ children }) {
         try {
             const { data, error } = await supabase
                 .from(SUPABASE_TABLES.ITEM)
-                .select('*')
-                .eq('vendor_id', vendorId)
-                .eq('is_deleted', false); // ✅ Only fetch non-deleted items
+                .select(SELECTED_COLUMN?.ALL)
+                .eq(ITEM_FIELDS?.VENDOR_ID, vendorId)
+                .eq(ITEM_FIELDS?.IS_DELETED, false); // ✅ Only fetch non-deleted items
 
             if (error) throw error;
             setItems(data || []);

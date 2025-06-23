@@ -50,14 +50,39 @@ export const VENDOR_DATA_KEYS = {
     BANNER_URL: 'banner_url',
     PAYMENT_QR_URL: 'payment_url',
     NOTE: 'note_from_vendor',
+    V_ID: "v_id",
+    U_ID:'u_id'
 };
+
+export const SELECTED_COLUMN = {
+    ALL:"*"
+}
+
+export const ORDER_STATUS = {
+    PENDING: "pending",
+    ACCEPT_LABLE: "Accept Order",
+    ACCEPTED: "accepted",
+    PREPARING_LABEL: "Start Preparing",
+    PREPARED_LABEL: "Mark as Prepared",
+    PREPARED: "prepared",
+    PREPARING: "preparing",
+    ACCEPTED_COLOR: 'bg-blue-500',
+    PREPARED_COLOR: 'bg-green-500',
+    PREPARING_COLOR: 'bg-yellow-500'
+
+}
   
 
 export const SUPABASE_TABLES = {
     VENDOR: 'vendor_request',
-    ITEM_CATEGORY: 'category_created_by_vendor',
+    ITEM_CATEGORY_BY_VENDOR: 'category_created_by_vendor',
     ITEM: 'item',
+    ITEM_CATEGORY:"item_category"
 };
+export const ITEM_CATEGORY_FIELD = {
+    C_ID: "c_id",
+    NAME:"name"
+}
 
 export const TOAST_MESSAGES = {
   
@@ -105,12 +130,37 @@ export const MESSAGES = {
     ITEM_CATEGORY_EXISTS: 'Item category already exists',
     ITEM_REGISTER_SUCCESS: 'Item registered successfully',
     ITEM_INSERT_FAILED: 'Failed to insert item',
+    SESSION_NOT_UPDATED:'"User session not updated with registration info"'
 };
+
   
 export const formatToCapital = (text) => text.trim().toUpperCase();
 
+//ORDER FILTER BUTTON
+export const FILTER_BUTTON = {
+    ALL: "All",
+    ACCEPTED: "Accepted",
+    PREPARED: "Prepared",
+    PREPARING: "Preparing",
+    ON_THE_WAY: "On The Way",
+    DELIVERED: "Delivered",
+    COLOR:"bg-green"
+}
 
-// Field keys
+//BOTTOM NAV(FOOTER)
+
+import { FiClipboard, FiShoppingCart, FiUser } from "react-icons/fi";
+import { PiMoneyWavyDuotone } from "react-icons/pi"
+export const navItems = [
+    { id: "Home", icon: FiClipboard, label: "Home", path: "/home" },
+    { id: "Manage Items", icon: FiShoppingCart, label: "Manage Items", path: "/manage-items" },
+    { id: "Earning", icon: PiMoneyWavyDuotone, label: "Earning", path: "/earning" },
+    { id: "Profile", icon: FiUser, label: "Profile", path: "/profile" }
+];
+
+
+
+// ITEM Field keys
 export const ITEM_FIELDS = {
     ID: "item_id",
     NAME: "item_name",
@@ -122,9 +172,10 @@ export const ITEM_FIELDS = {
     CATEGORY: "item_category",
     IMG_URL: "img_url",
     VENDOR_ID: "vendor_id",
+    IS_DELETED:"is_deleted"
 };
 
-// Default values
+// ITEM Default values
 export const ITEM_DEFAULTS = {
     NAME: "NA",
     CUISINE: "NA",
