@@ -14,7 +14,7 @@ export function FetchProvider({ children }) {
 
     // ✅ Fetch items from DB
     const fetchItems = async (silent = false) => {
-        if (!vendorProfile?.v_id) return;
+        if (!vendorId) return;
 
         if (!silent) setLoading(true);
         setError(null);
