@@ -79,7 +79,7 @@ console.log(items)
                     </div>
                 )}
 
-                <div className='max-w-2xl px-6 py-15 mt-15  shadow-lg min-h-[86vh] rounded-2xl pb-20 relative'>
+                <div className='max-w-2xl md:px-6 py-15 mt-15 px-4  shadow-lg min-h-[86vh] rounded-2xl pb-20 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -90,7 +90,7 @@ console.log(items)
                         {items?.map((item) => (
                             <div
                                 key={item.item_id}
-                                className="relative bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-all"
+                                className="relative bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition-all"
                             >
                                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
@@ -116,7 +116,7 @@ console.log(items)
                                     <div className="flex-1 space-y-1">
                                         <h3 className="text-lg font-semibold text-gray-800">{item?.item_name}</h3>
                                         <p className="text-gray-600 text-sm">Quantity: {item?.item_quantity}</p>
-                                        <p className="text-gray-600 text-sm">Prep Time: {item?.prep_time}</p>
+                                        <p className="text-gray-600 text-sm">Prep Time: {item?.prep_time}min</p>
                                         <p className="text-gray-800 text-sm font-medium">Price: {item?.item_price}</p>
                                     </div>
 

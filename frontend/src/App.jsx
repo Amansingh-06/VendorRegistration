@@ -21,7 +21,7 @@ import AdminProtectedRoute from './Routes/AdminAccess';
 function App() {
   return (
     <Router>
-      <div className="flex flex-col gap-2 bg-gray-100 font-family-poppins">
+      <div className="flex flex-col gap-2  font-family-poppins">
         {/* ✅ Common Header (optional) */}
 
 

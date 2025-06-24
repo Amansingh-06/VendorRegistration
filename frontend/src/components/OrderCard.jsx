@@ -23,7 +23,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
         action = { label: ORDER_STATUS?.ACCEPT_LABLE, nextStatus: ORDER_STATUS?.ACCEPTED, color: ORDER_STATUS?.ACCEPTED_COLOR };
     } else if (currentStatus === ORDER_STATUS?.ACCEPTED) {
         action = { label: ORDER_STATUS?.PREPARING_LABEL, nextStatus: ORDER_STATUS?.PREPARING, color: ORDER_STATUS?.PREPARING_COLOR };
-    } else if (currentStatus === ORDER_STATUS?.PREPARED) {
+    } else if (currentStatus === ORDER_STATUS?.PREPARING) {
         action = { label: ORDER_STATUS?.PREPARED_LABEL, nextStatus:ORDER_STATUS?.PREPARED, color: ORDER_STATUS?.PREPARED_COLOR };
     }
 
@@ -162,7 +162,10 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 
                         <div className="flex justify-end gap-2 pt-2">
                             <button
-                                onClick={() => setShowOtpPopup(false)}
+                               onClick={() => {
+                                setShowOtpPopup(false);
+                                setOtp(''); // 🧹 Clear OTP input when modal is closed
+                              }}
                                 className="px-3 py-1 rounded bg-gray-300 text-gray-700"
                             >
                                 Cancel

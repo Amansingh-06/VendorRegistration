@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/authContext";
+import Loader from "../components/Loader";
 
 export default function AdminProtectedRoute({ children, fallback = null }) {
     // const { vendorId } = useParams();
@@ -22,7 +23,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                     setIsAllowed(false); // Vendor
                 } else {
                     console.warn("⛔ No token and no fallback. Redirecting.");
-                    navigate("/unauthorized");
+                    navigate("/");
                 }
                 return;
             }
@@ -35,7 +36,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
 
             if (sessionError) {
                 console.error("❌ Failed to set session:", sessionError);
-                navigate("/unauthorized");
+                navigate("/");
                 return;
             }
 
@@ -44,7 +45,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
             if (!user || userError) {
                 
                 console.error("❌ Failed to fetch user:", userError?.message);
-                navigate("/unauthorized");
+                navigate("/");
                 return;
             }
 
@@ -56,7 +57,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
 
             if (error || !profile || profile.role !== "Admin") {
                 console.warn("⛔ Not an admin");
-                navigate("/unauthorized");
+                navigate("/");
                 return;
             }
 
@@ -69,7 +70,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
         verifyAdmin();
     }, [token, refreshToken, vendorId]);
 
-    if (isAllowed === null) return <div>Checking admin access...</div>;
+    if (isAllowed === null) return <Loader/>;
 
     if (isAllowed === true) return children;
 

@@ -1,22 +1,22 @@
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from "./supabaseClient";
+export const fetchVendorRatings = async (vendorId, page = 1, limit = 5) => {
+  try {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-export const fetchVendorRatings = async (vendorId) => {
-    try {
-        const { data, error } = await supabase
-            .from('rating')
-            .select(`
+    const { data, error } = await supabase
+      .from('rating')
+      .select(`
         r_id,
         created_at,
         rating_number,
         comment,
-        
         user:u_id (
           user_id,
           name,
           mobile_number,
           dp_url
         ),
-        
         order:order_id (
           order_id,
           total_amount,
@@ -32,17 +32,18 @@ export const fetchVendorRatings = async (vendorId) => {
           )
         )
       `)
-            .eq('v_id', vendorId)
-            .order('created_at', { ascending: false });
+      .eq('v_id', vendorId)
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
-        if (error) {
-            console.error("❌ Error fetching ratings:", error);
-            return { success: false, data: null };
-        }
-
-        return { success: true, data };
-    } catch (err) {
-        console.error("❌ Exception in fetchVendorRatings:", err);
-        return { success: false, data: null };
+    if (error) {
+      console.error("❌ Error fetching ratings:", error);
+      return { success: false, data: null };
     }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("❌ Exception in fetchVendorRatings:", err);
+    return { success: false, data: null };
+  }
 };

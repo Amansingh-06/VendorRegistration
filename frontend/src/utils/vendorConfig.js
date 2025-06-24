@@ -11,7 +11,7 @@ export const DEFAULTS = {
     NOTE: 'NA',
     TIME: "00:00:00",
     VIDEO_URL: 'NA',
-    BANNER_URL: './defaultuserImage.jsx'
+    BANNER_URL: './defaultuserImage.jpg'
 };
 
 export const FORM_FIELDS = {
@@ -66,6 +66,7 @@ export const ORDER_STATUS = {
     PREPARED_LABEL: "Mark as Prepared",
     PREPARED: "prepared",
     PREPARING: "preparing",
+    ON_THE_WAY: "on the way",
     ACCEPTED_COLOR: 'bg-blue-500',
     PREPARED_COLOR: 'bg-green-500',
     PREPARING_COLOR: 'bg-yellow-500'
@@ -77,7 +78,8 @@ export const SUPABASE_TABLES = {
     VENDOR: 'vendor_request',
     ITEM_CATEGORY_BY_VENDOR: 'category_created_by_vendor',
     ITEM: 'item',
-    ITEM_CATEGORY:"item_category"
+    ITEM_CATEGORY: "item_category",
+    ORDERS:'orders'
 };
 export const ITEM_CATEGORY_FIELD = {
     C_ID: "c_id",

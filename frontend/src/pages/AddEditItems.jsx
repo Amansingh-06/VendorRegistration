@@ -794,46 +794,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     
     console.log(isFormChanged,"isform")
     
-    
-    // const uploadFile = async (file, bucketName) => {
-    //             if (!file || !file.name) return null; // 👈 fixed here
-        
-    //             const fileExt = file.name.split('.').pop();
-    //             const filePath = `${Date.now()}.${fileExt}`;
-        
-    //             const { data, error } = await supabase.storage
-    //                 .from(bucketName)
-    //                 .upload(filePath, file, {
-    //                     cacheControl: '3600',
-    //                     upsert: true,
-    //                 });
-        
-    //             if (error) {
-    //                 console.error('Error uploading file:', error?.message);
-    //                 toast.error(MESSAGES?.UPLOAD_ERROR);
-        
-    //                 throw new Error(error?.message);
-    //             }
-        
-    //             const { data: urlData, error: urlError } = supabase.storage
-    //                 .from(bucketName)
-    //                 .getPublicUrl(filePath);
-        
-    //             if (urlError) {
-    //                 console.error('Error getting public URL:', urlError?.message);
-    //                 toast.error(MESSAGES?.PUBLIC_URL_ERROR);
-        
-    //                 throw new Error(urlError?.message);
-    //             }
-        
-    //             return urlData?.publicUrl;
-    //         };
-      
 
-    // 🍛 Handle cuisine selection
-    const handleCuisineChange = (selectedCuisines) => {
-        setValue('cuisine', selectedCuisines, { shouldValidate: true });
-    };
 
     const handleAddCategory = async () => {
                 const trimmed = newCategory.trim();
@@ -910,16 +871,16 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
     useEffect(() => {
         if (isEditMode && itemData) {
-            console.log(itemData.item_category_id)
+            console.log(itemData?.item_category_id)
             reset({
-                itemName: itemData.item_name || '',
+                itemName: itemData?.item_name || '',
                 quantity: itemData.item_quantity?.toString() || '',
                 price: itemData.item_price?.toString() || '',
                 prepTime: itemData.prep_time?.toString() || '',
                 category: itemData.vendor_created_category_id || '',
                 cuisine: Array.isArray(itemData.item_category_id)
                     ? itemData.item_category_id
-                    : JSON.parse(itemData.item_category_id || '[]'),
+                    : JSON.parse(itemData?.item_category_id || '[]'),
                 type: itemData.veg ? 'veg' : 'nonveg',
             });
             
@@ -951,12 +912,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     
             // ✅ Common item payload
             const itemFields = {
-                item_name: data.itemName,
+                item_name: data?.itemName,
                 prep_time: parseInt(data.prepTime),
-                item_price: data.price,
-                item_quantity: data.quantity,
+                item_price: data?.price,
+                item_quantity: data?.quantity,
                 veg: typeBool,
-                vendor_created_category_id: data.category,
+                vendor_created_category_id: data?.category,
                 item_category_id: data.cuisine,
             };
             let imageUrl = itemData?.img_url || null;
@@ -1031,12 +992,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     return (
         <div className='w-full min-h-screen mx-auto flex justify-center bg-gray-100'>
             {loading && <Loader/>}
-            <div className='max-w-2xl w-full mb-15'>
+            <div className='max-w-2xl w-full mb-15 '>
                 <Header title={isEditMode ? 'Edit Item' : 'Add Item'} />
-            <div className='max-w-2xl w-full mt-15 py-8  space-y-6 rounded-2xl shadow-lg '>
+            <div className='max-w-2xl w-full mt-15 pt-6  space-y-6 rounded-2xl shadow-lg  '>
                     
-                    <form onSubmit={handleSubmit(onSubmit)} className="w-full  mx-auto md:px-6 p-2 py-8 space-y-6 bg-white">
-                        <div className='flex flex-col gap-6 rounded-2xl shadow-lg  p-5'>
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6 p-2 py-8 space-y-6   bg-white">
+                        <div className='flex flex-col gap-6 rounded-2xl shadow-lg border border-gray-300  p-5'>
                             <FormInput
                                 id="itemName"
                                 label="Item Name"
@@ -1067,7 +1028,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
                             <FormInput
                                 id="prepTime"
-                                label="Preparation Time"
+                                label="Preparation Time(in min)"
                                 icon={FaRegClock}
                                 register={register}
                                 validation={{ required: 'Time is required' }}
@@ -1126,7 +1087,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                             error={errors.cuisine?.message}
                         />
 
-                        <div className="p-4 shadow-lg rounded-2xl w-full bg-white">
+                        <div className="p-4 shadow-lg rounded-2xl w-full bg-white border border-gray-300">
 <label className="block mb-2 font-semibold  text-gray-500">Select Category</label>
 <Controller
                                 name="category"
@@ -1205,7 +1166,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                         />
                         <button
                             type="submit"
-                            disabled={!isFormChanged || loading || !isValid}
+                            // disabled={!isFormChanged || loading || !isValid}
                             className={`w-full px-4 py-2 text-white rounded-md transition 
     ${!isFormChanged || loading || !isValid
                                     ? "bg-gray-400 cursor-not-allowed"

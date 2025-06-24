@@ -1,8 +1,7 @@
-import { supabase } from '../utils/supabaseClient';
-
-export const fetchVendorOrders = async (vendorId, status = null) => {
+import { supabase } from "./supabaseClient";
+export const fetchVendorOrders = async (vendorId, status = null, limit = 10, offset = 0) => {
   try {
-    const query = supabase
+    let query = supabase
       .from('orders')
       .select(`
         *,
@@ -28,18 +27,38 @@ export const fetchVendorOrders = async (vendorId, status = null) => {
           created_at
         )
       `)
-      .eq('v_id', vendorId)
-      .order('created_ts', { ascending: false });
+      .eq('v_id', vendorId);
 
     if (status && status.toLowerCase() !== 'all') {
-      query.ilike('status', status);
+      query = query.ilike('status', status);
     }
 
     const { data, error } = await query;
 
     if (error) throw error;
 
-    return { success: true, data };
+    // ✅ Sorting logic
+    const statusPriority = {
+      "pending": 1,
+      "accepted": 2,
+      "preparing": 3,
+      "prepared": 4,
+      "on the way": 5,
+      "delivered": 6,
+    };
+
+    const sortedData = data.sort((a, b) => {
+      const statusDiff =
+        (statusPriority[a.status?.toLowerCase()] || 99) -
+        (statusPriority[b.status?.toLowerCase()] || 99);
+      if (statusDiff !== 0) return statusDiff;
+      return new Date(b.created_ts) - new Date(a.created_ts);
+    });
+
+    // ✅ Manual pagination after filtering
+    const paginatedData = sortedData.slice(offset, offset + limit);
+
+    return { success: true, data: paginatedData };
   } catch (error) {
     console.error("❌ Exception fetching vendor completed orders:", error);
     return { success: false, data: [] };
