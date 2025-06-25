@@ -710,6 +710,7 @@ import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useFetch } from '../context/FetchContext';
 import { uploadFile } from '../utils/uploadFile';
+import TransparentLoader from '../components/Transparentloader';
 
 
 
@@ -721,6 +722,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         const [showCategoryInput, setShowCategoryInput] = useState(false);
         const [previewImage, setPreviewImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [catLoader,setCatLoader]=useState(false)
         const categoryInputRef = useRef(null);
     const { vendorProfile, selectedVendorId ,session} = useAuth();
     const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
@@ -785,9 +787,10 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             JSON.stringify(watchedFields.cuisine || []) !== JSON.stringify(itemData.item_category_id || []) ||
             watchedFields.type !== (itemData.veg ? "veg" : "nonveg");
 
-        const hasImageChanged =
+            const hasImageChanged =
             (previewImage && typeof previewImage === "object") || // ✅ new image uploaded
-            (!previewImage && itemData.img_url); // ✅ image removed
+            (!previewImage && itemData.img_url && itemData.img_url !== "NA"); // ✅ image removed (was present earlier)
+          
 
         return hasTextChanged || hasImageChanged;
     }, [watchedFields, previewImage, itemData]);
@@ -800,7 +803,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 const trimmed = newCategory.trim();
                 if (!trimmed) {
                     return toast.error(MESSAGES.EMPTY_CATEGORY);
-                }
+        }
+        setCatLoader(true)
         
         // Check if category already exists (case-insensitive)
                 const { data: existing, error: checkError } = await supabase
@@ -817,9 +821,11 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         
                 if (existing.length > 0) {
                     toast.error(MESSAGES.CATEGORY_EXISTS);
+                    setCatLoader(false)
                     return;
+
         }
-        setLoading(true)
+        
 
         
                 // ✅ Show loading toast only before inserting
@@ -837,9 +843,9 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     .select();
         
         // toast.dismiss(toastId);
-        setLoading(false)
         
-                if (error) {
+        if (error) {
+                    setCatLoader(false)
                     toast.error(MESSAGES.CATEGORY_ADD_FAIL);
                     console.error(error);
                     return;
@@ -862,7 +868,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
         // ✅ Manually trigger validation
         await trigger('category');
-        
+        setCatLoader(false)
                 toast.success(MESSAGES.CATEGORY_ADDED);
         
                 setNewCategory('');
@@ -884,9 +890,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 type: itemData.veg ? 'veg' : 'nonveg',
             });
             
-            if (itemData.img_url) {
-                setPreviewImage(itemData?.img_url); // 👈 Set URL as preview
-            }
+            if (itemData.img_url && itemData.img_url !== "NA") {
+                setPreviewImage(itemData.img_url); // ✅ Real image
+              } else {
+                setPreviewImage(null); // ✅ No image, so set null
+              }
+              
               
 
             setSelectedType(itemData.veg ? 'veg' : 'nonveg');
@@ -912,10 +921,10 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     
             // ✅ Common item payload
             const itemFields = {
-                item_name: data?.itemName,
-                prep_time: parseInt(data.prepTime),
-                item_price: data?.price,
-                item_quantity: data?.quantity,
+                item_name: data?.itemName.trim(),
+                prep_time: parseInt(data.prepTime.trim()),
+                item_price: data?.price.trim(),
+                item_quantity: data?.quantity.trim(),
                 veg: typeBool,
                 vendor_created_category_id: data?.category,
                 item_category_id: data.cuisine,
@@ -1179,7 +1188,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     </form>
                 
                 </div>
-                
+                {catLoader && <TransparentLoader/>}
             </div>
             <BottomNav />
         </div>

@@ -14,7 +14,7 @@ const FileUploadButton = ({ label, bgColor, Icon, accept, onChange, file, loadin
                 />
             </label>
             <span
-                className={`text-sm truncate max-w-[155px] ${error ? 'text-red-500' : 'text-gray-600'}`}
+                className={`text-sm  w-[250px] md:max-w-[155px]  ${error ? 'text-red-500' : 'text-gray-600'}`}
                 title={file?.name}
             >
                 {error ? (error.message || error) : (loading && file ? 'Uploading...' : (file ? file.name : placeholder))}

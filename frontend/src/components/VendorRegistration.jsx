@@ -53,6 +53,7 @@ import { useAuth } from "../context/authContext";
 import InputField from "./InputField";
 import { useSearch } from "../context/SearchContext";
 import ItemCategory from "./ItemCategory";
+import TransparentLoader from "./Transparentloader";
 
 function VendorRegistration() {
   const [videoFile, setVideoFile] = useState(null);
@@ -131,12 +132,12 @@ function VendorRegistration() {
 
       const shopData = {
         // u_id: user_id,
-        [VENDOR_DATA_KEYS?.VENDOR_NAME]: data[FORM_FIELDS?.NAME],
-        [VENDOR_DATA_KEYS?.SHOP_NAME]: data[FORM_FIELDS?.SHOP_NAME],
-        [VENDOR_DATA_KEYS?.STREET]: data[FORM_FIELDS?.STREET],
-        [VENDOR_DATA_KEYS?.CITY]: data[FORM_FIELDS?.CITY],
-        [VENDOR_DATA_KEYS?.STATE]: data[FORM_FIELDS?.STATE],
-        [VENDOR_DATA_KEYS?.PINCODE]: data[FORM_FIELDS?.PINCODE],
+        [VENDOR_DATA_KEYS?.VENDOR_NAME]: data[FORM_FIELDS?.NAME]?.trim(),
+        [VENDOR_DATA_KEYS?.SHOP_NAME]: data[FORM_FIELDS?.SHOP_NAME]?.trim(),
+        [VENDOR_DATA_KEYS?.STREET]: data[FORM_FIELDS?.STREET]?.trim(),
+        [VENDOR_DATA_KEYS?.CITY]: data[FORM_FIELDS?.CITY]?.trim(),
+        [VENDOR_DATA_KEYS?.STATE]: data[FORM_FIELDS?.STATE]?.trim(),
+        [VENDOR_DATA_KEYS?.PINCODE]: data[FORM_FIELDS?.PINCODE]?.trim(),
         [VENDOR_DATA_KEYS?.SHIFT1_START]: formatTime(startTime1),
         [VENDOR_DATA_KEYS?.SHIFT1_CLOSE]: formatTime(endTime1),
         [VENDOR_DATA_KEYS?.SHIFT2_START]: formatTime(startTime2),
@@ -208,8 +209,12 @@ function VendorRegistration() {
   // ✅ Manual validation for readOnly fields
   const validateCustomFields = () => {
     let isValid = true;
-
-    if (!startTime1) {
+  
+    const startTime1Value = watch("startTime1");
+    const endTime1Value = watch("endTime1");
+    const cuisinesValue = watch(FORM_FIELDS?.CUISINES);
+  
+    if (!startTime1Value) {
       setError("startTime1", {
         type: "manual",
         message: "Start Time is required",
@@ -218,8 +223,8 @@ function VendorRegistration() {
     } else {
       clearErrors("startTime1");
     }
-
-    if (!endTime1) {
+  
+    if (!endTime1Value) {
       setError("endTime1", {
         type: "manual",
         message: "Close Time is required",
@@ -228,7 +233,7 @@ function VendorRegistration() {
     } else {
       clearErrors("endTime1");
     }
-
+  
     if (!paymentFile) {
       setError("paymentFile", {
         type: "manual",
@@ -238,7 +243,7 @@ function VendorRegistration() {
     } else {
       clearErrors("paymentFile");
     }
-
+  
     if (!videoFile && !bannerFile) {
       setError("media", {
         type: "manual",
@@ -248,14 +253,15 @@ function VendorRegistration() {
     } else {
       clearErrors("media");
     }
+  
     if (!selectedAddress?.lat || !selectedAddress?.long) {
-      // toast.error("Please select your location");
       setLocationError(true);
       isValid = false;
     } else {
       setLocationError(false);
     }
-    if (!watchFields?.cuisines || watchFields?.cuisines?.length === 0) {
+  
+    if (!cuisinesValue || cuisinesValue.length === 0) {
       setError(FORM_FIELDS?.CUISINES, {
         type: "manual",
         message: "At least one cuisine is required",
@@ -264,9 +270,10 @@ function VendorRegistration() {
     } else {
       clearErrors(FORM_FIELDS?.CUISINES);
     }
-
+  
     return isValid;
   };
+  
 
   // block click when loading
   React.useEffect(() => {
@@ -435,6 +442,7 @@ function VendorRegistration() {
                           setStartTime1(time);
                           setStartView1(false);
                           setValue("startTime1", time);
+                          clearErrors("startTime1"); // 👈 Add this
                         }}
                       />
                     </div>
@@ -477,6 +485,7 @@ function VendorRegistration() {
                           setEndTime1(time);
                           setEndView1(false);
                           setValue("endTime1", time);
+                          clearErrors("endTime1"); // 👈 Add this
                         }}
                       />
                     </div>
@@ -584,8 +593,11 @@ function VendorRegistration() {
                     bgColor="bg-blue"
                     Icon={HiOutlineVideoCamera}
                     accept="video/*"
-                    onChange={(e) => setVideoFile(e.target.files[0])}
-                    file={videoFile}
+                    onChange={(e) => {
+                      setVideoFile(e.target.files[0]);
+                      clearErrors("media"); // 👈 Add this
+                    }}
+                                        file={videoFile}
                     loading={loading}
                     placeholder={"No video selected"}
                     error={errors?.media} // error pass karo
@@ -596,8 +608,11 @@ function VendorRegistration() {
                     bgColor="bg-green"
                     Icon={IoImageOutline}
                     accept="image/*"
-                    onChange={(e) => setBannerFile(e.target.files[0])}
-                    file={bannerFile}
+                    onChange={(e) => {
+                      setBannerFile(e.target.files[0]);
+                      clearErrors("media"); // 👈 Add this
+                    }}
+                                        file={bannerFile}
                     loading={loading}
                     placeholder={"No banner selected"}
                     error={errors?.media} // error pass karo
@@ -608,8 +623,11 @@ function VendorRegistration() {
                     bgColor="bg-yellow"
                     Icon={IoQrCodeOutline}
                     accept="image/*"
-                    onChange={(e) => setPaymentFile(e.target.files[0])}
-                    file={paymentFile}
+                    onChange={(e) => {
+                      setPaymentFile(e.target.files[0]);
+                      clearErrors("paymentFile"); // 👈 Add this
+                    }}
+                                        file={paymentFile}
                     loading={loading}
                     placeholder={"No QR selected"}
                     error={errors?.paymentFile} // error pass karo
@@ -793,6 +811,8 @@ function VendorRegistration() {
               onClose={() => setShowPopup(false)}
             />
           )}
+                  {waitloading && <TransparentLoader text="Getting current location"/>}
+
         </div>
       </div>
     </div>

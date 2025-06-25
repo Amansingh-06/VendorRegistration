@@ -29,6 +29,7 @@ import BottomNav from "../components/Footer";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
+import TransparentLoader from "../components/Transparentloader";
 
 export default function VendorProfile() {
   const { vendorProfile, selectedVendorId, session, refreshVendorProfile } =
@@ -1037,6 +1038,7 @@ export default function VendorProfile() {
                 {loading ? "Saving..." : "Save Profile"}
               </button>
             </form>
+            {waitloading && <TransparentLoader/>}
           </div>
           <BottomNav />
         </div>

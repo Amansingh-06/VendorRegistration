@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import SearchInput from "./SearchInput";
 import { getAddressFromLatLng } from "../utils/address";
+import TransparentLoader from "./Transparentloader";
 
 // Default marker icon fix for leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -99,6 +100,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
     },[selectedAddress])
     
     const handleCurrentLocation = async () => {
+        setLoading(true)
         // setWaitLoading(true); // if you show spinner
         const toastId = toast.loading("Getting current Location");
 
@@ -118,6 +120,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
 
             toast.dismiss(toastId);
             // setWaitLoading(false);
+            setLoading(false)
 
             if (!success || locError) {
                 console.error("Location Error:", locError);
@@ -129,6 +132,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
         } catch (err) {
             toast.dismiss(toastId);
             // setWaitLoading(false);
+            setLoading(false)
             console.error("❌ Location fetch failed:", err);
         }
     };
@@ -223,6 +227,8 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                         Set Location
                     </button>
                 </div>
+                {loading && <TransparentLoader text="Getting Current Location" />}
+
             </div>
         </div>
     );
