@@ -35,13 +35,14 @@ export const fetchVendorRatings = async (vendorId, page = 1, limit = 5) => {
       .eq('v_id', vendorId)
       .order('created_at', { ascending: false })
       .range(from, to);
-
     if (error) {
       console.error("❌ Error fetching ratings:", error);
       return { success: false, data: null };
     }
+    console.log("Rating data",data)
 
     return { success: true, data };
+
   } catch (err) {
     console.error("❌ Exception in fetchVendorRatings:", err);
     return { success: false, data: null };

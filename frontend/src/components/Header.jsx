@@ -16,6 +16,7 @@ const Header = ({ title = "Registration" }) => {
     const navigate = useNavigate();
 
     return (
+        <>
         <div className="fixed w-full top-0 z-20 backdrop-blur-sm rounded-b-lg max-w-2xl p-2 ">
             <div className="absolute inset-0 rotate-180 overflow-hidden">
                 <svg
@@ -104,8 +105,10 @@ const Header = ({ title = "Registration" }) => {
                 
 
             </div>
+            </div>
             {loggingOut && <Loader/>}
-        </div>
+
+            </>
     );
 };
 
