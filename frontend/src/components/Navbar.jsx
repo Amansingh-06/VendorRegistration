@@ -130,7 +130,7 @@ const Navbar = () => {
                   {/* Floating Icons */}
                   <div>
                       <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 right-8 animate-bounce-slow pointer-events-none" />
-                      <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-5 left-3 animate-float pointer-events-none" />
+                      {/* <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-5 left-3 animate-float pointer-events-none" /> */}
                       <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-4 lg:top-1/3 right-44 animate-float pointer-events-none" />
                       <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl bottom-2 right-18 animate-bounce-slow pointer-events-none" />
                       <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-0 lg:bottom-12 left-35 animate-bounce-slow pointer-events-none" />
@@ -201,7 +201,7 @@ const Navbar = () => {
                         <div className='flex items-center gap-4 lg:gap-6'>
                             <button className='p-2 lg:p-3 text-white hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30'>
                                 <MdOutlineMessage className='w-7 lg:w-8 h-6 lg:h-7 group-hover:text-blue-200 transition-colors drop-shadow-sm' />
-                                <span className='text-xs lg:text-sm font-semibold'>Help</span>
+                                <span className='text-xs lg:text-sm md:font-semibold font-medium'>Help</span>
                             </button>
                         </div>
                     </div>

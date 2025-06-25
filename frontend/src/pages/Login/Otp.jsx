@@ -214,25 +214,25 @@ const Otp = () => {
     }, []);
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen h-full bg-white">
+        <div className="flex flex-col lg:flex-row min-h-screen h-full bg-white ">
             {/* Image */}
-            <div className="relative w-full lg:w-[68%] overflow-hidden">
+            <div className="relative w-full lg:w-[68%] overflow-hidden ">
                 <img
                     src={LoginBGimage}
                     alt="Login Visual"
-                    className="object-cover w-full h-[39vh] lg:h-screen"
+                    className="object-cover w-full h-[52vh] lg:h-screen"
                 />
-                <Link to="/" className="absolute text-orange bg-white rounded-full p-3 text-3xl lg:text-3xl font-bold top-4 lg:top-5 left-1 lg:left-4 z-20"><FiArrowLeft /></Link>
-            </div>
+        <Link to="/" className="absolute text-orange bg-white rounded-full p-3 text-3xl lg:text-3xl font-bold top-4 lg:top-5 left-1 lg:left-4 z-20"><FiArrowLeft /></Link>
+        </div>
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
                 id="otp-form"
-                className="relative p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-start md:justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto min-h-[52vh] lg:h-screen -mt-5 lg:mt-0"
+                className="relative p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-[66vh]  lg:max-h-none lg:min-h-[66vh] -mt-5 lg:mt-0"
                 >
-                <div className="flex items-center justify-center mb-3 lg:mb-4 text-sm lg:text-lg font-medium text-slate-700 ">
+                <div className="flex items-center justify-center mb-3 lg:mb-4 text-sm lg:text-lg font-medium text-gray ">
                     {phone && (
                         <>
                             OTP sent to&nbsp;{phone}
@@ -266,7 +266,7 @@ const Otp = () => {
                     <FaIceCream className="absolute text-pink opacity-15 text-2xl lg:text-4xl top-1/4 right-1/4 animate-bounce-slow pointer-events-none" />
 
                 </div>
-                <h1 className="text-3xl text-gray md:text-2xl lg:text-4xl font-extrabold mb-4 ">
+                <h1 className="text-3xl text-gray md:text-2xl lg:text-4xl font-extrabold mb-4  ">
                     {/* {isLogin ? `Welcome, ${userName}` : "Registration"} */}
                 </h1>
 
@@ -317,7 +317,7 @@ const Otp = () => {
                 )} */}
 
                 {/* OTP Input */}{/* OTP Input */}
-                <div className="space-y-2 text-slate-700 mt-4">
+                <div className="space-y-1 text-gray mt-4">
                     <label className="text-xs font-medium ">Enter OTP</label>
                     <OTPInput
                         value={otp}
@@ -338,11 +338,11 @@ const Otp = () => {
                             width: "14%",
                             height: "60px",
                             textAlign: "center",
-                            borderBottom: `1px solid ${otp.length === 6 ? "green" : "#334155"
+                            borderBottom: `2px solid ${otp.length === 6 ? "green" : "#d1d5db"
                                 }`,
                             outline: "none",
                             backgroundColor: "#ffffff",
-                            color: "#334155",
+                            color: "#374151",
                             fontSize: "1.125rem",
                         }}
                         renderInput={(props) => (
@@ -385,11 +385,13 @@ const Otp = () => {
                     <button
                         type="submit"
                         name="defaultSignup"
-                        className={`flex items-center justify-center gap-2 md:gap-3 w-full lg:w-[200px] text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg z-50
-    ${!isValid || otp?.length !== 6
-                                ? "bg-orange-200 cursor-not-allowed"
-                                : "bg-orange hover:bg-orange/90 cursor-pointer hover:scale-95"
+                        className={`flex items-center  justify-center gap-2 md:gap-3 w-full lg:w-[120px] text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg z-50
+                            ${
+                              isValid && otp?.length === 6
+                                ? "bg-orange text-white hover:bg-orange/90 hover:scale-95 cursor-pointer"
+                                : "bg-orange/50 text-white cursor-not-allowed opacity-70"
                             }`}
+                          
                         disabled={authenticating}
                     >
                         {isLogin ? "Login" : "Sign Up"}

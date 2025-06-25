@@ -118,11 +118,13 @@ export default function ItemCategory({
                                 className="flex items-center px-3 py-1 border border-orange-500 bg-orange-100 text-orange-700 rounded-lg text-sm cursor-pointer whitespace-nowrap"
                             >
                                 <input
-                                    type="checkbox"
-                                    checked={true}
-                                    onChange={() => toggleItem(c_id)}
-                                    className="accent-orange-500 mr-1 w-4 h-4"
-                                />
+  type="checkbox"
+  checked={true}
+  onChange={() => toggleItem(c_id)}
+  className="w-4 h-4 mr-1 rounded border border-orange-500 bg-orange-500 text-white checked:bg-orange-500 checked:border-orange-500 appearance-none 
+             checked:before:content-['✔'] checked:before:text-white checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+/>
+
                                 {getNameById(c_id)}
                             </label>
                         ))}
@@ -143,7 +145,11 @@ export default function ItemCategory({
                                     type="checkbox"
                                     checked={selectedIds.includes(String(c_id))}
                                     onChange={() => toggleItem(c_id)}
-                                    className="accent-orange-500 mr-1 w-4 h-4"
+                                    className="w-4 h-4 mr-1 rounded border border-orange-500 appearance-none 
+             bg-white checked:bg-orange-500 checked:border-orange-500 
+             checked:before:content-['✔'] checked:before:text-white 
+             checked:before:flex checked:before:items-center checked:before:justify-center 
+             checked:before:text-xs checked:before:h-full checked:before:w-full"
                                 />
                                 {name}
                             </label>

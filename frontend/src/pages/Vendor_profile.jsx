@@ -179,7 +179,7 @@ export default function VendorProfile() {
           city: data.city || "",
           state: data.state || "",
           pincode: data.pincode || "",
-          note: data.note_from_vendor || "",
+          note: data.note_from_vendor === 'NA' ? '' : data.note_from_vendor || '',
         });
         if (data.latitude && data.longitude) {
           const loc = {
@@ -219,7 +219,7 @@ export default function VendorProfile() {
           city: data.city || "",
           state: data.state || "",
           pincode: data.pincode || "",
-          note: data.note_from_vendor || "",
+          note: data.note_from_vendor === 'NA' ? '' : data.note_from_vendor || '',
           cuisines: data.categories_available || [],
           banner: data.banner_url || "",
           video: data.video_url || "",
@@ -673,6 +673,8 @@ export default function VendorProfile() {
                       <input
                         type="text"
                         id="shift2_start"
+                        placeholder="e.g. 03:30 pm"
+
                         value={
                           startTime2 && startTime2 !== "00:00:00"
                             ? moment(startTime2, "HH:mm:ss").format("hh:mm A")
@@ -706,6 +708,7 @@ export default function VendorProfile() {
                       <input
                         type="text"
                         id="shift2_close"
+                        placeholder="e.g. 03:30 pm"
                         value={
                           endTime2 && endTime2 !== "00:00:00"
                             ? moment(endTime2, "HH:mm:ss").format("hh:mm A")
@@ -1000,7 +1003,7 @@ export default function VendorProfile() {
               />
 
               {/* Additional Note */}
-              <section className="flex flex-col rounded-2xl shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-2xl shadow-lg px-4 py-8">
                 <label
                   className="block mb-1 font-semibold text-gray-700"
                   htmlFor="note"
