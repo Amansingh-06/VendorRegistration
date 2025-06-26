@@ -155,7 +155,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-600 hover:text-black text-xl font-bold"
+                    className="absolute top-3 right-4 text-gray-600 hover:text-black text-xl font-bold"
                 >
                     ✕
                 </button>
@@ -164,7 +164,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
 
                 {/* Search Input */}
                 <div className="relative mb-4">
-                    <SearchInput />
+                    <SearchInput placeholder={"Search your location"} />
                 </div>
 
                 {/* Map */}
@@ -201,7 +201,8 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                 {selectedAddress && (
                     <div className="mt-4 text-sm text-gray-800 border-t pt-3">
                         <p>
-                            <strong>Selected:</strong>{" "}
+                            {/* <strong>Selected:</strong>{" "} */}
+                            <span className=" text-orange">Selected:</span>{" "}
                             {selectedAddress?.landmark || "No address found"}
                         </p>
                     </div>
@@ -219,8 +220,8 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
                             }
                         }}
                         disabled={!selectedAddress}
-                        className={`px-6 py-2 rounded-full text-white font-medium ${selectedAddress
-                                ? "bg-green-600 hover:bg-green-700"
+                        className={`px-6 py-2 rounded-lg text-white font-medium ${selectedAddress
+                                ? "bg-orange-300 hover:bg-orange-300"
                                 : "bg-gray-400 cursor-not-allowed"
                             }`}
                     >

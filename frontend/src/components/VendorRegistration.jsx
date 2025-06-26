@@ -14,6 +14,8 @@ import { PiMapPinAreaLight } from "react-icons/pi";
 import { TbMapPinCode } from "react-icons/tb";
 import { getCurrentLocation } from "../utils/address";
 import { uploadFile } from "../utils/uploadFile";
+import { TbBuildingEstate } from "react-icons/tb";
+
 import {
   BUCKET_NAMES,
   DEFAULTS,
@@ -376,7 +378,7 @@ function VendorRegistration() {
             {/* Card 1: Name, Shop Name, Timings, Upload */}
             <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">
               {/* Name & Shop Name */}
-              <h1 className="md:text-2xl text-lg font-semibold text-gray-500">
+              <h1 className="text-xl md:text-2xl lg:text-2xl font-medium text-gray">
                 Basic Details
               </h1>
               <div className=" flex flex-col gap-5">
@@ -408,7 +410,7 @@ function VendorRegistration() {
                 {/* Timings */}
                 {/* ===== Shift 1 ===== */}
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-700 mb-2">
+                  <h2 className="text-lg font-semibold text-gray-500 mb-2">
                     Shift 1
                   </h2>
                   <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -423,7 +425,7 @@ function VendorRegistration() {
                           value={startTime1 ? startTime1.format("hh:mm A") : ""}
                           onClick={() => setStartView1(true)}
                           placeholder="Start At"
-                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                          className={`peer pl-10 pt-3 pb-3 w-full text-gray-800 rounded border transition-all placeholder-transparent
                             ${
                               errors?.startTime1
                                 ? "border-red-500 focus:border-red-500"
@@ -434,7 +436,7 @@ function VendorRegistration() {
                             focus:outline-none`}                        />
                         <label
                           htmlFor="startTime1"
-                          className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+                          className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
           peer-placeholder-shown:top-4 
           peer-placeholder-shown:text-gray-500 
           peer-focus:-top-2.5 
@@ -473,7 +475,7 @@ function VendorRegistration() {
                           value={endTime1 ? endTime1.format("hh:mm A") : ""}
                           onClick={() => setEndView1(true)}
                           placeholder="Close At"
-                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border text-gray-800 transition-all placeholder-transparent
                             ${
                               errors?.endTime1
                                 ? "border-red-500 focus:border-red-500"
@@ -484,7 +486,7 @@ function VendorRegistration() {
                             focus:outline-none`}                        />
                         <label
                           htmlFor="endTime1"
-                          className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+                          className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
           peer-placeholder-shown:top-4 
           peer-placeholder-shown:text-gray-500 
           peer-focus:-top-2.5 
@@ -514,11 +516,12 @@ function VendorRegistration() {
                   </div>
 
                   {/* ===== Shift 2 ===== */}
-                  <h2 className="text-lg  font-semibold text-gray-700 mb-2">
+                  <h2 className="text-lg  font-semibold text-gray-500 mb-2">
                     Shift 2
                     <span className="text-gray-500 font-normal">
                       {" "}
-                      (Optional)
+                      <span className="text-sm">(Optional)</span>
+                      
                     </span>{" "}
                   </h2>
                   <div className="flex flex-col md:flex-row gap-4">
@@ -533,7 +536,7 @@ function VendorRegistration() {
                           value={startTime2 ? startTime2.format("hh:mm A") : ""}
                           onClick={() => setStartView2(true)}
                           placeholder="Start At"
-                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border text-gray-800 transition-all placeholder-transparent
                             ${
                               errors?.startTime2
                                 ? "border-red-500 focus:border-red-500"
@@ -544,7 +547,7 @@ function VendorRegistration() {
                             focus:outline-none`}                        />
                         <label
                           htmlFor="startTime2"
-                          className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+                          className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
           peer-placeholder-shown:top-4 
           peer-placeholder-shown:text-gray-500 
           peer-focus:-top-2.5 
@@ -582,7 +585,7 @@ function VendorRegistration() {
                           value={endTime2 ? endTime2.format("hh:mm A") : ""}
                           onClick={() => setEndView2(true)}
                           placeholder="Close At"
-                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                          className={`peer pl-10 pt-3 pb-3 w-full text-gray-800 rounded border transition-all placeholder-transparent
                             ${
                               errors?.endTime2
                                 ? "border-red-500 focus:border-red-500"
@@ -593,7 +596,7 @@ function VendorRegistration() {
                             focus:outline-none`}                        />
                         <label
                           htmlFor="endTime2"
-                          className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+                          className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
           peer-placeholder-shown:top-4 
           peer-placeholder-shown:text-gray-500 
           peer-focus:-top-2.5 
@@ -626,7 +629,7 @@ function VendorRegistration() {
                 <div className="flex flex-col md:flex-row justify-between gap-4 mt-3">
                   <FileUploadButton
                     label="Select Video"
-                    bgColor="bg-blue"
+                    bgColor="bg-orange-300"
                     Icon={HiOutlineVideoCamera}
                     accept="video/*"
                     onChange={(e) => {
@@ -641,7 +644,7 @@ function VendorRegistration() {
 
                   <FileUploadButton
                     label="Select Banner"
-                    bgColor="bg-green"
+                    bgColor="bg-orange-300"
                     Icon={IoImageOutline}
                     accept="image/*"
                     onChange={(e) => {
@@ -656,7 +659,7 @@ function VendorRegistration() {
 
                   <FileUploadButton
                     label="Select QR"
-                    bgColor="bg-yellow"
+                    bgColor="bg-orange-300"
                     Icon={IoQrCodeOutline}
                     accept="image/*"
                     onChange={(e) => {
@@ -673,7 +676,7 @@ function VendorRegistration() {
             </div>
             {/* Address */}
             <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-6 bg-white">
-              <h1 className="md:text-2xl text-lg font-semibold text-gray-500">
+              <h1 className="text-xl md:text-2xl lg:text-2xl font-medium text-gray">
                 Address & Location
               </h1>
 
@@ -710,7 +713,7 @@ function VendorRegistration() {
                 {/* State */}
                 <InputField
                   id="state"
-                  icon={PiMapPinAreaLight}
+                  icon={TbBuildingEstate}
                   label="State"
                   placeholder="State"
                   register={register}
@@ -745,11 +748,11 @@ function VendorRegistration() {
                     type="button"
                     onClick={() => setShowPopup(true)}
                     disabled={waitloading}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition 
+                    className={`flex items-center gap-2 px-4 py-2 font-medium rounded-md text-white transition 
     ${
       waitloading
         ? "bg-gray-400 cursor-not-allowed"
-        : "bg-blue cursor-pointer hover:bg-blue-700"
+        : "bg-orange-300 cursor-pointer hover:bg-orange-300"
     }`}
                   >
                     <MdAddLocationAlt className="text-lg" />
@@ -777,18 +780,18 @@ function VendorRegistration() {
                     disabled={waitloading}
                     className={`flex justify-center items-center rounded-full p-2 
     ${
-      waitloading ? "bg-gray-400 cursor-not-allowed" : "bg-teal cursor-pointer"
+      waitloading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-300 cursor-pointer"
     }`}
                   >
                     <MdGpsFixed className="text-2xl text-white" />
                   </button>
                 </div>
                 {locationError ? (
-  <p className="text-sm text-red-500">
+  <p className="text-sm text-red-500 md:mt-2">
     Please select your location
   </p>
 ) : selectedAddress ? (
-  <p className="mt-2 text-sm text-gray-700">
+  <p className="md:mt-2 text-sm text-gray-800 bg-green-200 flex justify-center items-center">
     Selected Location: {selectedAddress?.landmark}
   </p>
 ) : null}
@@ -816,11 +819,11 @@ function VendorRegistration() {
                 rows={4}
                 {...register("note")}
                 placeholder="Enter any note (optional)"
-                className="peer w-full border border-gray-300 rounded-lg shadow-lg p-3 placeholder-transparent focus:outline-none focus:border-orange transition-all resize-none"
+                className="peer w-full border border-gray-300 rounded-lg text-gray-800 shadow-lg p-3 placeholder-transparent focus:outline-none focus:border-orange transition-all resize-none"
               />
               <label
                 htmlFor="note"
-                className="absolute left-3 -top-2.5 text-sm bg-white text-black font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
+                className="absolute left-3 -top-2.5 text-sm bg-white text-gray-500 font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
               >
                 Note (optional)
               </label>
@@ -832,10 +835,10 @@ function VendorRegistration() {
               onClick={onFormSubmit}
               // disabled={isFormIncomplete}
               disabled={waitloading}
-              className={`py-3 rounded-lg shadow-lg  transition ${
+              className={`py-3 rounded-lg shadow-lg text-white font-medium  transition ${
                 isFormIncomplete
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-primary hover:bg-indigo-800 cursor-pointer text-white"
+                  : "bg-orange hover:bg-orange-400 cursor-pointer text-white"
               }`}
             >
               {loading ? "Creating Account..." : "Create Account"}

@@ -91,15 +91,15 @@ export default function ItemCategory({
     };
 
     return (
-        <div className="p-4 shadow-lg border border-gray-300 rounded-2xl w-full bg-white">
+        <div className="p-4 shadow-lg border border-gray-300 rounded-lg w-full bg-white">
             <h1 className="text-base font-semibold text-gray-500 mb-3">Select Cuisine</h1>
 
             <div className="relative">
-                <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-orange-500 text-lg" />
+                <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500 text-lg" />
                 <input
                     type="text"
                     placeholder="Search Here"
-                    className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:outline-none ${error ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-orange-400"
+                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none ${error ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-orange-400"
                         }`}
                     value={query}
                     onChange={handleInputChange}
@@ -139,7 +139,7 @@ export default function ItemCategory({
                         {suggestions.map(({ c_id, name }) => (
                             <label
                                 key={c_id}
-                                className="flex items-center px-3 py-1 border border-gray-300 rounded-full bg-gray-100 hover:bg-orange-100 hover:border-orange-400 cursor-pointer text-sm"
+                                className="flex items-center px-3 py-1 border border-gray-300 rounded-lg bg-gray-100 hover:bg-orange-100 hover:border-orange-400  cursor-pointer text-sm"
                             >
                                 <input
                                     type="checkbox"

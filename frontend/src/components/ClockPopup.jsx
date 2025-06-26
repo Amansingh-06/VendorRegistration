@@ -94,7 +94,7 @@ export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
                         onTimeSelect(value);
                         onClose();
                     }}
-                    className="mt-6 bg-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700 w-full max-w-[200px]"
+                    className="mt-6 bg-orange-300 text-white px-6 py-2 rounded-lg hover:bg-orange-300 w-full max-w-[200px]"
                 >
                     {TIME_CLOCK_CONFIG.SET_BUTTON_LABEL}
                 </button>

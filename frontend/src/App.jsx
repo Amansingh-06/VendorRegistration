@@ -25,7 +25,7 @@ import Layout from './pages/Layout'; // 👈 import your new Layout
 function App() {
   return (
     <Router>
-      <div className="font-family-poppins">
+      <div className="poppins-regular">
         <Routes>
 
           {/* Guest Routes */}

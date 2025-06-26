@@ -21,7 +21,7 @@ function InputField({
         {...register(id, validation)}
         onKeyDown={onKeyDown}
         onInput={onInput}
-        className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+        className={`peer pl-10 pt-3 pb-3 w-full rounded border text-gray-800 transition-all placeholder-transparent
           ${
             error
               ? "border-red-500 focus:border-red-500"
@@ -34,7 +34,7 @@ function InputField({
 
       <label
         htmlFor={id}
-        className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
+        className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
           peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 
           peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold 
           peer-not-placeholder-shown:font-semibold"

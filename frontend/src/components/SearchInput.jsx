@@ -126,7 +126,7 @@ console.log("Address,data",address)
                         setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
-                    className="w-full text-sm lg:text-base bg-white pl-10 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+                    className="w-full text-sm lg:text-base bg-white pl-10 pr-12 py-2 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
                 />
 
                 {/* Suggestions */}
