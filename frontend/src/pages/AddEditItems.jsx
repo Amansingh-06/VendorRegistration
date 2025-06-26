@@ -912,8 +912,10 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             
     
     const onSubmit = async (data) => {
-        console.log(data)
-        try {
+        if (isEditMode && !isFormChanged) {
+            toast.error("No updates found!");
+            return;
+          }        try {
             setLoading(true);
     
             // ✅ Convert type string to boolean
@@ -999,14 +1001,14 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     console.log("isValid",isValid)
    
     return (
-        <div className='w-full min-h-screen mx-auto flex justify-center bg-gray-100'>
+        <div className='w-full  mx-auto flex justify-center'>
             {loading && <Loader/>}
-            <div className='max-w-2xl w-full mb-15 '>
-                <Header title={isEditMode ? 'Edit Item' : 'Add Item'} />
-            <div className='max-w-2xl w-full mt-15 pt-6  space-y-6 rounded-2xl shadow-lg  '>
+            <div className='max-w-2xl w-full bg-gray-100  border-2  '>
+                {/* <Header title={isEditMode ? 'Edit Item' : 'Add Item'} /> */}
+            <div className='max-w-2xl w-full mt-10 pt-6  space-y-6 rounded-2xl shadow-lg  '>
                     
-                    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6 p-2 py-8 space-y-6   bg-white">
-                        <div className='flex flex-col gap-6 rounded-2xl shadow-lg border border-gray-300  p-5'>
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6  p-2 py-8 space-y-6   bg-gray-100">
+                        <div className='flex flex-col gap-6 rounded-2xl shadow-lg border-1 border-gray-300 bg-white  p-5'>
                             <FormInput
                                 id="itemName"
                                 label="Item Name"
@@ -1014,6 +1016,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Item name is required' }}
                                 error={errors.itemName}
+                                watch={watch}
                                 inputProps={{
                                     onInput: (e) => {
                                         e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, '');
@@ -1028,6 +1031,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Price is required' }}
                                 error={errors.price}
+                                watch={watch}
+
                                 inputProps={{
                                     onInput: (e) => {
                                         e.target.value = e.target.value.replace(/[^0-9.]/g, '');
@@ -1042,6 +1047,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 register={register}
                                 validation={{ required: 'Time is required' }}
                                 error={errors.prepTime}
+                                watch={watch}
+
                                 inputProps={{
                                     onInput: (e) => {
                                         e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -1055,11 +1062,14 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 icon={FaHashtag}
                                 register={register}
                                 validation={{ required: 'Quantity is required' }}
+                                watch={watch}
+
                                 error={errors.quantity}
                                 inputProps={{
                                     onInput: (e) => {
-                                        e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '');
-                                    },
+                                        e.target.value = e.target.value.replace(/[^A-Za-z0-9. ]/g, '');
+                                      }
+                                      
                                 }}
                             />
 
@@ -1136,8 +1146,9 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                         value={newCategory}
                                         onChange={(e) => {
                                             const val = e.target.value;
-                                            if (/^[a-zA-Z]*$/.test(val)) setNewCategory(val);
-                                        }}
+                                            if (/^[a-zA-Z\s]*$/.test(val)) setNewCategory(val);
+                                          }}
+                                          
                                         placeholder="Add new category"
                                         className="flex-1 px-3 py-2 border rounded-md"
                                     />
@@ -1176,7 +1187,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                         <button
                             type="submit"
                             // disabled={!isFormChanged || loading || !isValid}
-                            className={`w-full px-4 py-2 text-white rounded-md transition 
+                            className={`w-full px-4 mb-5 py-2 text-white rounded-md transition 
     ${!isFormChanged || loading || !isValid
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : "bg-blue-600 hover:bg-blue-700"
@@ -1188,9 +1199,10 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     </form>
                 
                 </div>
-                {catLoader && <TransparentLoader/>}
+                {catLoader && <TransparentLoader />}
+                <BottomNav />
             </div>
-            <BottomNav />
+            
         </div>
     );
 };

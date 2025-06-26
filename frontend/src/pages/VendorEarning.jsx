@@ -131,9 +131,9 @@ const VendorEarnings = () => {
 
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  const weekEnd = today;
   const monthStart = startOfMonth(today);
-  const monthEnd = endOfMonth(today);
+  const monthEnd = today;
 
   useEffect(() => {
     if (vendorId && vendorProfile?.status === "verified") {
@@ -144,11 +144,11 @@ const VendorEarnings = () => {
         const today = new Date();
         const weekRange = {
           start: startOfWeek(today, { weekStartsOn: 1 }),
-          end: endOfWeek(today, { weekStartsOn: 1 }),
+          end: today,
         };
         const monthRange = {
           start: startOfMonth(today),
-          end: endOfMonth(today),
+          end: today,
         };
 
         let weekOrders = 0,
@@ -254,10 +254,10 @@ const VendorEarnings = () => {
   }, [thisMonth]);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
-      <div className="max-w-2xl mx-auto w-full space-y-6 rounded-lg shadow-lg min-h-[92vh]">
-        <Header title="Earnings" />
-        <div className="max-w-2xl mx-auto w-full px-4 py-15 mt-15 space-y-6">
+    <div className="">
+      <div className="max-w-2xl mx-auto w-full bg-gray-100 space-y-6 min-h-[92vh]">
+        {/* <Header title="Earnings" /> */}
+        <div className="max-w-2xl mx-auto w-full px-4 pt-10 pb-5 mt-15 space-y-6">
           {vendorProfile?.status !== "verified" ? (
             <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
               <h2 className="font-semibold text-lg text-center mb-2">
@@ -371,7 +371,8 @@ const VendorEarnings = () => {
                     <Calendar
                       selectRange={true}
                       onChange={onChangeCalendar}
-                      value={dateRange}
+                        value={dateRange}
+                        maxDate={new Date()} 
                     />
                   </div>
                 )}

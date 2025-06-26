@@ -18,115 +18,46 @@ import ManageItemsPage from './pages/Manage-item';
 import InstallPrompt from './components/InstallPrompt';
 import AdminProtectedRoute from './Routes/AdminAccess';
 
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './pages/Layout'; // 👈 import your new Layout
+// ... all other imports remain
+
 function App() {
   return (
     <Router>
-      <div className="flex flex-col gap-2  font-family-poppins">
-        {/* ✅ Common Header (optional) */}
-
-
-        {/* ✅ Routes */}
+      <div className="font-family-poppins">
         <Routes>
 
-          
+          {/* Guest Routes */}
+          <Route path="/" element={<ProtectedGuestRoute><Login /></ProtectedGuestRoute>} />
+          <Route path="/otp" element={<ProtectedGuestRoute><Otp /></ProtectedGuestRoute>} />
+          <Route path="/vendor-registration" element={<ProtectedGuestRoute><RegistrationPage /></ProtectedGuestRoute>} />
+
+          {/* Protected Layout for all dashboard pages */}
           <Route
-            path="/vendor-registration"
             element={
-              <ProtectedGuestRoute>
-                <RegistrationPage />
-              </ProtectedGuestRoute>
+              <AdminProtectedRoute fallback={<PrivateRoute><Layout /></PrivateRoute>}>
+                <Layout />
+              </AdminProtectedRoute>
             }
-          />
-          <Route path="/" element={
-            <ProtectedGuestRoute>
-              <Login />
-            </ProtectedGuestRoute>
-          } />
-          <Route
-            path="/otp"
-            element={
-              <ProtectedGuestRoute>
-                <Otp />
-              </ProtectedGuestRoute>
-            }
-          />
-          
-
-          {/* ✅ Protected Routes (Admin + Vendor) */}
-          <Route path="/home" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <OrderPage />
-              </PrivateRoute>
-            }>
-              <OrderPage />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/manage-items" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <ManageItemsPage />
-              </PrivateRoute>
-            }>
-              <ManageItemsPage />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/Add-items" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <AddEditItem />
-              </PrivateRoute>
-            }>
-              <AddEditItem />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/earning" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <VendorEarnings />
-              </PrivateRoute>
-            }>
-              <VendorEarnings />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/address" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <Address />
-              </PrivateRoute>
-            }>
-              <Address />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/edit_address" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <EditAddress />
-              </PrivateRoute>
-            }>
-              <EditAddress />
-            </AdminProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <AdminProtectedRoute fallback={
-              <PrivateRoute>
-                <VendorProfile />
-              </PrivateRoute>
-            }>
-              <VendorProfile />
-            </AdminProtectedRoute>
-          } />
-
-          
-          {/* <Route path='/registration' element={<RegistrationPage />} /> */}
-
+          >
+            {/* Routes under Layout */}
+            <Route path="/home" element={<OrderPage />} />
+            <Route path="/manage-items" element={<ManageItemsPage />} />
+            <Route path="/add-items" element={<AddEditItem />} />
+            <Route path="/earning" element={<VendorEarnings />} />
+            <Route path="/profile" element={<VendorProfile />} />
+            <Route path="/address" element={<Address />} />
+            <Route path="/edit_address" element={<EditAddress />} />
+          </Route>
 
         </Routes>
+
         <InstallPrompt />
-        
       </div>
     </Router>
   );
 }
 
 export default App;
+

@@ -79,7 +79,7 @@ const TypeRadio = ({ register, setValue, error, watch }) => {
 
     return (
         <div className="mb-6 ">
-            <div className="rounded-2xl shadow-lg p-5 border border-gray-300">
+            <div className="rounded-2xl bg-white shadow-lg p-5 border border-gray-300">
                 <h3 className="text-base font-semibold text-gray-500 mb-2">Select Type</h3>
                 <div className="flex gap-6 flex-wrap">
                     {['veg', 'nonveg'].map((type) => (

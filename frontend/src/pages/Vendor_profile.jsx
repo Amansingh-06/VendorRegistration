@@ -396,9 +396,19 @@ export default function VendorProfile() {
 
   const onSubmit = async (formData) => {
     if (!session?.user?.id) return alert("User not logged in");
-
+  
+    if (isFormIncomplete) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+  
+    if (!isChanged) {
+      toast.error("No changes made.");
+      return;
+    }
+  
     setLoading(true);
-
+  
     try {
       const [uploadedVideoUrl, uploadedBannerUrl, uploadedQrUrl] =
         await Promise.all([
@@ -406,11 +416,11 @@ export default function VendorProfile() {
           bannerFile ? uploadFile(bannerFile, BUCKET_NAMES.BANNER) : bannerUrl,
           qrFile ? uploadFile(qrFile, BUCKET_NAMES.PAYMENT) : qrUrl,
         ]);
-
+  
       if (bannerFile) setBannerUrl(uploadedBannerUrl);
       if (videoFile) setVideoUrl(uploadedVideoUrl);
       if (qrFile) setQrUrl(uploadedQrUrl);
-
+  
       const insertData = {
         v_name: formData?.vendor_name,
         shop_name: formData?.shop_name,
@@ -433,29 +443,30 @@ export default function VendorProfile() {
         u_id: vendorProfile?.u_id,
         updated_at: new Date(),
       };
-
+  
       const { error } = await supabase
         .from(SUPABASE_TABLES.VENDOR)
         .upsert(insertData, { onConflict: "v_id" });
-
+  
       if (error) {
         console.error("❌ Supabase error:", error);
         toast.error("Update Fail");
       } else {
         toast.success("Profile Updated Successfully");
-
+  
         // ✅ Refresh the vendor profile after update
         await refreshVendorProfile();
-
+  
         navigate("/home");
       }
     } catch (err) {
       console.error("Upload failed:", err.message);
       toast.error("Upload failed");
     }
-
+  
     setLoading(false);
   };
+  
 
   const bannerInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -502,16 +513,18 @@ export default function VendorProfile() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center items-start ">
+    <div className=" flex justify-center items-start ">
       {loading && <Loader />}
 
-      <div className="max-w-2xl shadow-lg rounded-2xl ">
-        <Header title="Profile" />
-        <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mt-18 py-10  md:p-6 p-3">
-          <div className="max-w-2xl mx-auto ">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* <div className="max-w-2xl shadow-lg rounded-2xl "> */}
+        {/* <Header title="Profile" /> */}
+        
+      {/* </div> */}
+      <div className="  max-w-2xl w-full md:mt-15 mt-18  shadow-lg bg-gray-100  md:p-6 p-3">
+          <div className="max-w-2xl mx-auto  ">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
               {/* Basic Info */}
-              <section className="flex flex-col rounded-2xl shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-2xl bg-white border-gray-300 border-1 shadow-lg px-6 py-8">
                 <h2 className="text-xl font-semibold text-gray-500 mb-4">
                   Basic Information
                 </h2>
@@ -735,7 +748,7 @@ export default function VendorProfile() {
               </section>
 
               {/* Media Uploads */}
-              <section className="flex flex-col rounded-2xl shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-2xl  bg-white  border-gray-300 border-1 shadow-lg px-6 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                   {/* Banner Image */}
                   <div className="flex flex-col items-center border-dashed border-primary border-2 p-4">
@@ -831,7 +844,7 @@ export default function VendorProfile() {
               </section>
 
               {/* Address Section */}
-              <section className="flex flex-col rounded-2xl shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-2xl  border-gray-300 border-1 bg-white shadow-lg px-6 py-8">
                 <h2 className="text-xl font-semibold text-gray-500 mb-4">
                   Address
                 </h2>
@@ -1003,7 +1016,7 @@ export default function VendorProfile() {
               />
 
               {/* Additional Note */}
-              <section className="flex flex-col rounded-2xl shadow-lg px-4 py-8">
+              <section className="flex flex-col rounded-2xl  border-gray-300 border-1 bg-white shadow-lg px-4 py-8">
                 <label
                   className="block mb-1 font-semibold text-gray-700"
                   htmlFor="note"
@@ -1022,7 +1035,7 @@ export default function VendorProfile() {
               {/* Submit */}
               <button
                 type="submit"
-                disabled={loading || isFormIncomplete || !isChanged}
+                disabled={loading}
                 title={
                   loading
                     ? "Saving..."
@@ -1032,7 +1045,7 @@ export default function VendorProfile() {
                     ? "No changes made"
                     : ""
                 }
-                className={`mt-2 mb-15 px-4 w-full py-2 rounded text-white ${
+                className={`mt-2 md:mb-5 mb-8 px-4 w-full py-2 rounded text-white ${
                   loading || isFormIncomplete || !isChanged
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-primary cursor-pointer"
@@ -1045,7 +1058,6 @@ export default function VendorProfile() {
           </div>
           <BottomNav />
         </div>
-      </div>
     </div>
   );
 }

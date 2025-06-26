@@ -89,6 +89,7 @@ function VendorRegistration() {
     trigger,
     setError,
     clearErrors,
+    getValues
   } = useForm({ mode: "onChange" });
 
   const watchFields = {
@@ -288,12 +289,12 @@ function VendorRegistration() {
     };
   }, [showPopup, loading]);
 
-  // Check if form is incomplete
-  const filteredErrors = Object.entries(errors).filter(([key, value]) => {
-    // ❌ Ignore only this specific message
-    if (value?.ref === undefined) return false;
-    return true; // ✅ Count all other errors
-  });
+  // // Check if form is incomplete
+  // const filteredErrors = Object.entries(errors).filter(([key, value]) => {
+  //   // ❌ Ignore only this specific message
+  //   if (value?.ref === undefined) return false;
+  //   return true; // ✅ Count all other errors
+  // });
 
   //for validation
   const isFormIncomplete =
@@ -312,7 +313,7 @@ function VendorRegistration() {
     loading ||
     !selectedAddress?.lat ||
     !selectedAddress?.long ||
-    filteredErrors.length > 0;
+    Object.keys(errors).length > 0
 
   //current location
   const handleCurrentLocation = async () => {
@@ -347,15 +348,19 @@ function VendorRegistration() {
 
   //submit function
 
-  const onFormSubmit = handleSubmit(async (data) => {
-    const customValid = validateCustomFields();
-    if (!customValid) {
+  const onFormSubmit = async () => {
+    const isRHFValid = await trigger(); // validate all registered fields
+    const isCustomValid = validateCustomFields(); // validate custom fields
+  
+    if (!isRHFValid || !isCustomValid) {
       toast.error("Please complete required fields.");
       return;
     }
-
-    await onSubmit(data); // your actual function
-  });
+  
+    const data = getValues(); // get validated form values
+    await onSubmit(data); // your actual submit logic
+  };
+  
 
   return (
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 md:px-4">
@@ -385,6 +390,7 @@ function VendorRegistration() {
                     error={errors?.name}
                     onKeyDown={nameKeyDownHandler}
                     onInput={InputCleanup}
+                    value={watchFields?.name}
                   />
                   <InputField
                     id="shopName"
@@ -395,6 +401,8 @@ function VendorRegistration() {
                     error={errors?.shopName}
                     onKeyDown={shopNameKeyDownHandler}
                     onInput={InputCleanup}
+                    value={watchFields?.shopName}
+
                   />
                 </div>
                 {/* Timings */}
@@ -415,8 +423,15 @@ function VendorRegistration() {
                           value={startTime1 ? startTime1.format("hh:mm A") : ""}
                           onClick={() => setStartView1(true)}
                           placeholder="Start At"
-                          className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
-                        />
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                            ${
+                              errors?.startTime1
+                                ? "border-red-500 focus:border-red-500"
+                                : startTime1
+                                ? "border-green-500 focus:border-green-500"
+                                : "border-gray-300 focus:border-gray-300"
+                            }
+                            focus:outline-none`}                        />
                         <label
                           htmlFor="startTime1"
                           className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
@@ -458,8 +473,15 @@ function VendorRegistration() {
                           value={endTime1 ? endTime1.format("hh:mm A") : ""}
                           onClick={() => setEndView1(true)}
                           placeholder="Close At"
-                          className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
-                        />
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                            ${
+                              errors?.endTime1
+                                ? "border-red-500 focus:border-red-500"
+                                : endTime1
+                                ? "border-green-500 focus:border-green-500"
+                                : "border-gray-300 focus:border-gray-300"
+                            }
+                            focus:outline-none`}                        />
                         <label
                           htmlFor="endTime1"
                           className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
@@ -511,8 +533,15 @@ function VendorRegistration() {
                           value={startTime2 ? startTime2.format("hh:mm A") : ""}
                           onClick={() => setStartView2(true)}
                           placeholder="Start At"
-                          className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
-                        />
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                            ${
+                              errors?.startTime2
+                                ? "border-red-500 focus:border-red-500"
+                                : startTime2
+                                ? "border-green-500 focus:border-green-500"
+                                : "border-gray-300 focus:border-gray-300"
+                            }
+                            focus:outline-none`}                        />
                         <label
                           htmlFor="startTime2"
                           className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
@@ -553,8 +582,15 @@ function VendorRegistration() {
                           value={endTime2 ? endTime2.format("hh:mm A") : ""}
                           onClick={() => setEndView2(true)}
                           placeholder="Close At"
-                          className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
-                        />
+                          className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+                            ${
+                              errors?.endTime2
+                                ? "border-red-500 focus:border-red-500"
+                                : endTime2
+                                ? "border-green-500 focus:border-green-500"
+                                : "border-gray-300 focus:border-gray-300"
+                            }
+                            focus:outline-none`}                        />
                         <label
                           htmlFor="endTime2"
                           className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
@@ -652,6 +688,8 @@ function VendorRegistration() {
                   error={errors?.street}
                   onKeyDown={streetKeyDown}
                   onInput={streetInputClean}
+                  value={watchFields?.street}
+
                 />
                 {/* City */}
                 <InputField
@@ -667,6 +705,7 @@ function VendorRegistration() {
                   error={errors?.city}
                   onKeyDown={cityStateKeyDown}
                   onInput={cityStateInputClean}
+                  value={watchFields?.city}
                 />
                 {/* State */}
                 <InputField
@@ -682,6 +721,8 @@ function VendorRegistration() {
                   error={errors?.state}
                   onKeyDown={cityStateKeyDown}
                   onInput={cityStateInputClean}
+                  value={watchFields?.state}
+
                 />
                 {/* Pincode */}
                 <InputField
@@ -696,6 +737,7 @@ function VendorRegistration() {
                   onInput={pincodeInputClean}
                   maxLength={6}
                   inputMode="numeric"
+                  value={watchFields?.pincode}
                 />{" "}
                 {/* /* Location Button */}
                 <div className="flex items-center gap-5  ">
@@ -742,16 +784,15 @@ function VendorRegistration() {
                   </button>
                 </div>
                 {locationError ? (
-                  <p className="text-sm text-red-500">
-                    Please select your location
-                  </p>
-                ) : location || selectedAddress ? (
-                  <p className="mt-2 text-sm text-gray-700">
-                    Current location:{" "}
-                    {selectedAddress?.landmark || location?.landmark}
-                    {console.log(location, selectedAddress)}
-                  </p>
-                ) : null}
+  <p className="text-sm text-red-500">
+    Please select your location
+  </p>
+) : selectedAddress ? (
+  <p className="mt-2 text-sm text-gray-700">
+    Selected Location: {selectedAddress?.landmark}
+  </p>
+) : null}
+
               </div>
             </div>
 

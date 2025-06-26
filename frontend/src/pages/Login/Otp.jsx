@@ -30,6 +30,7 @@ import {
     logout,
 } from "../../utils/auth";
 import ResendButton from "../../components/ResendButton";
+import Loader from "../../components/Loader";
 
 const Otp = () => {
     const navigate = useNavigate();
@@ -41,7 +42,9 @@ const Otp = () => {
         setSession,
         proceedToUserDetails,
         setProceedToUserDetails,
-        setVendorData    } = useAuth();
+        setVendorData,
+        
+    } = useAuth();
     const {
         register,
         trigger,
@@ -117,47 +120,44 @@ const Otp = () => {
     const [authenticating, setAuthenticating] = useState(false);
 
     /********************    verify otp ********************/
+ const [loading,setLoading]=useState(false)
+ const onSubmit = async (data, event) => {
+    setLoading(true); // ✅ Start loader
+    try {
+        if (authenticating) return;
+        setAuthenticating(true);
 
-    const onSubmit = async (data, event) => {
-        try {
-            if (authenticating) return;
-            setAuthenticating(true);
+        const isValid = await trigger();
+        if (!isValid) return;
 
-            const isValid = await trigger();
-            if (!isValid) return;
+        if (!validateOtp(otp)) return;
 
-            // if (!isLogin) {
-            //     const trimmedName = validateName(data?.name);
-            //     if (!trimmedName) return;
-            //     data.name = trimmedName;
-            // }
+        console.log("Verifying OTP for:", phone, "with code:", otp);
 
-            if (!validateOtp(otp)) return;
+        const otpData = await verifyOtp(phone, otp);
+        console.log("otpData", otpData);
 
-            console.log("Verifying OTP for:", phone, "with code:", otp);
-
-            const otpData = await verifyOtp(phone, otp);
-            console.log("otpData", otpData);
-
-            if (isLogin) {
-                await handleLogin(phone, navigate);
-            } else {
-                setProceedToUserDetails(true);
-                await handleSignupFlow(
-                    data,
-                    event?.nativeEvent?.submitter?.name,
-                    phone,
-                    navigate,
-                    setSession,
-                    setVendorData
-                );
-            }
-        } catch (error) {
-            handleAuthError(error);
-        } finally {
-            setAuthenticating(false);
+        if (isLogin) {
+            await handleLogin(phone, navigate);
+        } else {
+            setProceedToUserDetails(true);
+            await handleSignupFlow(
+                data,
+                event?.nativeEvent?.submitter?.name,
+                phone,
+                navigate,
+                setSession,
+                setVendorData
+            );
         }
-    };
+    } catch (error) {
+        handleAuthError(error);
+    } finally {
+        setAuthenticating(false);
+        setLoading(false); // ✅ Stop loader
+    }
+};
+
     console.log("Phone received:", location?.state?.phone);
     console.log("Send OTP to:", phone);
     console.log("Verify OTP with:", otp);
@@ -215,6 +215,7 @@ const Otp = () => {
 
     return (
         <div className="flex flex-col lg:flex-row min-h-screen h-full bg-white ">
+            {loading && <Loader/>}
             {/* Image */}
             <div className="relative w-full lg:w-[68%] overflow-hidden ">
                 <img

@@ -69,9 +69,9 @@ export default function ManageItemsPage() {
     };
 console.log(items)
     return (
-        <section className="bg-gray-100 min-h-screen   md:px-0">
+        <section >
             <div className="max-w-2xl mx-auto rounded-2xl shadow-lg">
-                <Header title='Manage-item' />
+                {/* <Header title='Manage-item' /> */}
 
                 {loading && (
                     <div className='w-full flex justify-center items-center'>
@@ -79,7 +79,7 @@ console.log(items)
                     </div>
                 )}
 
-                <div className='max-w-2xl md:px-6 py-15 mt-15 px-4  shadow-lg min-h-[86vh] rounded-2xl pb-20 relative'>
+                <div className='max-w-2xl md:px-6 py-10 mt-12 px-4 bg-gray-100  shadow-lg min-h-[86vh] rounded-2xl pb-15 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -90,7 +90,7 @@ console.log(items)
                         {items?.map((item) => (
                             <div
                                 key={item.item_id}
-                                className="relative bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition-all"
+                                className="relative bg-white border-gray-300 border-1 rounded-2xl shadow-md p-4 hover:shadow-lg transition-all"
                             >
                                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch

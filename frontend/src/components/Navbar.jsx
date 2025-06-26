@@ -75,8 +75,8 @@ const Navbar = () => {
     
 
     return (
-        <div className="fixed w-full top-0 z-20 backdrop-blur-sm rounded-b-lg max-w-2xl font-family-poppins ">
-                  <div className="absolute inset-0 rotate-180 overflow-hidden">
+<div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-2xl backdrop-blur-sm rounded-b-lg font-family-poppins">
+<div className="absolute inset-0 rotate-180 overflow-hidden">
                       <svg
                           className="absolute top-0 left-0 w-full h-full"
                           viewBox="0 0 1200 200"

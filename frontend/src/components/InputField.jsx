@@ -7,20 +7,31 @@ function InputField({
   register,
   validation,
   error,
+  value,         // 👈 watch() value passed from parent
   onKeyDown,
   onInput
 }) {
   return (
     <div className="relative">
       {Icon && <Icon className="absolute left-3 top-4 text-black text-lg" />}
+      
       <input
         id={id}
         placeholder={placeholder}
         {...register(id, validation)}
         onKeyDown={onKeyDown}
         onInput={onInput}
-        className="peer pl-10 pt-3 pb-3 w-full rounded border border-gray-300 focus:outline-none focus:border-orange transition-all placeholder-transparent"
+        className={`peer pl-10 pt-3 pb-3 w-full rounded border transition-all placeholder-transparent
+          ${
+            error
+              ? "border-red-500 focus:border-red-500"
+              : value
+              ? "border-green-500 focus:border-green-500"
+              : "border-gray-300 focus:border-gray-400"
+          }
+          focus:outline-none`}
       />
+
       <label
         htmlFor={id}
         className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
@@ -30,6 +41,7 @@ function InputField({
       >
         {placeholder}
       </label>
+
       {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
     </div>
   );
