@@ -79,7 +79,7 @@ console.log(items)
                     </div>
                 )}
 
-                <div className='max-w-2xl md:px-6 py-10 mt-12 px-4 bg-gray-100  shadow-lg min-h-[86vh] rounded-2xl pb-15 relative'>
+                <div className='max-w-2xl md:px-6 py-5 mt-12 px-2  bg-gray-100  shadow-lg min-h-[86vh] rounded-2xl pb-15 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -90,9 +90,9 @@ console.log(items)
                         {items?.map((item) => (
                             <div
                                 key={item.item_id}
-                                className="relative bg-white border-gray-300 border-1 rounded-2xl shadow-md p-4 hover:shadow-lg transition-all"
+                                className="relative bg-white border-gray-300 border-1 rounded-lg flex flex-col justify-center shadow-md p-4 hover:shadow-lg transition-all"
                             >
-                                <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
+                                {/* <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
                                         checked={item.available}
                                         onChange={() => toggleAvailability(item.item_id, item.available)}
@@ -102,10 +102,10 @@ console.log(items)
                                     <span className={`text-xs font-semibold ${item.available ? 'text-green-600 px-2' : 'text-gray-500 px-.5'}`}>
                                         {item.available ? 'Available' : 'Unavailable'}
                                     </span>
-                                </div>
+                                </div> */}
 
-                                <div className="flex flex-col sm:flex-row items-start gap-4">
-                                    <div className='w-24 h-24 rounded border-dashed p-1 border-orange border-1'>
+                                <div className="flex  sm:flex-row items-start gap-4">
+                                    <div className=' rounded h-28 border-dashed p-1 border-orange border-1 flex-1 '>
                                         <img
                                             src={item?.img_url && item.img_url !== "NA" ? item.img_url : "/public/defaultItem.jpeg"}
                                             alt={item?.item_name || "Preview"}
@@ -113,17 +113,47 @@ console.log(items)
                                         />
                                     </div>
 
-                                    <div className="flex-1 space-y-1">
+                                    <div className="flex-1 flex flex-col  gap-1.5  ">
                                         <h3 className="text-lg font-semibold text-gray-800">{item?.item_name}</h3>
                                         <p className="text-gray-600 text-sm">Quantity: {item?.item_quantity}</p>
                                         <p className="text-gray-600 text-sm">Prep Time: {item?.prep_time}min</p>
-                                        <p className="text-gray-800 text-sm font-medium">Price: {item?.item_price}</p>
+                                        <p className="text-gray-600 text-sm font-medium">Price: ₹{item?.item_price}</p>
                                     </div>
 
-                                    <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
+                                    {/* <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
                                         <button
                                             onClick={() => navigate('/add-items', { state: { itemData: item } })}
                                             className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium"
+                                        >
+                                            <FaEdit />
+                                            <span>Edit</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => confirmDelete(item.item_id, item.item_name)}
+                                            className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm md:text-base font-medium"
+                                        >
+                                            <FaTrash />
+                                            <span>Delete</span>
+                                        </button>
+                                    </div> */}
+                                </div>
+                                <div className=' flex justify-between py-3 gap-5 '>
+<div className=" flex  items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1  shadow-sm">
+                                    <Switch
+                                        checked={item.available}
+                                        onChange={() => toggleAvailability(item.item_id, item.available)}
+                                        size="small"
+                                        color="success"
+                                    />
+                                    <span className={`text-xs font-semibold ${item.available ? 'text-green-600 px-2' : 'text-gray-500 px-.5'}`}>
+                                        {item.available ? 'Available' : 'Unavailable'}
+                                    </span>
+                                    </div>
+                                    <div className=" sm:mt-auto sm:ml-auto flex  flex-1 justify-between md:justify-evenly  items-center ">
+                                        <button
+                                            onClick={() => navigate('/add-items', { state: { itemData: item } })}
+                                            className="flex items-center gap-1 text-green hover:text-green text-sm md:text-base font-medium"
                                         >
                                             <FaEdit />
                                             <span>Edit</span>
@@ -142,7 +172,7 @@ console.log(items)
                         ))}
                         <div>
                         <button
-                                className="fixed   bottom-20 md:bottom-20 lg:right-110 md:right-20 right-10 w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
+                                className="fixed   bottom-18 md:bottom-20 lg:right-110 md:right-20 right-4 w-10 h-10 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
                             aria-label="Add Item"
                             onClick={() => navigate('/add-items')}
                         >

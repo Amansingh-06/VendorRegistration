@@ -520,19 +520,19 @@ export default function VendorProfile() {
         {/* <Header title="Profile" /> */}
         
       {/* </div> */}
-      <div className="  max-w-2xl w-full md:mt-15 mt-18  shadow-lg bg-gray-100  md:p-6 p-3">
+      <div className="  max-w-2xl w-full md:mt-10 mt-11  shadow-lg bg-gray-100  md:p-6 p-2">
           <div className="max-w-2xl mx-auto  ">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
               {/* Basic Info */}
-              <section className="flex flex-col rounded-2xl bg-white border-gray-300 border-1 shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-lg bg-white border-gray-300 border-1 shadow-lg px-4 py-6">
                 <h2 className="text-xl font-semibold text-gray-500 mb-4">
                   Basic Information
                 </h2>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {/* Vendor Name */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="vendor_name"
                     >
                       Vendor Name
@@ -541,7 +541,7 @@ export default function VendorProfile() {
                       id="vendor_name"
                       {...register("vendor_name", nameValidation)}
                       placeholder="Vendor Name"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.vendor_name
                           ? "border-red-500"
                           : "border-gray-300"
@@ -559,7 +559,7 @@ export default function VendorProfile() {
                   {/* Shop Name */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="shop_name"
                     >
                       Shop Name
@@ -568,7 +568,7 @@ export default function VendorProfile() {
                       id="shop_name"
                       {...register("shop_name", shopNameValidation)}
                       placeholder="Shop Name"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
                         errors.shop_name ? "border-red-500" : "border-gray-300"
                       }`}
                       onKeyDown={shopNameKeyDownHandler}
@@ -586,7 +586,7 @@ export default function VendorProfile() {
                     {/* Shift 1 Start */}
                     <div>
                       <label
-                        className="block mb-1 font-semibold text-gray-700"
+                        className="block mb-1 font-medium text-gray-500"
                         htmlFor="shift1_start"
                       >
                         Shift 1 Start
@@ -604,7 +604,7 @@ export default function VendorProfile() {
                         {...register("shift1_start", {
                           required: "Shift 1 Start is required",
                         })}
-                        className={`input-field w-full rounded-md border p-2 ${
+                        className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                           errors.shift1_start
                             ? "border-red-500"
                             : "border-gray-300"
@@ -634,7 +634,7 @@ export default function VendorProfile() {
                     {/* Shift 1 Close */}
                     <div>
                       <label
-                        className="block mb-1 font-semibold text-gray-700"
+                        className="block mb-1 font-medium text-gray-500"
                         htmlFor="shift1_close"
                       >
                         Shift 1 Close
@@ -652,7 +652,7 @@ export default function VendorProfile() {
                         {...register("shift1_close", {
                           required: "Shift 1 Close is required",
                         })}
-                        className={`input-field w-full rounded-md border p-2 ${
+                        className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
                           errors.shift1_close
                             ? "border-red-500"
                             : "border-gray-300"
@@ -678,7 +678,7 @@ export default function VendorProfile() {
                     {/* Shift 2 Start (Optional) */}
                     <div>
                       <label
-                        className="block mb-1 font-semibold text-gray-700"
+                        className="block mb-1 font-medium text-gray-500"
                         htmlFor="shift2_start"
                       >
                         Shift 2 Start (Optional)
@@ -696,7 +696,7 @@ export default function VendorProfile() {
                         onClick={() => setStartView2(true)}
                         readOnly
                         {...register("shift2_start")}
-                        className="input-field w-full rounded-md border p-2 border-gray-300"
+                        className="input-field w-full text-gray-800 rounded-lg border p-2 border-gray-300"
                       />
                       <TimeClockFull
                         isOpen={startView2}
@@ -713,7 +713,7 @@ export default function VendorProfile() {
                     {/* Shift 2 Close (Optional) */}
                     <div>
                       <label
-                        className="block mb-1 font-semibold text-gray-700"
+                        className="block mb-1 font-medium text-gray-500"
                         htmlFor="shift2_close"
                       >
                         Shift 2 Close (Optional)
@@ -730,7 +730,7 @@ export default function VendorProfile() {
                         onClick={() => setEndView2(true)}
                         readOnly
                         {...register("shift2_close")}
-                        className="input-field w-full rounded-md border p-2 border-gray-300"
+                        className="input-field w-full rounded-lg text-gray-800 border p-2 border-gray-300"
                       />
                       <TimeClockFull
                         isOpen={endView2}
@@ -748,15 +748,15 @@ export default function VendorProfile() {
               </section>
 
               {/* Media Uploads */}
-              <section className="flex flex-col rounded-2xl  bg-white  border-gray-300 border-1 shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-lg  bg-white  border-gray-300 border-1 shadow-lg px-4 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                   {/* Banner Image */}
-                  <div className="flex flex-col items-center border-dashed border-primary border-2 p-4">
+                  <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-2 p-4">
                     {bannerUrl ? (
                       <img
                         src={bannerUrl}
                         alt="banner"
-                        className="h-32 w-full object-contain rounded"
+                        className="h-32 w-full object-cover rounded-lg"
                       />
                     ) : (
                       <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -765,7 +765,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg hover:bg-indigo-700"
                       onClick={() => bannerInputRef.current.click()}
                     >
                       Select Banner
@@ -782,12 +782,12 @@ export default function VendorProfile() {
                   </div>
 
                   {/* Video */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary border-2">
+                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-2">
                     {videoUrl ? (
                       <video
                         src={videoUrl}
                         controls
-                        className="h-32 w-full object-contain rounded"
+                        className="h-32 w-full object-cover rounded-lg"
                       />
                     ) : (
                       <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -796,7 +796,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
+                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg "
                       onClick={() => videoInputRef.current.click()}
                     >
                       Select Video
@@ -813,12 +813,12 @@ export default function VendorProfile() {
                   </div>
 
                   {/* QR Code */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary border-2">
+                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-2">
                     {qrUrl ? (
                       <img
                         src={qrUrl}
                         alt="QR code"
-                        className="h-32 w-full object-contain rounded"
+                        className="h-32 w-full object-cover rounded-lg"
                       />
                     ) : (
                       <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -827,7 +827,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg "
                       onClick={() => qrInputRef.current.click()}
                     >
                       Select QR
@@ -844,15 +844,15 @@ export default function VendorProfile() {
               </section>
 
               {/* Address Section */}
-              <section className="flex flex-col rounded-2xl  border-gray-300 border-1 bg-white shadow-lg px-6 py-8">
+              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-8">
                 <h2 className="text-xl font-semibold text-gray-500 mb-4">
                   Address
                 </h2>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {/* Street with validation */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="street"
                     >
                       Street
@@ -861,7 +861,7 @@ export default function VendorProfile() {
                       id="street"
                       {...register("street", streetValidation)}
                       placeholder="Street"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
                         errors.street ? "border-red-500" : "border-gray-300"
                       }`}
                       onKeyDown={streetKeyDown}
@@ -877,7 +877,7 @@ export default function VendorProfile() {
                   {/* City */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="city"
                     >
                       City
@@ -886,7 +886,7 @@ export default function VendorProfile() {
                       id="city"
                       {...register("city", { required: "City is required" })}
                       placeholder="City"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.city ? "border-red-500" : "border-gray-300"
                       }`}
                     />
@@ -900,7 +900,7 @@ export default function VendorProfile() {
                   {/* State */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="state"
                     >
                       State
@@ -909,7 +909,7 @@ export default function VendorProfile() {
                       id="state"
                       {...register("state", { required: "State is required" })}
                       placeholder="State"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.state ? "border-red-500" : "border-gray-300"
                       }`}
                     />
@@ -923,7 +923,7 @@ export default function VendorProfile() {
                   {/* Pincode */}
                   <div>
                     <label
-                      className="block mb-1 font-semibold text-gray-700"
+                      className="block mb-1 font-medium text-gray-500"
                       htmlFor="pincode"
                     >
                       Pincode
@@ -934,7 +934,7 @@ export default function VendorProfile() {
                         required: "Pincode is required",
                       })}
                       placeholder="Pincode"
-                      className={`input-field w-full rounded-md border p-2 ${
+                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.pincode ? "border-red-500" : "border-gray-300"
                       }`}
                     />
@@ -949,11 +949,11 @@ export default function VendorProfile() {
                       type="button"
                       onClick={() => setShowPopup(true)}
                       disabled={waitloading}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition 
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white transition 
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-blue cursor-pointer hover:bg-blue-700"
+                                            : "bg-orange-300 cursor-pointer hover:bg-orange-300"
                                         }`}
                     >
                       <MdAddLocationAlt className="text-lg" />
@@ -983,14 +983,14 @@ export default function VendorProfile() {
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-teal cursor-pointer"
+                                            : "bg-orange-300 cursor-pointer"
                                         }`}
                     >
                       <MdGpsFixed className="text-2xl text-white" />
                     </button>
                   </div>
                   {selectedAddress || location || fetchedAddress ? (
-                    <p className="mt-2 text-sm text-gray-700">
+                    <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 rounded-lg">
                       Selected Location:{" "}
                       {selectedAddress?.area && selectedAddress?.city
                         ? `${selectedAddress.area}, ${selectedAddress.city}`
@@ -1016,9 +1016,9 @@ export default function VendorProfile() {
               />
 
               {/* Additional Note */}
-              <section className="flex flex-col rounded-2xl  border-gray-300 border-1 bg-white shadow-lg px-4 py-8">
+              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
                 <label
-                  className="block mb-1 font-semibold text-gray-700"
+                  className="block mb-1 font-medium text-gray-500"
                   htmlFor="note"
                 >
                   Additional Note (Optional)
@@ -1028,7 +1028,7 @@ export default function VendorProfile() {
                   {...register("note")}
                   rows={3}
                   placeholder="Write anything you want here..."
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full rounded-lg text-gray-800 border border-gray-300 p-2"
                 />
               </section>
 
@@ -1045,7 +1045,7 @@ export default function VendorProfile() {
                     ? "No changes made"
                     : ""
                 }
-                className={`mt-2 md:mb-5 mb-8 px-4 w-full py-2 rounded text-white ${
+                className={`mt-2 md:mb-5 font-medium mb-8 px-4 w-full py-2 rounded text-white ${
                   loading || isFormIncomplete || !isChanged
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-primary cursor-pointer"

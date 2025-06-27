@@ -4,6 +4,7 @@ import { updateOrderStatus } from '../utils/updateOrderStatus';
 import toast from 'react-hot-toast';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ORDER_STATUS } from '../utils/vendorConfig';
+import { capitalize } from '../utils/vendorConfig';
 
 const OrderCard = ({ order, onStatusUpdate }) => {
     const [localStatus, setLocalStatus] = useState(order?.status);
@@ -75,7 +76,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                             : localStatus === 'delivered' || localStatus === 'prepared'
                                 ? 'bg-green-50 text-green-600'
                                 : 'bg-red-100 text-red-600'}`}>
-                        {localStatus}
+                        {capitalize(localStatus)}
                     </span>
 
                     <span className={`text-xs font-medium
@@ -86,7 +87,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                                 : order?.delivery_type === 'Rapid'
                                     ? 'text-red-500'
                                     : 'text-gray-500'}`}>
-                        {order?.delivery_type}
+                        {capitalize(order?.delivery_type)}
                     </span>
                 </div>
 
@@ -131,7 +132,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                     <div className="text-center mt-2">
                         <button
                             onClick={() => setShowOtpPopup(true)}
-                            className="bg-purple-600 text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm"
+                            className="bg-orange-300 text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm"
                         >
                             Hand Over Order (Verify OTP)
                         </button>

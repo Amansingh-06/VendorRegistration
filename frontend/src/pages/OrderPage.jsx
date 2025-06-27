@@ -94,7 +94,7 @@ const OrderPage = () => {
   
         
       {/* </div> */}
-      <div className="w-full max-w-2xl px-4 md:px-6 flex flex-col min-h-[85vh] bg-gray-100  mt-10 md:mt-18 py-5 gap-4 shadow-lg">
+      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  mt-10 md:mt-18 py-5 gap-4 shadow-lg">
           <h1 className="text-xl font-bold text-left text-gray-500">Orders</h1>
   
           {/* ✅ Vendor Not Verified Handling */}

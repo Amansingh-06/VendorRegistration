@@ -4,7 +4,7 @@ import { Upload, X } from 'lucide-react';
 const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, onChange,setValue }) => {
     return (
         <div className="grid md:grid-cols-2 gap-4">
-            <div className="relative border-2 border-dashed border-gray-400 rounded-md p-4 flex items-center justify-center text-sm text-gray-500 cursor-pointer h-40">
+            <div className="relative border-2 border-dashed border-gray-400 rounded-lg p-4 flex items-center justify-center text-sm text-gray-500 cursor-pointer h-40">
                 {previewImage ? (
                     <>
                         <img
@@ -16,7 +16,7 @@ const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, 
                                         : ''
                             }
                             alt="Preview"
-                            className="object-contain h-full w-full"
+                            className="object-cover h-full w-full rounded-lg"
                         />
 
                         <X
@@ -34,9 +34,9 @@ const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, 
                     </span>
                 )}
             </div>
-            <label className="border p-4 rounded-md flex items-center bg-green justify-center cursor-pointer transition">
+            <label className="border p-2.5 rounded-md flex items-center bg-orange-300 text-white font-medium justify-center cursor-pointer transition">
                 <Upload className="w-5 h-5 mr-2" />
-                Upload Photo
+                Select Photo
                 <input
                     type="file"
                     accept="image/*"

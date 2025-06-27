@@ -179,29 +179,29 @@ const Navbar = () => {
 
                             <div className='text-white'>
                                 <div className='flex justify-center items-center md:gap-5 gap-2 '>
-                                    <div className='text-base lg:text-2xl font-semibold drop-shadow-sm flex flex-nowrap  '
+                                    <div className='text-base lg:text-2xl leading-4.5 font-semibold drop-shadow-sm flex flex-nowrap  '
                                     title={vendorProfile?.shop_name}
                                     >
                                         {truncateLetters(vendorProfile?.shop_name,15)}
                                     </div>
-                                    <div className="relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
-                                        <div className="text-white flex items-center gap-1 md:p-2 p-1">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-bold">
+                                    <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
+                                        <div className="text-white flex items-center gap-1 md:p-2 p-0.5">
+                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-semibold">
                                                 {switchOn ? 'Open' : 'Closed'}
                                             </span>
                                             <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)} />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="md:text-sm text-xs font-thin">{truncateLetters( vendorProfile?.v_name,20)}</div>
+                                <div className="md:text-sm text-xs md:-mt-2 ">{truncateLetters( vendorProfile?.v_name,20)}</div>
                             </div>
                         </div>
 
                         {/* Right Section - Icons */}
                         <div className='flex items-center gap-4 lg:gap-6'>
-                            <button className='p-2 lg:p-3 text-white hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30'>
-                                <MdOutlineMessage className='w-7 lg:w-8 h-6 lg:h-7 group-hover:text-blue-200 transition-colors drop-shadow-sm' />
-                                <span className='text-xs lg:text-sm md:font-semibold font-medium'>Help</span>
+                            <button className='p-3 lg:p-3 leading-2 text-white hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30'>
+                                <MdOutlineMessage className='w-7 lg:w-8 h-7 lg:h-7  group-hover:text-blue-200 transition-colors drop-shadow-sm' />
+                                <span className='text-[11px]  lg:text-sm md:font-semibold font-medium'>Help</span>
                             </button>
                         </div>
                     </div>

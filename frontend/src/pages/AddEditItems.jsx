@@ -720,7 +720,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     const [selectedType, setSelectedType] = useState()
     // const [cuisines,setCuisines]=useState([])
         const [showCategoryInput, setShowCategoryInput] = useState(false);
-        const [previewImage, setPreviewImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [catLoader,setCatLoader]=useState(false)
         const categoryInputRef = useRef(null);
@@ -1003,12 +1004,13 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     return (
         <div className='w-full  mx-auto flex justify-center'>
             {loading && <Loader/>}
-            <div className='max-w-2xl w-full bg-gray-100  border-2  '>
+            <div className='max-w-2xl w-full bg-gray-100    '>
                 {/* <Header title={isEditMode ? 'Edit Item' : 'Add Item'} /> */}
-            <div className='max-w-2xl w-full mt-10 pt-6  space-y-6 rounded-2xl shadow-lg  '>
+            <div className='max-w-2xl w-full  pt-6  space-y-6 rounded-2xl shadow-lg  '>
                     
                     <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6  p-2 py-8 space-y-6   bg-gray-100">
-                        <div className='flex flex-col gap-6 rounded-2xl shadow-lg border-1 border-gray-300 bg-white  p-5'>
+                        <div className='flex flex-col gap-6 rounded-lg shadow-lg border-1 border-gray-300 bg-white  p-5'>
+                            <p className='text-gray-500 text-xl font-medium'>Item Details</p>
                             <FormInput
                                 id="itemName"
                                 label="Item Name"
@@ -1106,24 +1108,54 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                             error={errors.cuisine?.message}
                         />
 
-                        <div className="p-4 shadow-lg rounded-2xl w-full bg-white border border-gray-300">
+                        <div className="p-4 shadow-lg rounded-lg w-full bg-white border border-gray-300">
 <label className="block mb-2 font-semibold  text-gray-500">Select Category</label>
+{/* import { useState } from "react"; */}
+
 <Controller
-                                name="category"
-                                control={control}
-                                rules={{ required: 'Category is required' }}
-                                render={({ field }) => (
-                                    <select
-                                        {...field}
-                                        className="w-full px-4 py-2 border rounded-md"
-                                    >
-                                        <option value="">-- Select Category --</option>
-                                        {categories.map((cat, i) => (
-                                            <option key={i} value={cat?.cat_id}>{cat?.title}</option>
-                                        ))}
-                                    </select>
-                                )}
-                            />
+  name="category"
+  control={control}
+  rules={{ required: 'Category is required' }}
+  render={({ field }) => {
+    // const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div className="relative w-full">
+        <select
+          {...field}
+          onClick={() => setIsOpen(prev => !prev)}
+        //   onBlur={() => setIsOpen(false)}
+          className="w-full appearance-none px-4 py-2 border rounded-md bg-white pr-10"
+        >
+          <option value="">-- Select Category --</option>
+          {categories.map((cat, i) => (
+            <option key={i} value={cat?.cat_id}>
+              {cat?.title}
+            </option>
+          ))}
+        </select>
+
+        {/* Arrow icon with dynamic rotate */}
+        <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2">
+          <svg
+            className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${
+              isOpen ? "rotate-180" : "rotate-0"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </div>
+    );
+  }}
+/>
+
+
+
                             {errors.category && (
                                 <p className="text-red text-sm mt-1">
                                     {errors.category.message}
@@ -1150,14 +1182,14 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                           }}
                                           
                                         placeholder="Add new category"
-                                        className="flex-1 px-3 py-2 border rounded-md"
+                                        className="flex-1 px-3 py-2 border rounded-lg"
                                     />
                                     <div className="flex items-center gap-2">
                                         <button
                                             type="button"
                                             onClick={handleAddCategory}
                                             disabled={!newCategory.trim()}
-                                            className="bg-blue-600 text-white px-4 py-2 rounded-md disabled:opacity-50"
+                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
                                         >
                                             Add
                                         </button>
@@ -1167,10 +1199,12 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                                 setNewCategory('');
                                                 setShowCategoryInput(false);
                                             }}
-                                            className="p-2 rounded-full hover:bg-gray-200"
+                                            className="p-2 bg-gray-400 rounded-lg text-white hover:bg-gray-200"
                                             title="Cancel"
                                         >
-                                            <FaTimes className="text-gray-500 w-4 h-4" />
+                                            {/* <FaTimes className="text-gray-500 w-4 h-4" />
+                                             */}
+                                            Cancel
                                         </button>
                                     </div>
                                 </div>

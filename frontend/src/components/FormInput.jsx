@@ -22,7 +22,7 @@ const FormInput = ({
 
   return (
     <div className="relative">
-      {Icon && <Icon className="absolute left-3 top-4 text-black text-md" />}
+      {Icon && <Icon className="absolute left-3 top-4 text-gray-500 text-md" />}
 
       <input
         id={id}
@@ -31,14 +31,15 @@ const FormInput = ({
         {...rest}
         placeholder={label}
         className={`peer w-full pl-10 pr-3 py-3 rounded-md border transition-all 
-          placeholder-transparent focus:outline-none ${borderClass}`}
+          placeholder-transparent text-gray-800 focus:outline-none ${borderClass}`}
       />
 
       <label
         htmlFor={id}
-        className="absolute left-10 -top-2.5 text-sm bg-white text-black transition-all 
-          peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 
-          peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
+        className="absolute left-10 -top-2.5 text-sm bg-white text-gray-500 transition-all 
+        peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 
+        peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold 
+        peer-not-placeholder-shown:font-semibold"
       >
         {label}
       </label>

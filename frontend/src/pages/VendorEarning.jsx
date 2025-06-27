@@ -257,7 +257,7 @@ const VendorEarnings = () => {
     <div className="">
       <div className="max-w-2xl mx-auto w-full bg-gray-100 space-y-6 min-h-[92vh]">
         {/* <Header title="Earnings" /> */}
-        <div className="max-w-2xl mx-auto w-full px-4 pt-10 pb-5 mt-15 space-y-6">
+        <div className="max-w-2xl mx-auto w-full px-2 pt-10 pb-5 mt-5 space-y-6">
           {vendorProfile?.status !== "verified" ? (
             <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
               <h2 className="font-semibold text-lg text-center mb-2">
@@ -282,7 +282,7 @@ const VendorEarnings = () => {
           ) : (
             <>
               {/* Delivered Orders */}
-              <section className="bg-white rounded-xl shadow p-4 md:p-6">
+              <section className="bg-white rounded-lg shadow p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-500 mb-4">
                   Delivered Orders
                 </h2>
@@ -326,12 +326,12 @@ const VendorEarnings = () => {
               </section>
 
               {/* Insights Section */}
-              <section className="bg-white rounded-xl shadow p-4 md:p-6 relative">
-                <div className="flex justify-between items-center flex-wrap gap-2">
+              <section className="bg-white rounded-lg shadow p-4 md:p-6 relative">
+                <div className="flex justify-between items-center  flex-wrap gap-2">
                   <h2 className="text-lg font-semibold text-gray-500">
                     Insights
                   </h2>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center  gap-2">
                     <p className="text-sm text-gray-500">
                       {Array.isArray(dateRange)
                         ? `${dateRange[0].toLocaleDateString("en-US", {
@@ -377,22 +377,22 @@ const VendorEarnings = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-center">
-                  <div className="p-4 border rounded-lg bg-gray-50">
+                <div className="grid grid-cols-1 sm:grid-cols-3 -50 gap-4 mt-6 text-center">
+                  <div className="p-4 border rounded-lg bg-orange-100">
                     <p className="text-gray-600">Earnings</p>
-                    <p className="text-xl font-bold text-gray-800">
+                    <p className="text-xl font-bold text-orange-600">
                       ₹{selectedStats?.earnings}
                     </p>
                   </div>
-                  <div className="p-4 border rounded-lg bg-gray-50">
+                  <div className="p-4 border rounded-lg bg-orange-100">
                     <p className="text-gray-600">Orders</p>
-                    <p className="text-xl font-bold text-gray-800">
+                    <p className="text-xl font-bold text-orange-600">
                       {selectedStats?.orders}
                     </p>
                   </div>
-                  <div className="p-4 border rounded-lg bg-gray-50">
+                  <div className="p-4 border rounded-lg bg-orange-50">
                     <p className="text-gray-600">Rejected</p>
-                    <p className="text-xl font-bold text-red-600">
+                    <p className="text-xl font-bold text-orange-600">
                       ₹{selectedStats?.rejected?.amount} (
                       {selectedStats?.rejected?.count} orders)
                     </p>
@@ -426,9 +426,14 @@ const VendorEarnings = () => {
                 className="w-10 h-10 rounded-full"
                 alt="User DP"
               />
+              <div>
               <h3 className="font-semibold text-gray-800">
                 {rating?.user?.name}
               </h3>
+              <div className="text-green-600 text-sm whitespace-nowrap">
+                <span className="text-gray-500 ">Spended</span>  ₹{rating.order?.total_amount}
+                  </div>
+            </div>
             </div>
           </div>
 
@@ -445,9 +450,7 @@ const VendorEarnings = () => {
                 "☆".repeat(5 - rating?.rating_number)}{" "}
               ({rating?.rating_number}.0)
             </div>
-            <div className="text-green-600 font-semibold whitespace-nowrap">
-              ₹{rating.order?.total_amount}
-            </div>
+            
           </div>
         </div>
       ))}

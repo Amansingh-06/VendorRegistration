@@ -67,9 +67,9 @@ export const ORDER_STATUS = {
     PREPARED: "prepared",
     PREPARING: "preparing",
     ON_THE_WAY: "on the way",
-    ACCEPTED_COLOR: 'bg-blue-500',
-    PREPARED_COLOR: 'bg-green-500',
-    PREPARING_COLOR: 'bg-yellow-500'
+    ACCEPTED_COLOR: 'bg-orange-300',
+    PREPARED_COLOR: 'bg-orange-300',
+    PREPARING_COLOR: 'bg-orange-300'
 
 }
   
@@ -137,6 +137,11 @@ export const MESSAGES = {
 
   
 export const formatToCapital = (text) => text.trim().toUpperCase();
+
+export function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+  
 
 //ORDER FILTER BUTTON
 export const FILTER_BUTTON = {
