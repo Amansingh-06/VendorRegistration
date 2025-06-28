@@ -520,7 +520,7 @@ export default function VendorProfile() {
         {/* <Header title="Profile" /> */}
         
       {/* </div> */}
-      <div className="  max-w-2xl w-full md:mt-10 mt-11  shadow-lg bg-gray-100  md:p-6 p-2">
+      <div className="  max-w-2xl w-full md:mt-8 mt-3  pt-10  shadow-lg bg-gray-100  md:p-6 p-2">
           <div className="max-w-2xl mx-auto  ">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
               {/* Basic Info */}
@@ -532,7 +532,7 @@ export default function VendorProfile() {
                   {/* Vendor Name */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 font-medium text-sm text-gray-500"
                       htmlFor="vendor_name"
                     >
                       Vendor Name
@@ -559,7 +559,7 @@ export default function VendorProfile() {
                   {/* Shop Name */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 font-medium text-sm text-gray-500"
                       htmlFor="shop_name"
                     >
                       Shop Name
@@ -586,7 +586,7 @@ export default function VendorProfile() {
                     {/* Shift 1 Start */}
                     <div>
                       <label
-                        className="block mb-1 font-medium text-gray-500"
+                        className="block mb-1 font-medium text-sm text-gray-500"
                         htmlFor="shift1_start"
                       >
                         Shift 1 Start
@@ -634,7 +634,7 @@ export default function VendorProfile() {
                     {/* Shift 1 Close */}
                     <div>
                       <label
-                        className="block mb-1 font-medium text-gray-500"
+                        className="block mb-1 font-medium text-gray-500 text-sm"
                         htmlFor="shift1_close"
                       >
                         Shift 1 Close
@@ -678,7 +678,7 @@ export default function VendorProfile() {
                     {/* Shift 2 Start (Optional) */}
                     <div>
                       <label
-                        className="block mb-1 font-medium text-gray-500"
+                        className="block mb-1 font-medium text-gray-500 text-sm"
                         htmlFor="shift2_start"
                       >
                         Shift 2 Start (Optional)
@@ -713,7 +713,7 @@ export default function VendorProfile() {
                     {/* Shift 2 Close (Optional) */}
                     <div>
                       <label
-                        className="block mb-1 font-medium text-gray-500"
+                        className="block mb-1 font-medium text-gray-500 text-sm"
                         htmlFor="shift2_close"
                       >
                         Shift 2 Close (Optional)
@@ -852,7 +852,7 @@ export default function VendorProfile() {
                   {/* Street with validation */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 text-sm font-medium text-gray-500"
                       htmlFor="street"
                     >
                       Street
@@ -877,7 +877,7 @@ export default function VendorProfile() {
                   {/* City */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 text-sm font-medium text-gray-500"
                       htmlFor="city"
                     >
                       City
@@ -900,7 +900,7 @@ export default function VendorProfile() {
                   {/* State */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 text-sm font-medium text-gray-500"
                       htmlFor="state"
                     >
                       State
@@ -923,7 +923,7 @@ export default function VendorProfile() {
                   {/* Pincode */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-gray-500"
+                      className="block mb-1 text-sm font-medium text-gray-500"
                       htmlFor="pincode"
                     >
                       Pincode
@@ -944,7 +944,7 @@ export default function VendorProfile() {
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-5  ">
+                  <div className="flex items-center gap-2  ">
                     <button
                       type="button"
                       onClick={() => setShowPopup(true)}
@@ -990,7 +990,7 @@ export default function VendorProfile() {
                     </button>
                   </div>
                   {selectedAddress || location || fetchedAddress ? (
-                    <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 rounded-lg">
+                    <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
                       Selected Location:{" "}
                       {selectedAddress?.area && selectedAddress?.city
                         ? `${selectedAddress.area}, ${selectedAddress.city}`
@@ -1045,7 +1045,7 @@ export default function VendorProfile() {
                     ? "No changes made"
                     : ""
                 }
-                className={`mt-2 md:mb-5 font-medium mb-8 px-4 w-full py-2 rounded text-white ${
+                className={` md:mb-5 font-medium mb-8 px-4 w-full py-2 rounded text-white ${
                   loading || isFormIncomplete || !isChanged
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-primary cursor-pointer"

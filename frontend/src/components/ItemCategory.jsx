@@ -110,7 +110,7 @@ export default function ItemCategory({
 
             {selectedIds.length > 0 && (
                 <div className="mt-4">
-                    <h3 className="font-semibold text-gray-500 mb-2">Selected:</h3>
+                    <h3 className="font-medium text-gray-500 mb-2">Selected:</h3>
                     <div className="flex flex-wrap gap-2 overflow-x-auto no-scrollbar">
                         {selectedIds.map(c_id => (
                             <label
@@ -134,7 +134,7 @@ export default function ItemCategory({
 
             {suggestions.length > 0 && (
                 <div className="mt-6">
-                    <h3 className="font-semibold text-gray-500 mb-2">Suggestions:</h3>
+                    <h3 className="font-medium text-gray-500 mb-2">Suggestions:</h3>
                     <div className="flex flex-wrap gap-2">
                         {suggestions.map(({ c_id, name }) => (
                             <label

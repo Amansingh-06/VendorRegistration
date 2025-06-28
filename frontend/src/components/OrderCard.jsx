@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ORDER_STATUS } from '../utils/vendorConfig';
 import { capitalize } from '../utils/vendorConfig';
+import { FaIndianRupeeSign } from "react-icons/fa6";
+
 
 const OrderCard = ({ order, onStatusUpdate }) => {
     const [localStatus, setLocalStatus] = useState(order?.status);
@@ -61,7 +63,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                     </div>
 
                     <div className="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-3 h-3" />
                         <span>
                             Placed {formatDistanceToNowStrict(new Date(order?.created_ts), { addSuffix: true })}
                         </span>
@@ -105,10 +107,10 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 
                 {/* Price */}
                 <div className="flex justify-between items-center flex-wrap text-gray-700 text-sm">
-                    <div className="flex items-center gap-2">
-                        <Receipt className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-1">
+                        <FaIndianRupeeSign className="w-3 h-3 text-gray-500" />
                         <p className="font-semibold">
-                            Total: <span className="text-black">₹{order.transaction.amount}</span>
+                            Total: <span className="text-orange">₹{order.transaction.amount}</span>
                         </p>
                     </div>
                 </div>

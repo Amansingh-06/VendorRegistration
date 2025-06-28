@@ -10,45 +10,80 @@ import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
 import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
 import { SUPABASE_TABLES } from '../utils/vendorConfig';
-
+import {ToggleSwitch} from './ToggleSwitch'; // Assuming you have a ToggleSwitch component
+// const IOSSwitch = styled((props) => (
+//     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+// ))(({ theme }) => ({
+//     width: 33,
+//     height: 17,
+//     padding: 0,
+//     '& .MuiSwitch-switchBase': {
+//         padding: 0,
+//         margin: 1,
+//         transitionDuration: '300ms',
+//         '&.Mui-checked': {
+//             transform: 'translateX(16px)',
+//             color: '#fff',
+//             '& + .MuiSwitch-track': {
+//                 backgroundColor: '#65C466',
+//                 opacity: 1,
+//                 border: 0,
+//             },
+//         },
+//     },
+//     '& .MuiSwitch-thumb': {
+//         boxSizing: 'border-box',
+//         width: 15,
+//         height: 15,
+//     },
+//     '& .MuiSwitch-track': {
+//         borderRadius: 26 / 2,
+//         backgroundColor: '#E9E9EA',
+//         opacity: 1,
+//         transition: theme.transitions.create(['background-color'], {
+//             duration: 500,
+//         }),
+//     },
+// }));
 const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(({ theme }) => ({
-    width: 42,
-    height: 26,
+  ))(({ theme }) => ({
+    width: 33,
+    height: 17,
     padding: 0,
-    '& .MuiSwitch-switchBase': {
-        padding: 0,
-        margin: 2,
-        transitionDuration: '300ms',
-        '&.Mui-checked': {
-            transform: 'translateX(16px)',
-            color: '#fff',
-            '& + .MuiSwitch-track': {
-                backgroundColor: '#65C466',
-                opacity: 1,
-                border: 0,
-            },
+    "& .MuiSwitch-switchBase": {
+      padding: 0,
+      margin: 1,
+      transitionDuration: "300ms",
+      "&.Mui-checked": {
+        transform: "translateX(16px)",
+        color: "#fff",
+        "& + .MuiSwitch-track": {
+          backgroundColor: "#65C466",
+          opacity: 1,
+          border: 0,
         },
+      },
     },
-    '& .MuiSwitch-thumb': {
-        boxSizing: 'border-box',
-        width: 22,
-        height: 22,
+    "& .MuiSwitch-thumb": {
+      boxSizing: "border-box",
+      width: 15,
+      height: 15,
     },
-    '& .MuiSwitch-track': {
-        borderRadius: 26 / 2,
-        backgroundColor: '#E9E9EA',
-        opacity: 1,
-        transition: theme.transitions.create(['background-color'], {
-            duration: 500,
-        }),
+    "& .MuiSwitch-track": {
+      borderRadius: 26 / 2,
+      backgroundColor: "#E9E9EA",
+      opacity: 1,
+      transition: theme.transitions.create(["background-color"], {
+        duration: 500,
+      }),
     },
-}));
-
+  }));
+  
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const { session, vendorProfile } = useAuth();
 
     // ✅ Initialize switch based on vendorProfile.available
@@ -177,23 +212,32 @@ const Navbar = () => {
 
                             </div>
 
-                            <div className='text-white'>
+                            <div className='text-white  '>
                                 <div className='flex justify-center items-center md:gap-5 gap-2 '>
                                     <div className='text-base lg:text-2xl leading-4.5 font-semibold drop-shadow-sm flex flex-nowrap  '
                                     title={vendorProfile?.shop_name}
                                     >
-                                        {truncateLetters(vendorProfile?.shop_name,15)}
+                                        {truncateLetters(vendorProfile?.shop_name,10)}
                                     </div>
-                                    <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm">
-                                        <div className="text-white flex items-center gap-1 md:p-2 p-0.5">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm font-semibold">
+                                    {/* <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm"> */}
+                                        {/* <div className="text-white flex items-center gap-1 md:p-2 p-0.5">
+                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm ">
                                                 {switchOn ? 'Open' : 'Closed'}
                                             </span>
-                                            <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)} />
-                                        </div>
+                                            <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)}  />
+                                        </div> */}
+        <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit  shadow-sm">
+  <ToggleSwitch 
+    switchOn={switchOn} 
+    onToggle={handleSwitchChange} 
+  />
+{/* </div> */}
+      {/* <div className="ml-4">
+        <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)} />
+      </div> */}
                                     </div>
                                 </div>
-                                <div className="md:text-sm text-xs md:-mt-2 ">{truncateLetters( vendorProfile?.v_name,20)}</div>
+                                <div className="md:text-sm text-xs -mt-1 ">{truncateLetters( vendorProfile?.v_name,20)}</div>
                             </div>
                         </div>
 

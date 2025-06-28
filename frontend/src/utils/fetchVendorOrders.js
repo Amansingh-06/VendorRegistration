@@ -22,7 +22,6 @@ export const fetchVendorOrders = async (vendorId, status = null, limit = 10, off
           amount,
           payment_id,
           status,
-          gst_collected,
           payement_mehtod,
           created_at
         )

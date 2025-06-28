@@ -79,7 +79,7 @@ console.log(items)
                     </div>
                 )}
 
-                <div className='max-w-2xl md:px-6 py-5 mt-12 px-2  bg-gray-100  shadow-lg min-h-[86vh] rounded-2xl pb-15 relative'>
+                <div className='max-w-2xl md:px-6 py-8 mt-7 px-2   bg-gray-100  shadow-lg min-h-[86vh]  pb-15 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -90,7 +90,7 @@ console.log(items)
                         {items?.map((item) => (
                             <div
                                 key={item.item_id}
-                                className="relative bg-white border-gray-300 border-1 rounded-lg flex flex-col justify-center shadow-md p-4 hover:shadow-lg transition-all"
+                                className="relative bg-white border-gray-300 border-1  rounded-lg flex flex-col justify-center shadow-md p-2 hover:shadow-lg transition-all"
                             >
                                 {/* <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
@@ -105,7 +105,7 @@ console.log(items)
                                 </div> */}
 
                                 <div className="flex  sm:flex-row items-start gap-4">
-                                    <div className=' rounded h-28 border-dashed p-1 border-orange border-1 flex-1 '>
+                                    <div className=' rounded h-28 border-dashed p-1  flex-1 '>
                                         <img
                                             src={item?.img_url && item.img_url !== "NA" ? item.img_url : "/public/defaultItem.jpeg"}
                                             alt={item?.item_name || "Preview"}
@@ -139,7 +139,7 @@ console.log(items)
                                     </div> */}
                                 </div>
                                 <div className=' flex justify-between py-3 gap-5 '>
-<div className=" flex  items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1  shadow-sm">
+<div className=" flex  items-center flex-1 md:flex-0 gap-2 bg-gray-100 rounded-lg md:px-3 px-1   shadow-sm">
                                     <Switch
                                         checked={item.available}
                                         onChange={() => toggleAvailability(item.item_id, item.available)}

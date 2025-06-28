@@ -380,19 +380,19 @@ const VendorEarnings = () => {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 -50 gap-4 mt-6 text-center">
-                  <div className="p-4 border rounded-lg bg-orange-100">
+                  <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Earnings</p>
                     <p className="text-xl font-bold text-orange-600">
                       ₹{selectedStats?.earnings}
                     </p>
                   </div>
-                  <div className="p-4 border rounded-lg bg-orange-100">
+                  <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Orders</p>
                     <p className="text-xl font-bold text-orange-600">
                       {selectedStats?.orders}
                     </p>
                   </div>
-                  <div className="p-4 border rounded-lg bg-orange-50">
+                  <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Rejected</p>
                     <p className="text-xl font-bold text-orange-600">
                       ₹{selectedStats?.rejected?.amount} (
@@ -415,7 +415,7 @@ const VendorEarnings = () => {
       {ratings.map((rating) => (
         <div
           key={rating.r_id}
-          className="border-primary border-1 p-4 rounded-lg bg-gray-50 space-y-3"
+          className="border-orange-200 border-1 p-4 rounded-lg bg-gray-50 space-y-3"
         >
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">

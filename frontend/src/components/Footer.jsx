@@ -28,10 +28,13 @@ const BottomNav = () => {
               ${isActive ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg' : 'text-gray-500 hover:text-yellow-500 hover:bg-yellow-50'}`}>
                             <Icon className={`text-lg transition-all duration-300 ${isActive ? 'scale-105' : ''}`} />
                         </div>
-                        <span className={`text-xs mt-0.5 font-medium transition-all duration-300
-              ${isActive ? 'text-yellow-600 font-semibold' : 'text-gray-500 hover:text-yellow-500'}`}>
-                            {item.label}
-                        </span>
+                        <span className={`text-xs mt-0.5 font-medium transition-all duration-300 
+  ${isActive ? 'text-yellow-600 font-semibold ' : 'text-gray-500 hover:text-yellow-500'}
+`}>
+  {item.label}
+</span>
+
+
                     </div>
                 );
             })}
