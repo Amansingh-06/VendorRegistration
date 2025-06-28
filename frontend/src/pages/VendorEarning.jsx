@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import BottomNav from "../components/Footer";
 import Header from "../components/Header";
+import { BsCalendarDate } from "react-icons/bs";
+
 import {
   isWithinInterval,
   format,
@@ -353,7 +355,7 @@ const VendorEarnings = () => {
                       onClick={() => setShowCalendar((prev) => !prev)}
                       className="cursor-pointer"
                     >
-                      📅
+                    <BsCalendarDate/>
                     </button>
                   </div>
                 </div>
