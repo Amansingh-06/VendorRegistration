@@ -160,7 +160,7 @@ import { FiClipboard, FiShoppingCart, FiUser } from "react-icons/fi";
 import { PiMoneyWavyDuotone } from "react-icons/pi"
 export const navItems = [
     { id: "Home", icon: FiClipboard, label: "Home", path: "/home" },
-    { id: "Manage Items", icon: FiShoppingCart, label: `Manage \n Items`, path: "/manage-items" },
+    { id: "Manage Items", icon: FiShoppingCart, label: `Manage Items`, path: "/manage-items" },
     { id: "Earning", icon: PiMoneyWavyDuotone, label: "Earning", path: "/earning" },
     { id: "Profile", icon: FiUser, label: "Profile", path: "/profile" }
 ];

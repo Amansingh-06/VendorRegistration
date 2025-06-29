@@ -86,6 +86,9 @@ const OrderPage = () => {
     }
   };
 
+  console.log("Current Orders:", orders.map(o => o.order_id));
+
+
   console.log("Vendor verified", vendorProfile?.status);
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">

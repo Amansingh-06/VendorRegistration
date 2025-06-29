@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, } from 'react-icons/fa';
+import { FiEdit } from "react-icons/fi";
+import { FiTrash } from "react-icons/fi";
+
+
 import Header from '../components/Header';
 import Switch from '@mui/material/Switch';
 import BottomNav from '../components/Footer';
@@ -8,6 +12,12 @@ import Loader from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
+import { GiFruitBowl } from "react-icons/gi";
+import { FaRegClock } from "react-icons/fa";
+import { FaIndianRupeeSign } from "react-icons/fa6";
+
+
+
 
 export default function ManageItemsPage() {
     const { items, setItems, loading } = useFetch();
@@ -104,8 +114,8 @@ console.log(items)
                                     </span>
                                 </div> */}
 
-                                <div className="flex  sm:flex-row items-start gap-4">
-                                    <div className=' rounded h-28 border-dashed p-1  flex-1 '>
+                                <div className="flex  sm:flex-row items-start gap-2">
+                                    <div className=' rounded h-28  p-1   w-32 md:flex-1 '>
                                         <img
                                             src={item?.img_url && item.img_url !== "NA" ? item.img_url : "/public/defaultItem.jpeg"}
                                             alt={item?.item_name || "Preview"}
@@ -115,9 +125,9 @@ console.log(items)
 
                                     <div className="flex-1 flex flex-col  gap-1.5  ">
                                         <h3 className="text-lg font-semibold text-gray-800">{item?.item_name}</h3>
-                                        <p className="text-gray-600 text-sm">Quantity: {item?.item_quantity}</p>
-                                        <p className="text-gray-600 text-sm">Prep Time: {item?.prep_time}min</p>
-                                        <p className="text-gray-600 text-sm font-medium">Price: ₹{item?.item_price}</p>
+                                        <p className="text-gray-600 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-sm'>Quantity: {item?.item_quantity}</span></p>
+                                        <p className="text-gray-600 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-sm'>Prep Time: {item?.prep_time}min</span></p>
+                                        <p className="text-gray-600 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-sm'> Price: ₹{item?.item_price}</span></p>
                                     </div>
 
                                     {/* <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
@@ -153,17 +163,20 @@ console.log(items)
                                     <div className=" sm:mt-auto sm:ml-auto flex  flex-1 justify-between md:justify-evenly  items-center ">
                                         <button
                                             onClick={() => navigate('/add-items', { state: { itemData: item } })}
-                                            className="flex items-center gap-1 text-green hover:text-green text-sm md:text-base font-medium"
+                                            className="flex  items-center gap-1 text-green hover:text-green text-sm md:text-base font-medium"
                                         >
-                                            <FaEdit />
-                                            <span>Edit</span>
+              <FiEdit
+                              className="text-blue-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
+                            />                                            <span>Edit</span>
                                         </button>
 
                                         <button
                                             onClick={() => confirmDelete(item.item_id, item.item_name)}
-                                            className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm md:text-base font-medium"
+                                            className="flex  items-center gap-1 text-red-500 hover:text-red-700 text-sm md:text-base font-medium"
                                         >
-                                            <FaTrash />
+                              <FiTrash
+                            className="text-red-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
+                            />
                                             <span>Delete</span>
                                         </button>
                                     </div>
