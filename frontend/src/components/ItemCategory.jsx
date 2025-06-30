@@ -145,7 +145,7 @@ export default function ItemCategory({
                                     type="checkbox"
                                     checked={selectedIds.includes(String(c_id))}
                                     onChange={() => toggleItem(c_id)}
-                                    className="w-4 h-4 mr-1 rounded border border-orange-500 appearance-none 
+                                    className="w-4 h-4 mr-1 rounded border border-gray-300 appearance-none 
              bg-white checked:bg-orange-500 checked:border-orange-500 
              checked:before:content-['✔'] checked:before:text-white 
              checked:before:flex checked:before:items-center checked:before:justify-center 

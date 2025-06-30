@@ -15,18 +15,23 @@ import { supabase } from '../utils/supabaseClient';
 import { GiFruitBowl } from "react-icons/gi";
 import { FaRegClock } from "react-icons/fa";
 import { FaIndianRupeeSign } from "react-icons/fa6";
+import { truncateLetters } from '../utils/vendorConfig';
 
 
 
 
 export default function ManageItemsPage() {
     const { items, setItems, loading } = useFetch();
-    const { vendorProfile } = useAuth();
+    const { vendorProfile, selectedVendorId } = useAuth();
     const navigate = useNavigate();
 
     const [showModal, setShowModal] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState(null);
     const [deleteItemName, setDeleteItemName] = useState("");
+    const [multiplierValues, setMultiplierValues] = useState({});
+const [multiplierErrors, setMultiplierErrors] = useState({});
+
+
 
     // ✅ Toggle Availability
     const toggleAvailability = async (id, currentValue) => {
@@ -77,7 +82,55 @@ export default function ManageItemsPage() {
         setDeleteItemId(null);
         setDeleteItemName("");
     };
-console.log(items)
+    console.log(items)
+ const handleMultiplierChange = (itemId, value) => {
+  setMultiplierValues((prev) => ({
+    ...prev,
+    [itemId]: value,
+  }));
+
+  // Clear error if valid
+  if (value >= 1 && value <= 2) {
+    setMultiplierErrors((prev) => ({
+      ...prev,
+      [itemId]: "",
+    }));
+  }
+};
+
+      
+    
+  const handleAddPriceMultiplier = async (itemId) => {
+  const value = parseFloat(multiplierValues[itemId]);
+
+  if (isNaN(value) || value < 1 || value > 2) {
+    setMultiplierErrors((prev) => ({
+      ...prev,
+      [itemId]: "Please enter a value between 1 and 2",
+    }));
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("item")
+      .update({ price_multiplier: value })
+      .eq("item_id", itemId);
+
+    if (error) throw error;
+
+    setMultiplierValues((prev) => ({ ...prev, [itemId]: "" }));
+    setMultiplierErrors((prev) => ({ ...prev, [itemId]: "" }));
+  } catch (err) {
+    setMultiplierErrors((prev) => ({
+      ...prev,
+      [itemId]: "Failed to update. Please try again.",
+    }));
+  }
+};
+
+      
+      
     return (
         <section >
             <div className="max-w-2xl mx-auto rounded-2xl shadow-lg">
@@ -114,8 +167,8 @@ console.log(items)
                                     </span>
                                 </div> */}
 
-                                <div className="flex  sm:flex-row items-start gap-2">
-                                    <div className=' rounded h-28  p-1   w-32 md:flex-1 '>
+                                <div className="flex flex-1 sm:flex-row items-start   gap-2">
+                                    <div className=' rounded h-28  p-1 w-32    md:flex-1 '>
                                         <img
                                             src={item?.img_url && item.img_url !== "NA" ? item.img_url : "/public/defaultItem.jpeg"}
                                             alt={item?.item_name || "Preview"}
@@ -123,11 +176,25 @@ console.log(items)
                                         />
                                     </div>
 
-                                    <div className="flex-1 flex flex-col  gap-1.5  ">
-                                        <h3 className="text-lg font-semibold text-gray-800">{item?.item_name}</h3>
-                                        <p className="text-gray-600 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-sm'>Quantity: {item?.item_quantity}</span></p>
-                                        <p className="text-gray-600 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-sm'>Prep Time: {item?.prep_time}min</span></p>
-                                        <p className="text-gray-600 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-sm'> Price: ₹{item?.item_price}</span></p>
+                                    <div className="flex-1 flex flex-col    ">
+                                    <div className="flex items-start   gap-1">
+  {/* Badge Box with shadow and rounded-lg */}
+  <div className="p-1 rounded-lg mt-1 shadow-lg bg-gray-100">
+    <span
+      className={`w-3 h-3 block rounded-full 
+        ${item?.veg === true ? 'bg-green-600' : 'bg-red-600'}`}
+    ></span>
+  </div>
+
+  {/* Item Name */}
+                                            <h3 className="text-lg font-semibold text-gray-800">
+                                                {truncateLetters(item?.item_name, 17)}
+  </h3>
+</div>
+
+                                        <p className="text-gray-600  p-1 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-sm'>Quantity: {item?.item_quantity}</span></p>
+                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-sm'>Prep Time: {item?.prep_time}min</span></p>
+                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-sm'> Price: ₹{item?.item_price}</span></p>
                                     </div>
 
                                     {/* <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
@@ -149,7 +216,7 @@ console.log(items)
                                     </div> */}
                                 </div>
                                 <div className=' flex justify-between py-3 gap-5 '>
-<div className=" flex  items-center flex-1 md:flex-0 gap-2 bg-gray-100 rounded-lg md:px-3 px-1   shadow-sm">
+<div className=" flex w-32   items-center  md:flex-0 gap-1 bg-gray-100 rounded md:px-3    shadow-sm">
                                     <Switch
                                         checked={item.available}
                                         onChange={() => toggleAvailability(item.item_id, item.available)}
@@ -163,25 +230,61 @@ console.log(items)
                                     <div className=" sm:mt-auto sm:ml-auto flex  flex-1 justify-between md:justify-evenly  items-center ">
                                         <button
                                             onClick={() => navigate('/add-items', { state: { itemData: item } })}
-                                            className="flex  items-center gap-1 text-green hover:text-green text-sm md:text-base font-medium"
+                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl shadow-sm hover:shadow-md group/btn cursor-pointer"
                                         >
               <FiEdit
                               className="text-blue-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
-                            />                                            <span>Edit</span>
+                            />                                            
                                         </button>
 
                                         <button
                                             onClick={() => confirmDelete(item.item_id, item.item_name)}
-                                            className="flex  items-center gap-1 text-red-500 hover:text-red-700 text-sm md:text-base font-medium"
+                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl shadow-sm hover:shadow-md group/btn cursor-pointer"
                                         >
                               <FiTrash
                             className="text-red-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
                             />
-                                            <span>Delete</span>
                                         </button>
                                     </div>
                                 </div>
+{selectedVendorId && (
+  <div className="flex flex-col w-full gap-1 mt-2">
+    <div className="flex gap-2">
+      <input
+        type="number"
+        placeholder="Price Multiplier"
+        min="1"
+        max="2"
+        step="0.01"
+        value={multiplierValues[item.item_id] || ""}
+        onChange={(e) => handleMultiplierChange(item.item_id, e.target.value)}
+        className={`border px-2 py-1 w-full  rounded-md ${
+          multiplierErrors[item.item_id] ? "border-red-500" : "border-green-300"
+        }`}
+      />
+      <button
+        onClick={() => handleAddPriceMultiplier(item.item_id)}
+        className={`px-3 py-1 rounded-md text-white ${
+          multiplierValues[item.item_id] >= 1 &&
+          multiplierValues[item.item_id] <= 2
+            ? "bg-green-600 hover:bg-green-700"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        Add
+      </button>
+    </div>
+    {multiplierErrors[item.item_id] && (
+      <p className="text-red-500 text-sm">{multiplierErrors[item.item_id]}</p>
+    )}
+  </div>
+)}
+
+
+
+                                
                             </div>
+                            
                         ))}
                         <div>
                         <button
@@ -210,7 +313,7 @@ console.log(items)
                             Delete Confirmation
                         </h2>
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete <strong>{deleteItemName}</strong>?
+                            Are you sure you want to delete <strong>{truncateLetters(deleteItemName, 17)}</strong>
                         </p>
                         <div className="flex justify-center gap-4">
                             <button

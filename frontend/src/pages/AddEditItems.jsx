@@ -889,6 +889,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     ? itemData.item_category_id
                     : JSON.parse(itemData?.item_category_id || '[]'),
                 type: itemData.veg ? 'veg' : 'nonveg',
+                note: itemData.item_description === 'NA' ? '' : itemData.item_description || '',
             });
             
             if (itemData.img_url && itemData.img_url !== "NA") {
@@ -931,6 +932,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 veg: typeBool,
                 vendor_created_category_id: data?.category,
                 item_category_id: data.cuisine,
+                item_description: data?.note?.trim() || '',
             };
             let imageUrl = itemData?.img_url || null;
 
@@ -1210,6 +1212,25 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 </div>
                             )}
                         </div>
+                        <div className='flex border-1 border-gray-300 bg-white rounded-lg p-4 shadow-lg '>
+
+                        <div className="relative w-full  col-span-2">
+              <textarea
+                id="note"
+                rows={3}
+                {...register("note")}
+                placeholder="Enter any note (optional)"
+                className="peer w-full border border-gray-300 rounded-lg bg-white text-gray-800  p-3 placeholder-transparent focus:outline-none focus:border-green transition-all resize-none"
+              />
+              <label
+                htmlFor="note"
+                className="absolute left-3 -top-2.5 text-sm bg-white text-gray-500 font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
+              >
+                Note (optional)
+              </label>
+                            </div>
+                            </div>
+
 
                         <ImageUploader
                             previewImage={previewImage}

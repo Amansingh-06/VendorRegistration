@@ -97,32 +97,40 @@ const OrderPage = () => {
   
         
       {/* </div> */}
-      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  mt-10 md:mt-18 py-5 gap-4 shadow-lg">
-          <h1 className="text-xl font-bold text-left text-gray-500">Orders</h1>
+      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  mt-10 md:mt-18 py-3 gap-4 shadow-lg">
+          <h1 className="text-xl font-semibold text-gray-500">Orders</h1>
   
           {/* ✅ Vendor Not Verified Handling */}
-          {vendorProfile?.status !== "verified" ? (
-            <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
-              <h2 className="font-semibold text-lg text-center mb-2">
-                Account Status
-              </h2>
-  
-              <p className="mb-2">
-                <strong>Status:</strong>{" "}
-                {vendorProfile?.status === "not_verified"
-                  ? "Not Verified"
-                  : vendorProfile?.status}
-              </p>
-  
-              {vendorProfile?.request_status === "NA" ? (
-                <p>Your account verification is under process. Please wait.</p>
-              ) : (
-                <p>
-                  <strong>Rejected:</strong> {vendorProfile?.request_status}
-                </p>
-              )}
-            </div>
-          ) : (
+          {vendorProfile?.status === "blocked" ? (
+  <div className="bg-red-50 border border-red-300 text-red-800 p-4 rounded-md">
+    <h2 className="font-semibold text-lg text-center mb-2">
+      Account Blocked
+    </h2>
+    <p>Your account has been blocked. Please contact support for assistance.</p>
+  </div>
+) : vendorProfile?.status !== "verified" ? (
+  <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
+    <h2 className="font-semibold text-lg text-center mb-2">
+      Account Status
+    </h2>
+
+    <p className="mb-2">
+      <strong>Status:</strong>{" "}
+      {vendorProfile?.status === "not_verified"
+        ? "Not Verified"
+        : vendorProfile?.status}
+    </p>
+
+    {vendorProfile?.request_status === "NA" ? (
+      <p>Your account verification is under process. Please wait.</p>
+    ) : (
+      <p>
+        <strong>Rejected:</strong> {vendorProfile?.request_status}
+      </p>
+    )}
+  </div>
+) 
+ : (
             <>
               <div className="flex flex-wrap">
                 <ButtonGroup active={active} setActive={setActive} />

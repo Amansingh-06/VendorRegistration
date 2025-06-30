@@ -260,28 +260,35 @@ const VendorEarnings = () => {
       <div className="max-w-2xl mx-auto w-full bg-gray-100 space-y-6 min-h-[92vh]">
         {/* <Header title="Earnings" /> */}
         <div className="max-w-2xl mx-auto w-full px-2 pt-10 pb-5 mt-5 space-y-6">
-          {vendorProfile?.status !== "verified" ? (
-            <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
-              <h2 className="font-semibold text-lg text-center mb-2">
-                Account Status
-              </h2>
+        {vendorProfile?.status === "blocked" ? (
+  <div className="bg-red-50 border border-red-300 text-red-800 p-4 rounded-md">
+    <h2 className="font-semibold text-lg text-center mb-2">
+      Account Blocked
+    </h2>
+    <p>Your account has been blocked. Please contact support for assistance.</p>
+  </div>
+) : vendorProfile?.status !== "verified" ? (
+  <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-md">
+    <h2 className="font-semibold text-lg text-center mb-2">
+      Account Status
+    </h2>
 
-              <p className="mb-2">
-                <strong>Status:</strong>{" "}
-                {vendorProfile?.status === "not_verified"
-                  ? "Not Verified"
-                  : vendorProfile?.status}
-              </p>
+    <p className="mb-2">
+      <strong>Status:</strong>{" "}
+      {vendorProfile?.status === "not_verified"
+        ? "Not Verified"
+        : vendorProfile?.status}
+    </p>
 
-              {vendorProfile?.request_status === "NA" ? (
-                <p>Your account verification is under process. Please wait.</p>
-              ) : (
-                <p>
-                  <strong>Rejected:</strong> {vendorProfile?.request_status}
-                </p>
-              )}
-            </div>
-          ) : (
+    {vendorProfile?.request_status === "NA" ? (
+      <p>Your account verification is under process. Please wait.</p>
+    ) : (
+      <p>
+        <strong>Rejected:</strong> {vendorProfile?.request_status}
+      </p>
+    )}
+  </div>
+) : (
             <>
               {/* Delivered Orders */}
               <section className="bg-white rounded-lg shadow p-4 md:p-6">
@@ -379,7 +386,7 @@ const VendorEarnings = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 -50 gap-4 mt-6 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 -50 gap-4 mt-6 text-left">
                   <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Earnings</p>
                     <p className="text-xl font-bold text-orange-600">

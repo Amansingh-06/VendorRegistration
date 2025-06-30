@@ -184,62 +184,61 @@ const Navbar = () => {
                 {!scrolled && (
                     <div className={`flex items-center justify-between p-1 lg:p-4 max-w-9xl mx-auto transition-all duration-1200`}>
                         {/* Left Section - Profile */}
-                        <div className='flex items-center gap-2 lg:gap-4'>
-                            <div className='relative'>
-                                <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
-                                    {vendorProfile && vendorProfile?.banner_url && vendorProfile.banner_url !== 'NA' ? (
-                                        <img
-                                            src={vendorProfile.banner_url}
-                                            alt="Vendor Banner"
-                                            className='w-full h-full object-cover'
-                                        />
-                                    ) : vendorProfile && vendorProfile?.video_url && vendorProfile.video_url !== 'NA' ? (
-                                        <video
-                                            src={vendorProfile?.video_url}
-                                            className="w-full h-full object-cover"
-                                            muted
-                                            preload="metadata"
-                                            onLoadedMetadata={(e) => (e.target.currentTime = 1)}
-                                        />
-                                    ) : (
-                                        <img
-                                            src="/defaultuserImage.jpg" // 👈 public/defaultBanner.jpg
-                                            alt="Default"
-                                            className='w-full h-full object-cover'
-                                        />
-                                    )}
-                                </div>
+                        <div className='flex items-center gap-2  lg:gap-4'>
+  {/* Image or Video Circle */}
+  <div className='relative '>
+    <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
+      {vendorProfile?.banner_url && vendorProfile.banner_url !== 'NA' ? (
+        <img
+          src={vendorProfile.banner_url}
+          alt="Vendor Banner"
+          className='w-full h-full object-cover'
+        />
+      ) : vendorProfile?.video_url && vendorProfile.video_url !== 'NA' ? (
+        <video
+          src={vendorProfile.video_url}
+          className="w-full h-full object-cover"
+          muted
+          preload="metadata"
+          onLoadedMetadata={(e) => (e.target.currentTime = 1)}
+        />
+      ) : (
+        <img
+          src="/defaultuserImage.jpg"
+          alt="Default"
+          className='w-full h-full object-cover'
+        />
+      )}
+    </div>
+  </div>
 
-                            </div>
+  {/* Text Section */}
+  <div className='text-white flex flex-col justify-center -mt-1'>
+    {/* Shop Name and Toggle */}
+    <div className='flex items-center gap-2  md:gap-5 '>
+      <div
+        className='text-base lg:text-2xl font-semibold drop-shadow-sm '
+        title={vendorProfile?.shop_name}
+      >
+        {truncateLetters(vendorProfile?.shop_name, 12)}
+      </div>
 
-                            <div className='text-white  '>
-                                <div className='flex justify-center items-center md:gap-5 gap-2 '>
-                                    <div className='text-base lg:text-2xl leading-4.5 font-semibold drop-shadow-sm flex flex-nowrap  '
-                                    title={vendorProfile?.shop_name}
-                                    >
-                                        {truncateLetters(vendorProfile?.shop_name,10)}
-                                    </div>
-                                    {/* <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit border border-yellow-200 shadow-sm"> */}
-                                        {/* <div className="text-white flex items-center gap-1 md:p-2 p-0.5">
-                                            <span className="text-xs lg:text-sm tracking-wide drop-shadow-sm ">
-                                                {switchOn ? 'Open' : 'Closed'}
-                                            </span>
-                                            <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)}  />
-                                        </div> */}
-        <div className=" mt-1 mr-1.5 md:mr-0 md:mt-0 relative flex items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit  shadow-sm">
-  <ToggleSwitch 
-    switchOn={switchOn} 
-    onToggle={handleSwitchChange} 
-  />
-{/* </div> */}
-      {/* <div className="ml-4">
-        <IOSSwitch checked={switchOn} onChange={(e) => handleSwitchChange(e.target.checked)} />
-      </div> */}
-                                    </div>
-                                </div>
-                                <div className="md:text-sm text-xs -mt-1 ">{truncateLetters( vendorProfile?.v_name,20)}</div>
-                            </div>
-                        </div>
+      {/* Toggle Button */}
+      <div className="relative flex  items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit shadow-sm">
+        <ToggleSwitch 
+          switchOn={switchOn} 
+          onToggle={handleSwitchChange} 
+        />
+      </div>
+    </div>
+
+    {/* Vendor Name */}
+    <div className="md:text-sm text-xs  truncate max-w-[160px]">
+      {truncateLetters(vendorProfile?.v_name, 20)}
+    </div>
+  </div>
+</div>
+
 
                         {/* Right Section - Icons */}
                         <div className='flex items-center gap-4 lg:gap-6'>

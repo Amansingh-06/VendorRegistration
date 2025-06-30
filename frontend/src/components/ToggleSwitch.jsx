@@ -2,18 +2,18 @@ export const ToggleSwitch = ({ switchOn, onToggle }) => {
     return (
       <div
         onClick={() => onToggle(!switchOn)}
-        className={`w-22 h-7 flex items-center rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
-          switchOn ? "bg-green-500 text-white" : "bg-gray-400"
+        className={`w-17 border-2 h-7 flex items-center rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
+          switchOn ? "bg-green-500  text-white" : "bg-gray-400"
         }`}
       >
         {/* Background Labels */}
-        <div className="absolute inset-0 flex items-center justify-between px-2">
-          <span className={`text-white text-xs font-medium transition-all duration-300 ${
+        <div className="absolute inset-0 flex items-center  px-2 mt-1">
+          <span className={`text-white text-[10px] font-normal transition-all duration-300 ${
             switchOn ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
           }`}>
             OPEN
           </span>
-          <span className={`text-white text-xs font-medium transition-all duration-300  ${
+          <span className={`text-white text-[10px] font-normal transition-all duration-300 -ml-2  ${
             switchOn ? 'opacity-0 scale-90' : 'opacity-100 scale-110'
           }`}>
             CLOSE
@@ -22,8 +22,8 @@ export const ToggleSwitch = ({ switchOn, onToggle }) => {
         
         {/* Moving Circle with Icons */}
         <div
-          className={`bg-white w-5 h-5 rounded-full shadow-xl transform transition-all duration-500 ease-out absolute top-1 flex items-center justify-center ${
-            switchOn ? "translate-x-16" : "translate-x-1"
+          className={`bg-white w-4 h-4 rounded-full shadow-xl transform transition-all duration-500 ease-out absolute top-1 flex items-center justify-center ${
+            switchOn ? "translate-x-11.5" : "translate-x-1"
           }`}
         >
           {switchOn ? (

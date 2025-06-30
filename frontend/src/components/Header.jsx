@@ -71,18 +71,18 @@ const Header = ({ title = "Registration" }) => {
             </div>
             {/* Floating Icons */}
             <div>
-                <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 right-8 animate-bounce-slow pointer-events-none" />
-                <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-5 left-3 animate-float pointer-events-none" />
-                <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-4 lg:top-1/3 right-44 animate-float pointer-events-none" />
-                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl bottom-2 right-18 animate-bounce-slow pointer-events-none" />
+                <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl -top-2 right-8 animate-bounce-slow pointer-events-none" />
+                <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl animate-float pointer-events-none" />
+                <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl  lg:top-1/3 right-44 animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl -top-2 right-18 animate-bounce-slow pointer-events-none" />
                 <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-0 lg:bottom-12 left-35 animate-bounce-slow pointer-events-none" />
-                <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-1 left-70 animate-float pointer-events-none" />
-                <PiBowlFood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-1 right-60 animate-bounce-slow pointer-events-none" />
-                <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-12 right-[470px] animate-float pointer-events-none" />
-                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-10 left-60 lg:left-1/2 animate-bounce-slow pointer-events-none" />
-                <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-16 left-1/3 animate-bounce-slow pointer-events-none" />
-                <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 left-20 lg:left-[530px] animate-float pointer-events-none" />
-                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-1 right-[570px] animate-bounce-slow pointer-events-none" />
+                <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl -top-2 left-75 animate-float pointer-events-none" />
+                <PiBowlFood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl  right-62 animate-bounce-slow pointer-events-none" />
+                <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-8 -right-[8px] animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-8 left-45 lg:left-1/2 animate-bounce-slow pointer-events-none" />
+                <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 left-40 animate-bounce-slow pointer-events-none" />
+                <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-10 left-20 lg:left-[530px] animate-float pointer-events-none" />
+                <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-12 right-[270px] animate-bounce-slow pointer-events-none" />
             </div>
 
             {/* Title and Logout */}

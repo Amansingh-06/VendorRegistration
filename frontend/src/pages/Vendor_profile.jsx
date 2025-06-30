@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import TransparentLoader from "../components/Transparentloader";
+import { FiMapPin } from "react-icons/fi";
 
 export default function VendorProfile() {
   const { vendorProfile, selectedVendorId, session, refreshVendorProfile } =
@@ -288,7 +289,7 @@ export default function VendorProfile() {
             long: initialFormState?.longitude,
           };
 
-          setFetchedAddress(addressToSet);
+          // setFetchedAddress(addressToSet);
           setSelectedAddress(addressToSet);
 
           console.log("✅ fetchedAddress:", addressToSet);
@@ -748,7 +749,10 @@ export default function VendorProfile() {
               </section>
 
               {/* Media Uploads */}
-              <section className="flex flex-col rounded-lg  bg-white  border-gray-300 border-1 shadow-lg px-4 py-8">
+            <section className="flex flex-col rounded-lg  bg-white  border-gray-300 border-1 shadow-lg px-4 py-6">
+            <h2 className="text-xl font-semibold text-gray-500 mb-4">
+                  Proofs
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                   {/* Banner Image */}
                   <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-2 p-4">
@@ -844,7 +848,7 @@ export default function VendorProfile() {
               </section>
 
               {/* Address Section */}
-              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-8">
+              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
                 <h2 className="text-xl font-semibold text-gray-500 mb-4">
                   Address
                 </h2>
@@ -991,14 +995,15 @@ export default function VendorProfile() {
                   </div>
                   {selectedAddress || location || fetchedAddress ? (
                     <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
-                      Selected Location:{" "}
+                      <FiMapPin className="inline-block mr-1" />
                       {selectedAddress?.area && selectedAddress?.city
                         ? `${selectedAddress.area}, ${selectedAddress.city}`
                         : selectedAddress?.landmark
-                        ? selectedAddress.landmark
-                        : fetchedAddress?.area && fetchedAddress?.city
-                        ? `${fetchedAddress.area}, ${fetchedAddress.city}`
-                        : fetchedAddress?.landmark || "N/A"}
+                        // ? selectedAddress.landmark
+                        // : fetchedAddress?.area && fetchedAddress?.city
+                        // ? `${fetchedAddress.area}, ${fetchedAddress.city}`
+                      // : fetchedAddress?.landmark || "N/A"
+                    }
                     </p>
                   ) : null}
                 </div>
