@@ -16,7 +16,7 @@ import { GiFruitBowl } from "react-icons/gi";
 import { FaRegClock } from "react-icons/fa";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { truncateLetters } from '../utils/vendorConfig';
-
+import { toast } from 'react-hot-toast';
 
 
 
@@ -29,7 +29,9 @@ export default function ManageItemsPage() {
     const [deleteItemId, setDeleteItemId] = useState(null);
     const [deleteItemName, setDeleteItemName] = useState("");
     const [multiplierValues, setMultiplierValues] = useState({});
-const [multiplierErrors, setMultiplierErrors] = useState({});
+    const [multiplierErrors, setMultiplierErrors] = useState({});
+    const [loadingItemId, setLoadingItemId] = useState(null);
+
 
 
 
@@ -100,34 +102,81 @@ const [multiplierErrors, setMultiplierErrors] = useState({});
 
       
     
-  const handleAddPriceMultiplier = async (itemId) => {
-  const value = parseFloat(multiplierValues[itemId]);
-
-  if (isNaN(value) || value < 1 || value > 2) {
-    setMultiplierErrors((prev) => ({
-      ...prev,
-      [itemId]: "Please enter a value between 1 and 2",
-    }));
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from("item")
-      .update({ price_multiplier: value })
-      .eq("item_id", itemId);
-
-    if (error) throw error;
-
-    setMultiplierValues((prev) => ({ ...prev, [itemId]: "" }));
-    setMultiplierErrors((prev) => ({ ...prev, [itemId]: "" }));
-  } catch (err) {
-    setMultiplierErrors((prev) => ({
-      ...prev,
-      [itemId]: "Failed to update. Please try again.",
-    }));
-  }
-};
+const handleAddPriceMultiplier = async (itemId) => {
+    const inputValue = multiplierValues[itemId];
+    const parsedValue = parseFloat(inputValue);
+    const currentMultiplier = items.find((item) => item.item_id === itemId)?.price_multiplier;
+  
+    const isInvalid =
+      inputValue === undefined ||
+      inputValue === "" ||
+      isNaN(parsedValue) ||
+      parsedValue < 1 ||
+      parsedValue > 2;
+  
+    const isSame = parsedValue === currentMultiplier;
+  
+    // ✅ First: If invalid input
+    if (isInvalid) {
+      setMultiplierErrors((prev) => ({
+        ...prev,
+        [itemId]: "Please enter a value between 1 and 2",
+      }));
+      return;
+    }
+  
+    // ✅ Then: If same value
+    if (isSame) {
+      toast.dismiss();
+      toast("No update found. Multiplier is unchanged.");
+      return;
+    }
+  
+    setLoadingItemId(itemId);
+    const toastId = toast.loading("Updating price multiplier...");
+  
+    try {
+      const { data, error } = await supabase
+        .from("item")
+        .update({ price_multiplier: parsedValue })
+        .eq("item_id", itemId);
+  
+      if (error) throw error;
+  
+      // ✅ Update local items list
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.item_id === itemId
+            ? { ...item, price_multiplier: parsedValue }
+            : item
+        )
+      );
+  
+      // ✅ Clear input and errors
+      setMultiplierValues((prev) => ({ ...prev, [itemId]: undefined }));
+      setMultiplierErrors((prev) => ({ ...prev, [itemId]: "" }));
+  
+      toast.dismiss(toastId);
+      toast.success("Price multiplier updated successfully!");
+    } catch (err) {
+      console.error(err);
+  
+      setMultiplierErrors((prev) => ({
+        ...prev,
+        [itemId]: "Failed to update. Please try again.",
+      }));
+  
+      toast.dismiss();
+      toast.error("Failed to update price multiplier.");
+    } finally {
+      setLoadingItemId(null);
+    }
+  };
+  
+  
+  
+  
+  
 
       
       
@@ -256,23 +305,62 @@ const [multiplierErrors, setMultiplierErrors] = useState({});
         min="1"
         max="2"
         step="0.01"
-        value={multiplierValues[item.item_id] || ""}
-        onChange={(e) => handleMultiplierChange(item.item_id, e.target.value)}
+        value={
+            multiplierValues[item.item_id] !== undefined
+              ? multiplierValues[item.item_id]
+              : item.price_multiplier || ""
+          }        onChange={(e) => handleMultiplierChange(item.item_id, e.target.value)}
         className={`border px-2 py-1 w-full  rounded-md ${
           multiplierErrors[item.item_id] ? "border-red-500" : "border-green-300"
         }`}
       />
-      <button
-        onClick={() => handleAddPriceMultiplier(item.item_id)}
-        className={`px-3 py-1 rounded-md text-white ${
-          multiplierValues[item.item_id] >= 1 &&
-          multiplierValues[item.item_id] <= 2
-            ? "bg-green-600 hover:bg-green-700"
-            : "bg-gray-400 cursor-not-allowed"
-        }`}
-      >
-        Add
-      </button>
+     {(() => {
+  const inputValue = multiplierValues[item.item_id];
+  const parsedValue = parseFloat(inputValue);
+  const currentMultiplier = item.price_multiplier;
+
+  const isInvalid =
+    inputValue === undefined ||
+    inputValue === "" ||
+    isNaN(parsedValue) ||
+    parsedValue < 1 ||
+    parsedValue > 2;
+
+  const isSame = parsedValue === currentMultiplier;
+
+  const isLoading = loadingItemId === item.item_id;
+
+  const showErrorToast = () => {
+    if (isInvalid) {
+      toast("Please enter a value between 1 and 2");
+    } else if (isSame) {
+      toast("No update found. Multiplier is unchanged.");
+    }
+  };
+
+  return (
+    <button
+      onClick={() => {
+        if (isInvalid || isSame) {
+          showErrorToast();
+        } else {
+          handleAddPriceMultiplier(item.item_id);
+        }
+      }}
+      disabled={isLoading}
+      className={`px-3 py-1 rounded-md text-white transition ${
+        !isInvalid && !isSame
+          ? "bg-green-600 hover:bg-green-700"
+          : "bg-gray-400 cursor-not-allowed"
+      }`}
+    >
+      {isLoading ? "Adding..." : "Add"}
+    </button>
+  );
+})()}
+
+
+
     </div>
     {multiplierErrors[item.item_id] && (
       <p className="text-red-500 text-sm">{multiplierErrors[item.item_id]}</p>
