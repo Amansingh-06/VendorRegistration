@@ -96,19 +96,35 @@ const Navbar = () => {
     }, [vendorProfile]);
 
     const handleSwitchChange = async (checked) => {
-        setSwitchOn(checked);
-
-        if (!vendorProfile?.v_id) return;
-
-        const { error } = await supabase
-            .from(SUPABASE_TABLES?.VENDOR)
-            .update({ available: checked })
-            .eq(VENDOR_DATA_KEYS?.V_ID, vendorProfile?.v_id);
-
-        if (error) {
-            console.error("Failed to update vendor availability:", error.message);
-        }
+      setSwitchOn(checked);
+    
+      if (!vendorProfile?.v_id) return;
+    
+      const { error } = await supabase
+        .from(SUPABASE_TABLES?.VENDOR)
+        .update({ available: checked })
+        .eq(VENDOR_DATA_KEYS?.V_ID, vendorProfile?.v_id);
+    
+      if (error) {
+        console.error("Failed to update vendor availability:", error.message);
+        return;
+      }
+    
+      // ✅ Admin logging if admin is acting on behalf of vendor
+      if (session?.user?.id && session?.user?.id !== vendorProfile?.u_id) {
+        const description = `Vendor availability updated for vendor ID ${vendorProfile?.v_id}. Available changed to "${checked}"`;
+    
+        await supabase.from("admin_logs").insert([
+          {
+            admin_id: session.user.id,
+            title: "Vendor Availability Updated",
+            description,
+            timestamp: new Date(),
+          },
+        ]);
+      }
     };
+    
     
 
     return (

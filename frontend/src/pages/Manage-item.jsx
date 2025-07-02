@@ -107,8 +107,8 @@ export default function ManageItemsPage() {
       
           await supabase.from("admin_logs").insert([
             {
-              log_id: crypto.randomUUID(),
-              admin_id: currentUser.id,
+              //   log_id: crypto.randomUUID(),
+              admin_id: session?.user?.id,
               title: "Deleted Item",
               description,
               timestamp: new Date(),

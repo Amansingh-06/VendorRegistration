@@ -32,16 +32,42 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 
     const handleAction = async () => {
         if (!action || loading) return;
+      
         setLoading(true);
+      
         const { success } = await updateOrderStatus(order?.order_id, action?.nextStatus);
+      
         if (success) {
-            setLocalStatus(action.nextStatus);
-            onStatusUpdate?.(order?.order_id);
+          setLocalStatus(action.nextStatus);
+          onStatusUpdate?.(order?.order_id);
+      
+          // ✅ Admin log if admin is acting
+          if (selectedVendorId) {
+            const adminId = session?.user?.id;
+            const description = `Order status updated for order ID ${order?.order_id}. Status changed to "${action?.nextStatus}".`;
+      
+            const { error } = await supabase.from("admin_logs").insert([
+              {
+                // log_id: crypto.randomUUID(), // Only if not defaulted
+                admin_id: adminId,
+                title: "Order Status Updated",
+                description,
+                timestamp: new Date(),
+              },
+            ]);
+      
+            if (error) {
+              console.error("❌ Failed to log admin order update:", error.message);
+            }
+          }
+      
         } else {
-            alert('Failed to update status');
+          alert('Failed to update status');
         }
+      
         setLoading(false);
-    };
+      };
+      
 
     const itemCounts = Array.isArray(order?.order_item)
         ? order?.order_item.map(i => ({
