@@ -46,9 +46,20 @@ const OrderCard = ({ order, onStatusUpdate }) => {
       
           // ✅ Admin log if admin is acting
           if (selectedVendorId) {
-            const adminId = session?.user?.id;
+            
             const description = `Order status updated for order ID ${order?.order_id}. Status changed to "${action?.nextStatus}".`;
-      
+            let adminId = session?.user?.id;
+
+            if (!adminId) {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error || !user) {
+                  console.error("❌ Could not fetch current user:", error?.message);
+                  toast.error("Could not fetch admin user");
+                  return;
+                } else {
+                  adminId = user.id;
+                }
+              }
             const { error } = await supabase.from("admin_logs").insert([
               {
                 // log_id: crypto.randomUUID(), // Only if not defaulted
