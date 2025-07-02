@@ -42,35 +42,51 @@ const OrderPage = () => {
   
     setLoading(true);
     const toastId = toast.loading("Updating offer...");
-    const { success } = await updateVendorDiscount(vendorId, discountValue);
-    toast.dismiss(toastId);
-    setLoading(false);
-    setShowPopup(false);
   
-    if (success) {
+    try {
+      const { success } = await updateVendorDiscount(vendorId, discountValue);
+      toast.dismiss(toastId);
+      setLoading(false);
+      setShowPopup(false);
+  
+      if (!success) {
+        toast.error("Failed to update offer. Please try again.");
+        return;
+      }
+  
       setOffer(`${discountValue}%`);
       toast.success("Offer updated successfully!");
   
       if (selectedVendorId) {
-        // const { data: { user: currentUser } } = await supabase.auth.getUser();
         const existingOffer = vendorProfile?.current_discount;
   
         const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
   
-        await supabase.from("admin_logs").insert([
+        const { error: logError } = await supabase.from("admin_logs").insert([
           {
-            // log_id: crypto.randomUUID(),
             admin_id: session?.user?.id,
             title: "Updated Vendor Discount",
             description,
             timestamp: new Date(),
           },
         ]);
+  
+        if (logError) {
+          console.error("❌ Failed to insert into admin_logs:", logError.message);
+          toast.error("Logging failed. Check console.");
+        } else {
+          console.log("✅ admin_logs entry inserted successfully.");
+        }
       }
-    } else {
-      toast.error("Failed to update offer. Please try again.");
+    } catch (err) {
+      console.error("❌ Offer update error:", err.message);
+      toast.dismiss(toastId);
+      toast.error("An unexpected error occurred.");
     }
+  
+    setLoading(false);
   };
+  
   
 
 

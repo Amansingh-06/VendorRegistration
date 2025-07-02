@@ -6,6 +6,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { ORDER_STATUS } from '../utils/vendorConfig';
 import { capitalize } from '../utils/vendorConfig';
 import { FaIndianRupeeSign } from "react-icons/fa6";
+import { useAuth } from '../context/authContext';
 
 
 const OrderCard = ({ order, onStatusUpdate }) => {
@@ -14,6 +15,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
     const [showOtpPopup, setShowOtpPopup] = useState(false);
     const [otp, setOtp] = useState('');
     const [submittingOtp, setSubmittingOtp] = useState(false);
+    const {selectedVendorId} = useAuth()
 
     useEffect(() => {
         setLocalStatus(order?.status);

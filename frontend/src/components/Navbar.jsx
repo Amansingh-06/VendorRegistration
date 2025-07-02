@@ -86,7 +86,7 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const { session, vendorProfile } = useAuth();
+    const { session, vendorProfile, selectedVendorId } = useAuth();
 
     // ✅ Initialize switch based on vendorProfile.available
     useEffect(() => {
@@ -111,7 +111,7 @@ const Navbar = () => {
       }
     
       // ✅ Admin logging if admin is acting on behalf of vendor
-      if (session?.user?.id && session?.user?.id !== vendorProfile?.u_id) {
+      if (selectedVendorId) {
         const description = `Vendor availability updated for vendor ID ${vendorProfile?.v_id}. Available changed to "${checked}"`;
     
         await supabase.from("admin_logs").insert([

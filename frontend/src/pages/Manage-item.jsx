@@ -23,7 +23,7 @@ import { getChangedFields, generateChangeDescription } from '../utils/AdminLogs'
 
 export default function ManageItemsPage() {
     const { items, setItems, loading } = useFetch();
-    const { vendorProfile, selectedVendorId } = useAuth();
+    const { vendorProfile, selectedVendorId,session } = useAuth();
     const navigate = useNavigate();
 
     const [showModal, setShowModal] = useState(false);
