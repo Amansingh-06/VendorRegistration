@@ -114,15 +114,26 @@ const Navbar = () => {
       if (selectedVendorId) {
         const description = `Vendor availability updated for vendor ID ${vendorProfile?.v_id}. Available changed to "${checked}"`;
     
+        let adminId = session?.user?.id;
+
+        if (!adminId) {
+          const { data: { user }, error } = await supabase.auth.getUser();
+          if (error || !user) {
+            console.error("❌ Could not fetch current user:", error?.message);
+            return;
+          }
+          adminId = user.id;
+        }
+        
         await supabase.from("admin_logs").insert([
           {
-            admin_id: session.user.id,
+            admin_id: adminId,
             title: "Vendor Availability Updated",
             description,
             timestamp: new Date(),
           },
         ]);
-      }
+      }        
     };
     
     
