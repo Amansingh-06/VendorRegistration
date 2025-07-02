@@ -17,6 +17,7 @@ import VendorEarnings from './pages/VendorEarning';
 import ManageItemsPage from './pages/Manage-item';
 import InstallPrompt from './components/InstallPrompt';
 import AdminProtectedRoute from './Routes/AdminAccess';
+import ScrollToTop from './components/ScrolltoTop';
 
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './pages/Layout'; // 👈 import your new Layout
@@ -26,6 +27,8 @@ function App() {
   return (
     <Router>
       <div className="poppins-regular">
+      <ScrollToTop />
+
         <Routes>
 
           {/* Guest Routes */}

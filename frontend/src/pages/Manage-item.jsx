@@ -146,7 +146,7 @@ export default function ManageItemsPage() {
                     </div>
                 )}
 
-                <div className='max-w-2xl md:px-6 py-8 mt-7 px-2   bg-gray-100  shadow-lg min-h-[86vh]  pb-15 relative'>
+                <div className='max-w-2xl md:px-6 py-8 mt-7 px-2    bg-gray-100  shadow-lg min-h-[86vh]  pb-27 relative'>
                     <div className="grid gap-6">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
@@ -264,21 +264,21 @@ export default function ManageItemsPage() {
             </div>
            
           </div>
-          <div className='bottom-13 max-w-2xl w-full fixed items-right-0 flex justify-end '>                         
-    <div className="flex flex-col items-center gap-2">
-              <div className=" flex flex-col justify-center items-center rounded-full  p-4 text-[13px]">
-              <button                                 
-            className="w-14 h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"                             
-            aria-label="Add Item"                             
-            onClick={() => navigate('/add-items')}                         
-        >                             
-            <FaPlus />                         
-        </button>
-            Add Item
-        </div>
-     
-    </div>                         
+      {/* Floating Add Item Button - Fixed at Bottom Right */}
+      <div className="fixed bottom-18 right-4 sm:right-6 md:right-15 lg:right-49 lg:bottom-18 xl:right-110 xl:bottom-18 z-50">
+  <div className="flex flex-col items-center gap-2">
+    <button
+      className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl cursor-pointer"
+      aria-label="Add Item"
+      onClick={() => navigate('/add-items')}
+    >
+      <FaPlus />
+    </button>
+    <span className="text-[11px] sm:text-xs md:text-sm text-orange font-medium">Add Item</span>
+  </div>
 </div>
+
+
 
                 <BottomNav />
             </div>
