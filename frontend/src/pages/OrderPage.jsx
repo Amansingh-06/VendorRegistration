@@ -53,6 +53,7 @@ const OrderPage = () => {
   
       if (selectedVendorId) {
         // const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const existingOffer = vendorProfile?.current_discount;
   
         const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
   
