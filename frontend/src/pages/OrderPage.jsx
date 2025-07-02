@@ -52,14 +52,14 @@ const OrderPage = () => {
       toast.success("Offer updated successfully!");
   
       if (selectedVendorId) {
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        // const { data: { user: currentUser } } = await supabase.auth.getUser();
   
         const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
   
         await supabase.from("admin_logs").insert([
           {
-            log_id: crypto.randomUUID(),
-            admin_id: currentUser.id,
+            // log_id: crypto.randomUUID(),
+            admin_id: session?.user?.id,
             title: "Updated Vendor Discount",
             description,
             timestamp: new Date(),

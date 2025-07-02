@@ -459,8 +459,8 @@ const formRef = useRef();
           toast.success("Profile Updated Successfully");
         
           // ✅ 1. Log only if admin is acting on another vendor
-          if (selectedVendorId && selectedVendorId !== vendorProfile?.v_id) {
-            const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (selectedVendorId) {
+            // const { data: { user: currentUser } } = await supabase.auth.getUser();
         
             const newState = {
               vendor_name: formData?.vendor_name,
@@ -487,8 +487,8 @@ const formRef = useRef();
         
             await supabase.from("admin_logs").insert([
               {
-                log_id: crypto.randomUUID(),
-                admin_id: currentUser.id,
+                // log_id: crypto.randomUUID(),
+                admin_id: session?.user?.id,
                 title: "Vendor Profile Updated",
                 description,
                 timestamp: new Date(),
