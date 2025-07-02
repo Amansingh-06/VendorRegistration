@@ -924,16 +924,37 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
     const getChangedFields = (oldData, newData) => {
         const changed = {};
+      
         for (const key in newData) {
-          if (newData[key] !== oldData[key]) {
-            changed[key] = {
-              before: oldData[key],
-              after: newData[key],
-            };
+          let oldVal = oldData[key];
+          let newVal = newData[key];
+      
+          // 🧠 Normalize both values for better comparison
+          if (Array.isArray(oldVal) || Array.isArray(newVal)) {
+            // If either is array, convert both to sorted strings
+            oldVal = Array.isArray(oldVal) ? oldVal.sort().join(",") : String(oldVal);
+            newVal = Array.isArray(newVal) ? newVal.sort().join(",") : String(newVal);
+          } else {
+            oldVal = oldVal !== null && oldVal !== undefined ? String(oldVal).trim() : "";
+            newVal = newVal !== null && newVal !== undefined ? String(newVal).trim() : "";
           }
+      
+          // ✅ Skip if they are same
+          if (oldVal === newVal) continue;
+      
+          // 🧹 Optional rule: NA vs "" → treat as same
+          if ((oldVal === "NA" && newVal === "") || (oldVal === "" && newVal === "NA")) continue;
+      
+          changed[key] = {
+            before: oldVal,
+            after: newVal,
+          };
         }
+      
         return changed;
       };
+      
+      
       const generateChangeDescription = (changes) => {
         return Object.entries(changes)
           .map(([key, value]) => `${key} changed from "${value.before}" to "${value.after}"`)

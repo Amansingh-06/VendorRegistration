@@ -17,6 +17,7 @@ import { FaRegClock } from "react-icons/fa";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { truncateLetters } from '../utils/vendorConfig';
 import { toast } from 'react-hot-toast';
+import { getChangedFields, generateChangeDescription } from '../utils/AdminLogs';
 
 
 
@@ -37,26 +38,45 @@ export default function ManageItemsPage() {
 
     // ✅ Toggle Availability
     const toggleAvailability = async (id, currentValue) => {
+        const oldItems = [...items];
+        const targetItem = oldItems.find(item => item.item_id === id);
+      
         setItems(prev =>
-            prev.map(item =>
-                item.item_id === id ? { ...item, available: !currentValue } : item
-            )
+          prev.map(item =>
+            item.item_id === id ? { ...item, available: !currentValue } : item
+          )
         );
-
+      
         const { error } = await supabase
-            .from('item')
-            .update({ available: !currentValue })
-            .eq('item_id', id);
-
+          .from('item')
+          .update({ available: !currentValue })
+          .eq('item_id', id);
+      
         if (error) {
-            console.error("Update failed:", error.message);
-            setItems(prev =>
-                prev.map(item =>
-                    item.item_id === id ? { ...item, available: currentValue } : item
-                )
-            );
+          console.error("Update failed:", error.message);
+          setItems(oldItems);
+        } else if (selectedVendorId) {
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+          const newItemData = { ...targetItem, available: !currentValue };
+          const changes = getChangedFields(targetItem, newItemData);
+      
+          if (Object.keys(changes).length > 0) {
+            const description = `Item "${targetItem.item_name}" availability toggled for vendor ID ${selectedVendorId}. Changes: ${generateChangeDescription(changes)}`;
+      
+            await supabase.from("admin_logs").insert([
+              {
+                log_id: crypto.randomUUID(),
+                admin_id: currentUser.id,
+                title: "Toggled Availability",
+                description,
+                timestamp: new Date(),
+              },
+            ]);
+          }
         }
-    };
+      };
+      
 
     // ✅ Step 1: Show confirmation modal
     const confirmDelete = (id, name) => {
@@ -68,110 +88,45 @@ export default function ManageItemsPage() {
     // ✅ Step 2: Perform delete
     const performDelete = async () => {
         const oldItems = [...items];
+        const deletedItem = oldItems.find(item => item.item_id === deleteItemId);
+      
         setItems(prev => prev.filter(item => item.item_id !== deleteItemId));
-
+      
         const { error } = await supabase
-            .from('item')
-            .update({ is_deleted: true })
-            .eq('item_id', deleteItemId);
-
+          .from('item')
+          .update({ is_deleted: true })
+          .eq('item_id', deleteItemId);
+      
         if (error) {
-            console.error("Delete failed:", error.message);
-            setItems(oldItems);
+          console.error("Delete failed:", error.message);
+          setItems(oldItems);
+        } else if (selectedVendorId) {
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+          const description = `Item "${deletedItem?.item_name}" was deleted for vendor ID ${selectedVendorId}.`;
+      
+          await supabase.from("admin_logs").insert([
+            {
+              log_id: crypto.randomUUID(),
+              admin_id: currentUser.id,
+              title: "Deleted Item",
+              description,
+              timestamp: new Date(),
+            },
+          ]);
         }
-
+      
         setShowModal(false);
         setDeleteItemId(null);
         setDeleteItemName("");
-    };
+      };
+      
     console.log(items)
- const handleMultiplierChange = (itemId, value) => {
-  setMultiplierValues((prev) => ({
-    ...prev,
-    [itemId]: value,
-  }));
-
-  // Clear error if valid
-  if (value >= 1 && value <= 2) {
-    setMultiplierErrors((prev) => ({
-      ...prev,
-      [itemId]: "",
-    }));
-  }
-};
+ 
 
       
     
-const handleAddPriceMultiplier = async (itemId) => {
-    const inputValue = multiplierValues[itemId];
-    const parsedValue = parseFloat(inputValue);
-    const currentMultiplier = items.find((item) => item.item_id === itemId)?.price_multiplier;
-  
-    const isInvalid =
-      inputValue === undefined ||
-      inputValue === "" ||
-      isNaN(parsedValue) ||
-      parsedValue < 1 ||
-      parsedValue > 2;
-  
-    const isSame = parsedValue === currentMultiplier;
-  
-    // ✅ First: If invalid input
-    if (isInvalid) {
-      setMultiplierErrors((prev) => ({
-        ...prev,
-        [itemId]: "Please enter a value between 1 and 2",
-      }));
-      return;
-    }
-  
-    // ✅ Then: If same value
-    if (isSame) {
-      toast.dismiss();
-      toast("No update found. Multiplier is unchanged.");
-      return;
-    }
-  
-    setLoadingItemId(itemId);
-    const toastId = toast.loading("Updating price multiplier...");
-  
-    try {
-      const { data, error } = await supabase
-        .from("item")
-        .update({ price_multiplier: parsedValue })
-        .eq("item_id", itemId);
-  
-      if (error) throw error;
-  
-      // ✅ Update local items list
-      setItems((prevItems) =>
-        prevItems.map((item) =>
-          item.item_id === itemId
-            ? { ...item, price_multiplier: parsedValue }
-            : item
-        )
-      );
-  
-      // ✅ Clear input and errors
-      setMultiplierValues((prev) => ({ ...prev, [itemId]: undefined }));
-      setMultiplierErrors((prev) => ({ ...prev, [itemId]: "" }));
-  
-      toast.dismiss(toastId);
-      toast.success("Price multiplier updated successfully!");
-    } catch (err) {
-      console.error(err);
-  
-      setMultiplierErrors((prev) => ({
-        ...prev,
-        [itemId]: "Failed to update. Please try again.",
-      }));
-  
-      toast.dismiss();
-      toast.error("Failed to update price multiplier.");
-    } finally {
-      setLoadingItemId(null);
-    }
-  };
+
   
   
   

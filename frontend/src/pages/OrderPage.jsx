@@ -33,30 +33,44 @@ const OrderPage = () => {
 
   const handleOfferSubmit = async () => {
     if (!newOffer.trim()) return;
-
+  
     const discountValue = parseInt(newOffer);
-
     if (isNaN(discountValue)) {
       toast.error("Please enter a valid number.");
       return;
     }
-
+  
     setLoading(true);
     const toastId = toast.loading("Updating offer...");
-
     const { success } = await updateVendorDiscount(vendorId, discountValue);
-
     toast.dismiss(toastId);
     setLoading(false);
     setShowPopup(false);
-
+  
     if (success) {
       setOffer(`${discountValue}%`);
       toast.success("Offer updated successfully!");
+  
+      if (selectedVendorId) {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+  
+        const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
+  
+        await supabase.from("admin_logs").insert([
+          {
+            log_id: crypto.randomUUID(),
+            admin_id: currentUser.id,
+            title: "Updated Vendor Discount",
+            description,
+            timestamp: new Date(),
+          },
+        ]);
+      }
     } else {
       toast.error("Failed to update offer. Please try again.");
     }
   };
+  
 
 
   const observer = useRef();

@@ -31,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import TransparentLoader from "../components/Transparentloader";
 import { FiMapPin } from "react-icons/fi";
+import { getChangedFields, generateChangeDescription } from "../utils/AdminLogs";
 
 export default function VendorProfile() {
   const { vendorProfile, selectedVendorId, session, refreshVendorProfile } =
@@ -451,17 +452,55 @@ const formRef = useRef();
         .from(SUPABASE_TABLES.VENDOR)
         .upsert(insertData, { onConflict: "v_id" });
   
-      if (error) {
-        console.error("❌ Supabase error:", error);
-        toast.error("Update Fail");
-      } else {
-        toast.success("Profile Updated Successfully");
-  
-        // ✅ Refresh the vendor profile after update
-        await refreshVendorProfile();
-  
-        navigate("/home");
-      }
+        if (error) {
+          console.error("❌ Supabase error:", error);
+          toast.error("Update Fail");
+        } else {
+          toast.success("Profile Updated Successfully");
+        
+          // ✅ 1. Log only if admin is acting on another vendor
+          if (selectedVendorId && selectedVendorId !== vendorProfile?.v_id) {
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+        
+            const newState = {
+              vendor_name: formData?.vendor_name,
+              shop_name: formData?.shop_name,
+              shift1_start: formData?.shift1_start,
+              shift1_close: formData?.shift1_close,
+              shift2_start: formData?.shift2_start,
+              shift2_close: formData?.shift2_close,
+              street: formData?.street,
+              city: formData?.city,
+              state: formData?.state,
+              pincode: formData.pincode,
+              note: formData?.note || '',
+              cuisines: selectedCuisineIds,
+              banner: uploadedBannerUrl,
+              video: uploadedVideoUrl,
+              qr: uploadedQrUrl,
+              longitude: selectedAddress?.long || '',
+              latitude: selectedAddress?.lat || '',
+            };
+        
+            const changes = getChangedFields(initialFormState, newState);
+            const description = `Vendor profile updated for vendor ID ${selectedVendorId}. Changes: ${generateChangeDescription(changes)}`;
+        
+            await supabase.from("admin_logs").insert([
+              {
+                log_id: crypto.randomUUID(),
+                admin_id: currentUser.id,
+                title: "Vendor Profile Updated",
+                description,
+                timestamp: new Date(),
+              },
+            ]);
+          }
+        
+          // ✅ 2. Refresh the vendor profile after update
+          await refreshVendorProfile();
+          navigate("/home");
+        }
+        
     } catch (err) {
       console.error("Upload failed:", err.message);
       toast.error("Upload failed");
