@@ -62,14 +62,28 @@ const OrderPage = () => {
   
         const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
         {console.log("admin_id", session?.user?.id)}
+        let adminId = session?.user?.id;
+
+        if (!adminId) {
+          const { data: { user }, error } = await supabase.auth.getUser();
+          if (error || !user) {
+            console.error("❌ Could not fetch current user:", error?.message);
+            toast.error("Could not fetch admin user");
+            return;
+          } else {
+            adminId = user.id;
+          }
+        }
+        
         const { error: logError } = await supabase.from("admin_logs").insert([
           {
-            admin_id: session?.user?.id,
+            admin_id: adminId,
             title: "Updated Vendor Discount",
             description,
             timestamp: new Date(),
           },
         ]);
+        
   
         if (logError) {
           console.error("❌ Failed to insert into admin_logs:", logError.message);

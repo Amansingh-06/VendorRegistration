@@ -7,6 +7,7 @@ import { ORDER_STATUS } from '../utils/vendorConfig';
 import { capitalize } from '../utils/vendorConfig';
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { useAuth } from '../context/authContext';
+import { supabase } from '../utils/supabaseClient';
 
 
 const OrderCard = ({ order, onStatusUpdate }) => {
