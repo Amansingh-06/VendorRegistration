@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigationType } from "react-router-dom";
 import { FaRegUser, FaStore, FaRegClock } from "react-icons/fa";
@@ -276,6 +276,10 @@ function VendorRegistration() {
   
     return isValid;
   };
+
+  
+  
+  
   
 
   // block click when loading
@@ -350,18 +354,87 @@ function VendorRegistration() {
 
   //submit function
 
+  const refs = {
+    name: useRef(),
+    shopName: useRef(),
+    street: useRef(),
+    city: useRef(),
+    state: useRef(),
+    pincode: useRef(),
+    cuisines: useRef(),
+    startTime1: useRef(),
+    endTime1: useRef(),
+    
+    uploads: useRef(),
+    locationSection: useRef(),
+  };
+  
+  const scrollToRef = (ref) => {
+    console.log("📍 Trying to scroll to:", ref?.current); // 👈 Console added here
+    if (ref?.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      ref.current.focus?.();
+    } else {
+      console.warn("❌ Ref not found for scrolling");
+    }
+  };
+  
   const onFormSubmit = async () => {
-    const isRHFValid = await trigger(); // validate all registered fields
+    const isRHFValid = await trigger(); // validate registered fields
     const isCustomValid = validateCustomFields(); // validate custom fields
   
     if (!isRHFValid || !isCustomValid) {
       toast.error("Please complete required fields.");
+  
+      const values = getValues();
+  
+      // Debug logs for every condition:
+      if (!values.name?.trim()) {
+        console.log("❌ Missing: name");
+        scrollToRef(refs.name);
+      } else if (!values.shopName?.trim()) {
+        console.log("❌ Missing: shopName");
+        scrollToRef(refs.shopName);
+      } else if (!values.street?.trim()) {
+        console.log("❌ Missing: street");
+        scrollToRef(refs.street);
+      } else if (!values.city?.trim()) {
+        console.log("❌ Missing: city");
+        scrollToRef(refs.city);
+      } else if (!values.state?.trim()) {
+        console.log("❌ Missing: state");
+        scrollToRef(refs.state);
+      } else if (!values.pincode?.trim()) {
+        console.log("❌ Missing: pincode");
+        scrollToRef(refs.pincode);
+      } else if (!values.startTime1) {
+        console.log("❌ Missing: startTime1");
+        scrollToRef(refs.startTime1);
+      } else if (!values.endTime1) {
+        console.log("❌ Missing: endTime1");
+        scrollToRef(refs.endTime1);
+      } else if (!values.cuisines || values.cuisines.length === 0) {
+        console.log("❌ Missing: cuisines");
+        scrollToRef(refs.cuisines);
+      } else if (!paymentFile) {
+        console.log("❌ Missing: paymentFile (QR)");
+        scrollToRef(refs.uploads);
+      } else if (!bannerFile && !videoFile) {
+        console.log("❌ Missing: bannerFile or videoFile");
+        scrollToRef(refs.uploads);
+      } else if (!selectedAddress?.lat || !selectedAddress?.long) {
+        console.log("❌ Missing: location");
+        console.log("⛳ Location missing, scrolling to locationSection", refs.locationSection?.current);
+        scrollToRef(refs.locationSection);
+      }
+  
       return;
     }
   
-    const data = getValues(); // get validated form values
-    await onSubmit(data); // your actual submit logic
+    const data = getValues();
+    await onSubmit(data);
   };
+  
   
 
   return (
@@ -369,16 +442,16 @@ function VendorRegistration() {
       {loading && <Loader />}
       <div className="border border-gray-300 bg-white w-full max-w-2xl  rounded-lg shadow-lg">
         <Header title="Registration" />
-        <div className="md:p-6 p-2 rounded-lg shadow-lg mt-20 ">
+        <div className="md:p-6 p-2 rounded-lg shadow-lg mt-15 ">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-7  py-4"
+            className="flex flex-col gap-7 mb-10 py-4"
             noValidate
           >
             {/* Card 1: Name, Shop Name, Timings, Upload */}
             <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300  flex flex-col gap-6 bg-white ">
               {/* Name & Shop Name */}
-              <h1 className="text-xl md:text-2xl lg:text-2xl font-medium text-gray">
+              <h1 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase">
                 Basic Details
               </h1>
               <div className=" flex flex-col gap-5">
@@ -393,6 +466,7 @@ function VendorRegistration() {
                     onKeyDown={nameKeyDownHandler}
                     onInput={InputCleanup}
                     value={watchFields?.name}
+                    inputRef={refs.name}
                   />
                   <InputField
                     id="shopName"
@@ -404,13 +478,14 @@ function VendorRegistration() {
                     onKeyDown={shopNameKeyDownHandler}
                     onInput={InputCleanup}
                     value={watchFields?.shopName}
+                    inputRef={refs.shopName}
 
                   />
                 </div>
                 {/* Timings */}
                 {/* ===== Shift 1 ===== */}
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-500 mb-2">
+                  <h2 className="text-lg text-gray-500 mb-2 uppercase">
                     Shift 1
                   </h2>
                   <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -422,6 +497,7 @@ function VendorRegistration() {
                           id="startTime1"
                           type="text"
                           readOnly
+                          ref={refs.startTime1}
                           value={startTime1 ? startTime1.format("hh:mm A") : ""}
                           onClick={() => setStartView1(true)}
                           placeholder="Start At"
@@ -471,7 +547,9 @@ function VendorRegistration() {
                         <input
                           id="endTime1"
                           type="text"
+                          
                           readOnly
+                          ref={refs.endTime1}
                           value={endTime1 ? endTime1.format("hh:mm A") : ""}
                           onClick={() => setEndView1(true)}
                           placeholder="Close At"
@@ -516,7 +594,7 @@ function VendorRegistration() {
                   </div>
 
                   {/* ===== Shift 2 ===== */}
-                  <h2 className="text-lg  font-semibold text-gray-500 mb-2">
+                  <h2 className="text-lg uppercase   text-gray-500 mb-2">
                     Shift 2
                     <span className="text-gray-500 font-normal">
                       {" "}
@@ -626,10 +704,10 @@ function VendorRegistration() {
                 </div>
 
                 {/* Uploads */}
-                <div className="flex flex-col md:flex-row justify-between gap-4 mt-3">
+                <div ref={refs.uploads} className="flex flex-col  md:flex-row justify-between gap-4 mt-3">
                   <FileUploadButton
                     label="Select Video"
-                    bgColor="bg-orange-300"
+                    bgColor="bg-orange"
                     Icon={HiOutlineVideoCamera}
                     accept="video/*"
                     onChange={(e) => {
@@ -644,7 +722,7 @@ function VendorRegistration() {
 
                   <FileUploadButton
                     label="Select Banner"
-                    bgColor="bg-orange-300"
+                    bgColor="bg-orange"
                     Icon={IoImageOutline}
                     accept="image/*"
                     onChange={(e) => {
@@ -659,7 +737,7 @@ function VendorRegistration() {
 
                   <FileUploadButton
                     label="Select QR"
-                    bgColor="bg-orange-300"
+                    bgColor="bg-orange"
                     Icon={IoQrCodeOutline}
                     accept="image/*"
                     onChange={(e) => {
@@ -676,7 +754,7 @@ function VendorRegistration() {
             </div>
             {/* Address */}
             <div className="px-6 py-5 shadow-lg rounded-lg border border-gray-300 flex flex-col gap-6 bg-white">
-              <h1 className="text-xl md:text-2xl lg:text-2xl font-medium text-gray">
+              <h1 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase">
                 Address & Location
               </h1>
 
@@ -685,13 +763,14 @@ function VendorRegistration() {
                   icon={GrStreetView}
                   id="street"
                   label="Street"
-                  placeholder="Street"
+                  placeholder="House No/Plot No/Street"
                   register={register}
                   validation={streetValidation}
                   error={errors?.street}
                   onKeyDown={streetKeyDown}
                   onInput={streetInputClean}
                   value={watchFields?.street}
+                  inputRef={refs.street}
 
                 />
                 {/* City */}
@@ -709,6 +788,7 @@ function VendorRegistration() {
                   onKeyDown={cityStateKeyDown}
                   onInput={cityStateInputClean}
                   value={watchFields?.city}
+                  inputRef={refs.city}
                 />
                 {/* State */}
                 <InputField
@@ -725,6 +805,7 @@ function VendorRegistration() {
                   onKeyDown={cityStateKeyDown}
                   onInput={cityStateInputClean}
                   value={watchFields?.state}
+                  inputRef={refs.state}
 
                 />
                 {/* Pincode */}
@@ -741,18 +822,21 @@ function VendorRegistration() {
                   maxLength={6}
                   inputMode="numeric"
                   value={watchFields?.pincode}
+                  inputRef={refs.pincode}
                 />{" "}
                 {/* /* Location Button */}
-                <div className="flex items-center gap-5  ">
+                <div
+                  ref={refs.locationSection}
+                  className="flex  items-center gap-5   ">
                   <button
                     type="button"
                     onClick={() => setShowPopup(true)}
                     disabled={waitloading}
-                    className={`flex items-center gap-2 px-4 py-2 font-medium rounded-md text-white transition 
+                    className={`flex items-center gap-2 px-2 py-2 font-medium rounded-md text-white transition 
     ${
       waitloading
         ? "bg-gray-400 cursor-not-allowed"
-        : "bg-orange-300 cursor-pointer hover:bg-orange-300"
+        : "bg-orange cursor-pointer hover:bg-orange-800"
     }`}
                   >
                     <MdAddLocationAlt className="text-lg" />
@@ -780,14 +864,14 @@ function VendorRegistration() {
                     disabled={waitloading}
                     className={`flex justify-center items-center rounded-full p-2 
     ${
-      waitloading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-300 cursor-pointer"
+      waitloading ? "bg-gray-400 cursor-not-allowed" : "bg-orange cursor-pointer"
     }`}
                   >
                     <MdGpsFixed className="text-2xl text-white" />
                   </button>
                 </div>
                 {locationError ? (
-  <p className="text-sm text-red-500 md:mt-2">
+  <p  className="text-sm text-red-500 md:mt-2">
     Please select your location
   </p>
 ) : selectedAddress ? (
@@ -801,6 +885,7 @@ function VendorRegistration() {
 
             {/* Card 3: Cuisine */}
             {/* <CuisineSelector register={register} errors={errors} /> */}
+            <div ref={refs.cuisines}>      
             <ItemCategory
               value={watch(FORM_FIELDS?.CUISINES)}
               onChange={(val) => {
@@ -810,7 +895,9 @@ function VendorRegistration() {
                 }
               }}
               error={errors?.[FORM_FIELDS?.CUISINES]?.message}
-            />
+              />
+              </div>
+
 
             {/* Note from Vendor (optional) */}
             <div className="relative col-span-2">
@@ -830,20 +917,10 @@ function VendorRegistration() {
             </div>
 
             {/* Submit */}
-            <button
-              type="button"
-              onClick={onFormSubmit}
-              // disabled={isFormIncomplete}
-              disabled={waitloading}
-              className={`py-3 rounded-lg shadow-lg text-white font-medium  transition ${
-                isFormIncomplete
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-orange hover:bg-orange-400 cursor-pointer text-white"
-              }`}
-            >
-              {loading ? "Creating Account..." : "Create Account"}
-            </button>
+            
+           
           </form>
+          
           {showPopup && (
             <LocationPopup
               setLocation={(loc) => {
@@ -858,6 +935,21 @@ function VendorRegistration() {
                   {waitloading && <TransparentLoader text="Getting current location"/>}
 
         </div>
+        <div className="fixed bottom-3 px-2 w-full  max-w-2xl ">
+            <button
+              type="button"
+              onClick={onFormSubmit}
+              // disabled={isFormIncomplete}
+              disabled={waitloading}
+              className={`flex-1  rounded-[8px] h-11 flex items-center justify-center font-bold  text-white text-lg shadow-lg hover:shadow-xl transition-all w-full duration-300 hover:scale-[1.02] disabled:bg-orange/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white ${
+                isFormIncomplete
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
+              }`}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+            </div>
       </div>
     </div>
   );

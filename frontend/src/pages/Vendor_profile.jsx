@@ -36,6 +36,7 @@ export default function VendorProfile() {
   const { vendorProfile, selectedVendorId, session, refreshVendorProfile } =
     useAuth();
   const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
+  const [isLocationUpdated, setIsLocationUpdated] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [selectedCuisineIds, setSelectedCuisineIds] = useState([]);
@@ -133,6 +134,7 @@ export default function VendorProfile() {
           // Prevent unnecessary state update
           setPosition({ lat, lng });
           setLocation({ lat, lng });
+          setIsLocationUpdated(true);
         },
         setErr,
         setSelectedAddress
@@ -394,7 +396,7 @@ export default function VendorProfile() {
   };
 
   console.log(cuisines, "cusine");
-
+const formRef = useRef();
   const onSubmit = async (formData) => {
     if (!session?.user?.id) return alert("User not logged in");
   
@@ -523,10 +525,10 @@ export default function VendorProfile() {
       {/* </div> */}
       <div className="  max-w-2xl w-full md:mt-8 mt-3  pt-10  shadow-lg bg-gray-100  md:p-6 p-2">
           <div className="max-w-2xl mx-auto  ">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
+            <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-24 ">
               {/* Basic Info */}
               <section className="flex flex-col rounded-lg bg-white border-gray-300 border-1 shadow-lg px-4 py-6">
-                <h2 className="text-xl font-semibold text-gray-500 mb-4">
+                <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
                   Basic Information
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -750,7 +752,7 @@ export default function VendorProfile() {
 
               {/* Media Uploads */}
             <section className="flex flex-col rounded-lg  bg-white  border-gray-300 border-1 shadow-lg px-4 py-6">
-            <h2 className="text-xl font-semibold text-gray-500 mb-4">
+            <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
                   Proofs
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
@@ -769,7 +771,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg hover:bg-indigo-700"
+                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg"
                       onClick={() => bannerInputRef.current.click()}
                     >
                       Select Banner
@@ -800,7 +802,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg "
+                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg "
                       onClick={() => videoInputRef.current.click()}
                     >
                       Select Video
@@ -831,7 +833,7 @@ export default function VendorProfile() {
                     )}
                     <button
                       type="button"
-                      className="mt-3 w-full px-3 py-1 bg-orange-300 text-white rounded-lg "
+                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange rounded-[8px] text-white "
                       onClick={() => qrInputRef.current.click()}
                     >
                       Select QR
@@ -849,7 +851,7 @@ export default function VendorProfile() {
 
               {/* Address Section */}
               <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
-                <h2 className="text-xl font-semibold text-gray-500 mb-4">
+                <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
                   Address
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -859,12 +861,12 @@ export default function VendorProfile() {
                       className="block mb-1 text-sm font-medium text-gray-500"
                       htmlFor="street"
                     >
-                      Street
+                      House No. / Plot No. / Street Name
                     </label>
                     <input
                       id="street"
                       {...register("street", streetValidation)}
-                      placeholder="Street"
+                      placeholder="House No. / Plot No. / Street Name"
                       className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
                         errors.street ? "border-red-500" : "border-gray-300"
                       }`}
@@ -957,13 +959,16 @@ export default function VendorProfile() {
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-orange-300 cursor-pointer hover:bg-orange-300"
+                                            : "bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
                                         }`}
                     >
                       <MdAddLocationAlt className="text-lg" />
-                      {selectedAddress?.lat && selectedAddress?.long
-                        ? "Location Selected"
-                        : "Current Location"}
+                      {isLocationUpdated
+  ? "Updated Location"
+  : selectedAddress?.lat && selectedAddress?.long
+  ? "Update Location"
+  : "Current Location"}
+
                     </button>
 
                     {/* Popup */}
@@ -971,7 +976,8 @@ export default function VendorProfile() {
                       <LocationPopup
                         setLocation={(loc) => {
                           setLocation(loc);
-                          setSelectedAddress(loc);
+                        setSelectedAddress(loc);
+                        setIsLocationUpdated(true);
                           // setShowPopup(false);
                         }}
                         show={showPopup}
@@ -987,7 +993,7 @@ export default function VendorProfile() {
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-orange-300 cursor-pointer"
+                                            : "bg-gradient-to-br from-orange via-yellow  active:scale-95 to-orange cursor-pointer"
                                         }`}
                     >
                       <MdGpsFixed className="text-2xl text-white" />
@@ -1023,7 +1029,7 @@ export default function VendorProfile() {
               {/* Additional Note */}
               <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
                 <label
-                  className="block mb-1 font-medium text-gray-500"
+                  className="block mb-1 font-medium text-gray uppercase"
                   htmlFor="note"
                 >
                   Additional Note (Optional)
@@ -1038,8 +1044,19 @@ export default function VendorProfile() {
               </section>
 
               {/* Submit */}
-              <button
-                type="submit"
+              
+          </form>
+          
+            {waitloading && <TransparentLoader/>}
+        </div>
+       
+          <BottomNav />
+      </div>
+      <div className="max-w-2xl md:bottom-17 w-full bottom-13 fixed md:px-4 px-2">
+          <button
+                onClick={() => {
+                  if (formRef.current) formRef.current.requestSubmit(); // ✅ triggers native submit
+                }}
                 disabled={loading}
                 title={
                   loading
@@ -1050,19 +1067,15 @@ export default function VendorProfile() {
                     ? "No changes made"
                     : ""
                 }
-                className={` md:mb-5 font-medium mb-8 px-4 w-full py-2 rounded text-white ${
+                className={` md:mb-5 h-11 font-bold mb-8 px-4 w-full py-2 rounded-lg text-white ${
                   loading || isFormIncomplete || !isChanged
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-primary cursor-pointer"
+                    : " bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
                 }`}
               >
                 {loading ? "Saving..." : "Save Profile"}
               </button>
-            </form>
-            {waitloading && <TransparentLoader/>}
           </div>
-          <BottomNav />
-        </div>
     </div>
   );
 }

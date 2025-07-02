@@ -16,6 +16,7 @@ import "react-calendar/dist/Calendar.css";
 import { useAuth } from "../context/authContext";
 import { fetchVendorOrders } from "../utils/fetchVendorOrders";
 import { fetchVendorRatings } from "../utils/fetchVendorRating";
+import { fetchVendorRatingStats } from '../utils/vendorRatingStats';
 
 const VendorEarnings = () => {
   const { vendorProfile, selectedVendorId } = useAuth();
@@ -23,6 +24,11 @@ const VendorEarnings = () => {
   const [ratings, setRatings] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [ratingStats, setRatingStats] = useState({
+    averageRating: 0,
+    totalCustomers: 0,
+  });
+  
   const LIMIT = 5;
 
   // const [reviews, setReviews] = useState(initialReviews);
@@ -140,9 +146,17 @@ const VendorEarnings = () => {
   useEffect(() => {
     if (vendorId && vendorProfile?.status === "verified") {
       const fetchStats = async () => {
-        const { success, data: orders } = await fetchVendorOrders(vendorId);
-        if (!success || !orders) return;
-
+        console.log("🔄 Fetching orders for vendorId:", vendorId);
+  
+        const { success, data: orders } = await fetchVendorOrders(vendorId, null, 0, 0, true);
+  
+        if (!success || !orders) {
+          console.warn("⚠️ Failed to fetch orders or no data returned.");
+          return;
+        }
+  
+        console.log("✅ Total orders fetched:", orders.length);
+  
         const today = new Date();
         const weekRange = {
           start: startOfWeek(today, { weekStartsOn: 1 }),
@@ -152,49 +166,74 @@ const VendorEarnings = () => {
           start: startOfMonth(today),
           end: today,
         };
-
+  
+        let totalOrders = orders.length;
+        let deliveredOrders = 0;
+  
         let weekOrders = 0,
           weekAmount = 0;
         let monthOrders = 0,
           monthAmount = 0;
         let todayOrders = 0,
           todayAmount = 0;
-
-        orders.forEach((order) => {
-          // ✅ Only include delivered orders
-          if (order.status?.toLowerCase() !== "delivered") return;
-
-          const orderDate = new Date(order.created_ts);
-          const amount = order.transaction?.amount || 0;
-
-          if (isWithinInterval(orderDate, weekRange)) {
-            weekOrders++;
-            weekAmount += amount;
-          }
-
-          if (isWithinInterval(orderDate, monthRange)) {
-            monthOrders++;
-            monthAmount += amount;
-          }
-
-          if (
-            orderDate.getFullYear() === today.getFullYear() &&
-            orderDate.getMonth() === today.getMonth() &&
-            orderDate.getDate() === today.getDate()
-          ) {
-            todayOrders++;
-            todayAmount += amount;
+  
+        orders.forEach((order, index) => {
+          const status = order?.status?.toLowerCase();
+          const orderDate = new Date(order?.created_ts);
+          const amount = order?.transaction?.amount || 0;
+  
+          if (status === "delivered") {
+            deliveredOrders++;
+  
+            console.log(`✅ Delivered order #${index}:`, {
+              orderDate,
+              amount,
+            });
+  
+            if (isWithinInterval(orderDate, weekRange)) {
+              weekOrders++;
+              weekAmount += amount;
+            }
+  
+            if (isWithinInterval(orderDate, monthRange)) {
+              monthOrders++;
+              monthAmount += amount;
+            }
+  
+            if (
+              orderDate.getFullYear() === today.getFullYear() &&
+              orderDate.getMonth() === today.getMonth() &&
+              orderDate.getDate() === today.getDate()
+            ) {
+              todayOrders++;
+              todayAmount += amount;
+            }
+          } else {
+            console.log(`⛔ Not delivered order #${index} - Status:`, status);
           }
         });
-
+  
+        // 🟢 Final Summary
+        console.log("📦 Total Orders:", totalOrders);
+        console.log("✅ Delivered Orders:", deliveredOrders);
+        console.log("❌ Non-Delivered Orders:", totalOrders - deliveredOrders);
+  
+        // 📊 Earnings Summary
+        console.log("📊 Final Stats:");
+        console.log("  🔹 Today     => Orders:", todayOrders, "Amount:", todayAmount);
+        console.log("  🔹 This Week => Orders:", weekOrders, "Amount:", weekAmount);
+        console.log("  🔹 This Month=> Orders:", monthOrders, "Amount:", monthAmount);
+  
         setThisWeek({ total_orders: weekOrders, total_amount: weekAmount });
         setThisMonth({ total_orders: monthOrders, total_amount: monthAmount });
         setTodayStats({ total_orders: todayOrders, total_amount: todayAmount });
       };
-
+  
       fetchStats();
     }
   }, [vendorId, vendorProfile?.status]);
+  
+  
 
   useEffect(() => {
     if (
@@ -203,35 +242,41 @@ const VendorEarnings = () => {
       Array.isArray(dateRange)
     ) {
       const calculateStatsForDateRange = async () => {
-        const { success, data: orders } = await fetchVendorOrders(vendorId);
+        const { success, data: orders } = await fetchVendorOrders(
+          vendorId,
+          null,
+          0,
+          0,
+          true // ✅ Important: Fetch all orders, not just 10
+        );
+  
         if (!success || !orders) return;
-
+  
         const [start, end] = dateRange;
         let earnings = 0,
           orderCount = 0,
           rejectedAmount = 0,
           rejectedCount = 0;
-
+  
         orders.forEach((order) => {
           const orderDate = new Date(order.created_ts);
           const amount = order.transaction?.amount || 0;
-
-          // ✅ Must be in selected date range
+  
           if (orderDate >= start && orderDate <= end) {
-            // ✅ Count rejected orders separately
-            if (order.status?.toLowerCase() === "rejected") {
+            const status = order.status?.toLowerCase();
+  
+            if (status === "rejected") {
               rejectedCount++;
               rejectedAmount += amount;
             }
-
-            // ✅ Only include delivered orders in earnings and order count
-            if (order.status?.toLowerCase() === "delivered") {
+  
+            if (status === "delivered") {
               orderCount++;
               earnings += amount;
             }
           }
         });
-
+  
         setSelectedStats({
           earnings,
           orders: orderCount,
@@ -241,10 +286,11 @@ const VendorEarnings = () => {
           },
         });
       };
-
+  
       calculateStatsForDateRange();
     }
   }, [vendorId, dateRange, vendorProfile?.status]);
+  
 
   // Track state changes separately
   useEffect(() => {
@@ -255,6 +301,20 @@ const VendorEarnings = () => {
     console.log("✅ thisMonth Updated:", thisMonth);
   }, [thisMonth]);
 
+  useEffect(() => {
+    if (vendorId && vendorProfile?.status === "verified") {
+      const getRatingStats = async () => {
+        const { success, averageRating, totalCustomers } =
+          await fetchVendorRatingStats(vendorId);
+        if (success) {
+          setRatingStats({ averageRating, totalCustomers });
+        }
+      };
+  
+      getRatingStats();
+    }
+  }, [vendorId, vendorProfile?.status]);
+  
   return (
     <div className="">
       <div className="max-w-2xl mx-auto w-full bg-gray-100 space-y-6 min-h-[92vh]">
@@ -292,7 +352,7 @@ const VendorEarnings = () => {
             <>
               {/* Delivered Orders */}
               <section className="bg-white rounded-lg shadow p-4 md:p-6">
-                <h2 className="text-lg font-semibold text-gray-500 mb-4">
+                <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
                   Delivered Orders
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -337,7 +397,7 @@ const VendorEarnings = () => {
               {/* Insights Section */}
               <section className="bg-white rounded-lg shadow p-4 md:p-6 relative">
                 <div className="flex justify-between items-center  flex-wrap gap-2">
-                  <h2 className="text-lg font-semibold text-gray-500">
+                  <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase">
                     Insights
                   </h2>
                   <div className="flex items-center  gap-2">
@@ -411,9 +471,16 @@ const VendorEarnings = () => {
 
               {/* Ratings & Reviews */}
               <section className="bg-white rounded-xl shadow p-4 md:p-6 mb-24">
-  <h2 className="text-lg font-semibold text-gray-500 mb-4">
+  <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
     Ratings & Reviews
-  </h2>
+                    </h2>
+                    <div className="my-4 p-4 bg-white rounded-lg shadow">
+                    <p>
+  Your store is rated ⭐ {ratingStats.averageRating} by {ratingStats.totalCustomers} customer
+  {ratingStats.totalCustomers !== 1 ? "s" : ""}
+</p>
+
+                    </div>
 
   {ratings.length === 0 ? (
     <p className="text-gray-500 text-sm">No ratings yet.</p>
@@ -421,7 +488,7 @@ const VendorEarnings = () => {
     <div className="space-y-4">
       {ratings.map((rating) => (
         <div
-          key={rating.r_id}
+          key={rating?.r_id}
           className="border-orange-200 border-1 p-4 rounded-lg bg-gray-50 space-y-3"
         >
           <div className="flex justify-between items-start">

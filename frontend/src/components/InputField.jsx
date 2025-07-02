@@ -7,9 +7,10 @@ function InputField({
   register,
   validation,
   error,
-  value,         // 👈 watch() value passed from parent
+  value,         // 👈 watch() value from parent
   onKeyDown,
-  onInput
+  onInput,
+  inputRef       // 👈 ref for scrolling
 }) {
   return (
     <div className="relative">
@@ -19,6 +20,10 @@ function InputField({
         id={id}
         placeholder={placeholder}
         {...register(id, validation)}
+        ref={(el) => {
+          register(id, validation).ref(el);   // for react-hook-form
+          if (inputRef) inputRef.current = el; // 👈 for scrollToRef
+        }}
         onKeyDown={onKeyDown}
         onInput={onInput}
         className={`peer pl-10 pt-3 pb-3 w-full rounded border text-gray-800 transition-all placeholder-transparent

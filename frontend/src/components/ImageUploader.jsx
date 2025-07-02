@@ -34,7 +34,7 @@ const ImageUploader = ({ previewImage, setPreviewImage, fileInputRef, register, 
                     </span>
                 )}
             </div>
-            <label className="border p-2.5 rounded-md flex items-center bg-orange-300 text-white font-medium justify-center cursor-pointer transition">
+            <label className="border p-2.5 rounded-[8px] flex-1 h-11 md:h-auto flex items-center bg-orange text-white font-medium justify-center cursor-pointer transition">
                 <Upload className="w-5 h-5 mr-2" />
                 Select Photo
                 <input

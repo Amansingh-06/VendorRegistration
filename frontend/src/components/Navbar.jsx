@@ -10,7 +10,9 @@ import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
 import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
 import { SUPABASE_TABLES } from '../utils/vendorConfig';
-import {ToggleSwitch} from './ToggleSwitch'; // Assuming you have a ToggleSwitch component
+import { ToggleSwitch } from './ToggleSwitch';
+import { MessageCircle } from 'lucide-react';
+// Assuming you have a ToggleSwitch component
 // const IOSSwitch = styled((props) => (
 //     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 // ))(({ theme }) => ({
@@ -110,10 +112,10 @@ const Navbar = () => {
     
 
     return (
-<div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-2xl backdrop-blur-sm rounded-b-lg font-family-poppins">
-<div className="absolute inset-0 rotate-180 overflow-hidden">
+<div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-2xl backdrop-blur-sm rounded-b-xl overflow-hidden font-family-poppins">
+<div className="absolute inset-0 rotate-180 overflow-hidden rounded-t-xl">
                       <svg
-                          className="absolute top-0 left-0 w-full h-full"
+                          className="absolute top-0 left-0 w-full h-full rounded-t-xl"
                           viewBox="0 0 1200 200"
                           preserveAspectRatio="none"
                           xmlns="http://www.w3.org/2000/svg"
@@ -181,75 +183,74 @@ const Navbar = () => {
 
             {/* Content */}
             <div className="relative z-10">
-                {!scrolled && (
-                    <div className={`flex items-center justify-between p-1 lg:p-4 max-w-9xl mx-auto transition-all duration-1200`}>
-                        {/* Left Section - Profile */}
-                        <div className='flex items-center gap-2  lg:gap-4'>
-  {/* Image or Video Circle */}
-  <div className='relative '>
-    <div className='flex items-center justify-center w-12 lg:w-16 h-12 lg:h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 text-white font-bold text-lg shadow-lg ring-2 ring-white/30 backdrop-blur-sm border overflow-hidden'>
-      {vendorProfile?.banner_url && vendorProfile.banner_url !== 'NA' ? (
-        <img
-          src={vendorProfile.banner_url}
-          alt="Vendor Banner"
-          className='w-full h-full object-cover'
-        />
-      ) : vendorProfile?.video_url && vendorProfile.video_url !== 'NA' ? (
-        <video
-          src={vendorProfile.video_url}
-          className="w-full h-full object-cover"
-          muted
-          preload="metadata"
-          onLoadedMetadata={(e) => (e.target.currentTime = 1)}
-        />
-      ) : (
-        <img
-          src="/defaultuserImage.jpg"
-          alt="Default"
-          className='w-full h-full object-cover'
-        />
-      )}
-    </div>
-  </div>
+  {!scrolled && (
+    <div className="flex items-center justify-between px-2 lg:px-4 py-2  max-w-9xl mx-auto transition-all duration-1000">
+      
+      {/* 👤 Left Section - Profile */}
+      <div className="flex items-center gap-3 lg:gap-5 ">
+        
+        {/* Profile Circle */}
+        <div className="w-12 lg:w-16 h-12 lg:h-16 rounded-full overflow-hidden bg-gradient-to-br from-orange-500 to-yellow-500 ring-2 ring-white/30 shadow-lg">
+          {vendorProfile?.banner_url && vendorProfile.banner_url !== 'NA' ? (
+            <img
+              src={vendorProfile.banner_url}
+              alt="Vendor Banner"
+              className="w-full h-full object-cover"
+            />
+          ) : vendorProfile?.video_url && vendorProfile.video_url !== 'NA' ? (
+            <video
+              src={vendorProfile.video_url}
+              className="w-full h-full object-cover"
+              muted
+              preload="metadata"
+              onLoadedMetadata={(e) => (e.target.currentTime = 1)}
+            />
+          ) : (
+            <img
+              src="/defaultuserImage.jpg"
+              alt="Default"
+              className="w-full h-full object-cover"
+            />
+          )}
+        </div>
 
-  {/* Text Section */}
-  <div className='text-white flex flex-col justify-center -mt-1'>
-    {/* Shop Name and Toggle */}
-    <div className='flex items-center gap-2  md:gap-5 '>
-      <div
-        className='text-base lg:text-2xl font-semibold drop-shadow-sm '
-        title={vendorProfile?.shop_name}
-      >
-        {truncateLetters(vendorProfile?.shop_name, 12)}
+        {/* Shop Details */}
+        <div className="text-white flex flex-col -mt-1  justify-center">
+          {/* Shop Name + Toggle */}
+          <div className="flex items-center gap-2 md:gap-4">
+            <div
+              className="text-base lg:text-2xl font-semibold truncate drop-shadow-sm"
+              title={vendorProfile?.shop_name}
+            >
+              {truncateLetters(vendorProfile?.shop_name, 12)}
+            </div>
+
+            {/* Toggle Button */}
+            <div className=" ">
+              <ToggleSwitch
+                switchOn={switchOn}
+                onToggle={handleSwitchChange}
+              />
+            </div>
+          </div>
+
+          {/* Vendor Name */}
+          <div className="text-xs md:text-sm truncate max-w-[160px] - text-white/90">
+            {truncateLetters(vendorProfile?.v_name, 20)}
+          </div>
+        </div>
       </div>
 
-      {/* Toggle Button */}
-      <div className="relative flex  items-center bg-white/30 backdrop-blur-sm rounded-full md:p-0.5 gap-2 w-fit shadow-sm">
-        <ToggleSwitch 
-          switchOn={switchOn} 
-          onToggle={handleSwitchChange} 
-        />
+      {/* 📩 Right Section - Icons */}
+      <div className="flex items-center gap-2 lg:gap-4">
+        <button className="p-1.5 lg:p-2 text-orange bg-gray-100 hover:bg-white/90 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30 cursor-pointer">
+          <MessageCircle className="w-5 lg:w-6 h-5 lg:h-6 group-hover:text-orange-500 transition-colors drop-shadow-sm" />
+        </button>
       </div>
     </div>
-
-    {/* Vendor Name */}
-    <div className="md:text-sm text-xs  truncate max-w-[160px]">
-      {truncateLetters(vendorProfile?.v_name, 20)}
-    </div>
-  </div>
+  )}
 </div>
 
-
-                        {/* Right Section - Icons */}
-                        <div className='flex items-center gap-4 lg:gap-6'>
-                            <button className='p-3 lg:p-3 leading-2 text-white hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30'>
-                                <MdOutlineMessage className='w-7 lg:w-8 h-7 lg:h-7  group-hover:text-blue-200 transition-colors drop-shadow-sm' />
-                                <span className='text-[11px]  lg:text-sm md:font-semibold font-medium'>Help</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
         </div>
     );
 };

@@ -56,11 +56,19 @@ const OrderCard = ({ order, onStatusUpdate }) => {
             <div className="rounded-xl shadow-md border border-gray-200 bg-white p-3 md:p-4 space-y-3 text-sm">
                 {/* Top Row */}
                 <div className="flex justify-between items-start gap-2 flex-wrap">
-                    <div className="flex items-center gap-1 text-gray-700 w-full sm:w-auto">
+                    <div className="flex i flex-col gap-1 text-gray-700 w-full sm:w-auto">
                         <p className="font-semibold break-all text-xs md:text-sm">
                             ID: <span className="text-black font-normal">{order.user_order_id}</span>
                         </p>
+                        <div className='flex items-center gap-2'>
+                        <div className="w-8 h-8">
+                            <img src={order?.user?.dp_url} alt="" className="w-full h-full object-cover rounded-full" />
+                            </div>
+                            <p>{order?.user?.name}</p>
+                            </div>
+                        
                     </div>
+                    
 
                     <div className="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
                         <Clock className="w-3 h-3" />
@@ -92,6 +100,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                         {capitalize(order?.delivery_type)}
                     </span>
                 </div>
+                <div className="w-full  border-1 border-orange-300/60 border-dashed "></div>
 
                 {/* Items List */}
                 <div>
@@ -104,6 +113,8 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                         ))}
                     </div>
                 </div>
+
+                <div className="-mx-3 md:-mx-4 border border-orange border-solid mt-2"></div>
 
                 {/* Price */}
                 <div className="flex justify-between items-center flex-wrap text-gray-700 text-sm">
@@ -121,7 +132,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                         <button
                             onClick={handleAction}
                             disabled={loading}
-                            className={`${action.color} text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                            className={`bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white py-1.5 px-4 rounded-[8px] w-full sm:w-1/2 font-semibold text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                         >
                             {loading ? 'Updating...' : action.label}
@@ -134,7 +145,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                     <div className="text-center mt-2">
                         <button
                             onClick={() => setShowOtpPopup(true)}
-                            className="bg-orange-300 text-white py-1.5 px-4 rounded-lg w-full sm:w-1/2 font-semibold text-sm"
+                            className="bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white py-1.5 px-4 rounded-[8px] w-full sm:w-1/2 font-semibold text-sm"
                         >
                             Hand Over Order (Verify OTP)
                         </button>

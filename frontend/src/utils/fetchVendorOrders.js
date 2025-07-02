@@ -1,5 +1,12 @@
 import { supabase } from "./supabaseClient";
-export const fetchVendorOrders = async (vendorId, status = null, limit = 10, offset = 0) => {
+
+export const fetchVendorOrders = async (
+  vendorId,
+  status = null,
+  limit = 10,
+  offset = 0,
+  fullFetch = false // ✅ NEW PARAM
+) => {
   try {
     let query = supabase
       .from('orders')
@@ -24,6 +31,11 @@ export const fetchVendorOrders = async (vendorId, status = null, limit = 10, off
           status,
           payement_mehtod,
           created_at
+        ),
+        user:u_id (
+          user_id,
+          name,
+          dp_url
         )
       `)
       .eq('v_id', vendorId);
@@ -54,10 +66,12 @@ export const fetchVendorOrders = async (vendorId, status = null, limit = 10, off
       return new Date(b.created_ts) - new Date(a.created_ts);
     });
 
-    // ✅ Manual pagination after filtering
-    const paginatedData = sortedData.slice(offset, offset + limit);
+    // ✅ Apply manual pagination only if fullFetch is false
+    const finalData = fullFetch
+      ? sortedData
+      : sortedData.slice(offset, offset + limit);
 
-    return { success: true, data: paginatedData };
+    return { success: true, data: finalData };
   } catch (error) {
     console.error("❌ Exception fetching vendor completed orders:", error);
     return { success: false, data: [] };

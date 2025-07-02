@@ -92,7 +92,7 @@ export default function ItemCategory({
 
     return (
         <div className="p-4 shadow-lg border border-gray-300 rounded-lg w-full bg-white">
-            <h1 className="text-base font-semibold text-gray-500 mb-3">Select Cuisine</h1>
+            <h1 className="text-md lg:text-2xl font-medium text-gray uppercase mb-3">Select Cuisine</h1>
 
             <div className="relative">
                 <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500 text-lg" />
@@ -110,7 +110,7 @@ export default function ItemCategory({
 
             {selectedIds.length > 0 && (
                 <div className="mt-4">
-                    <h3 className="font-medium text-gray-500 mb-2">Selected:</h3>
+                    <h3 className="font-medium text-gray-500 text-sm uppercase mb-2">Selected:</h3>
                     <div className="flex flex-wrap gap-2 overflow-x-auto no-scrollbar">
                         {selectedIds.map(c_id => (
                             <label
@@ -134,7 +134,7 @@ export default function ItemCategory({
 
             {suggestions.length > 0 && (
                 <div className="mt-6">
-                    <h3 className="font-medium text-gray-500 mb-2">Suggestions:</h3>
+                    <h3 className="font-medium text-gray text-sm uppercase mb-2">Suggestions:</h3>
                     <div className="flex flex-wrap gap-2">
                         {suggestions.map(({ c_id, name }) => (
                             <label

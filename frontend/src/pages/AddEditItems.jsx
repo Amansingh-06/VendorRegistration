@@ -745,6 +745,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             category: '',
             cuisine: [],
             type: null,
+            priceMultiplier:"1",
           },
     });
     const watchedFields = watch()
@@ -786,7 +787,11 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             watchedFields.prepTime !== itemData.prep_time?.toString() ||    // ✅ "20" === "20"
             watchedFields.category !== itemData.vendor_created_category_id ||
             JSON.stringify(watchedFields.cuisine || []) !== JSON.stringify(itemData.item_category_id || []) ||
-            watchedFields.type !== (itemData.veg ? "veg" : "nonveg");
+            watchedFields.type !== (itemData.veg ? "veg" : "nonveg") ||
+        (selectedVendorId && watchedFields.priceMultiplier !== itemData.price_multiplier?.toString()); // ✅ add ||
+        console.log("watchedFields", watchedFields?.priceMultiplier)
+        console.log("itemData", itemData?.price_multiplier)
+
 
             const hasImageChanged =
             (previewImage && typeof previewImage === "object") || // ✅ new image uploaded
@@ -796,7 +801,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         return hasTextChanged || hasImageChanged;
     }, [watchedFields, previewImage, itemData]);
     
-    console.log(isFormChanged,"isform")
+    console.log(isFormChanged, "isform")
+    
     
 
 
@@ -890,6 +896,9 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                     : JSON.parse(itemData?.item_category_id || '[]'),
                 type: itemData.veg ? 'veg' : 'nonveg',
                 note: itemData.item_description === 'NA' ? '' : itemData.item_description || '',
+                priceMultiplier: selectedVendorId
+                ? itemData.price_multiplier?.toString() || ''
+                : '', // 🆕 only if vendor is self
             });
             
             if (itemData.img_url && itemData.img_url !== "NA") {
@@ -911,109 +920,161 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             setPreviewImage(file);
         }
     };
+    const formRef = useRef();
+
+    const getChangedFields = (oldData, newData) => {
+        const changed = {};
+        for (const key in newData) {
+          if (newData[key] !== oldData[key]) {
+            changed[key] = {
+              before: oldData[key],
+              after: newData[key],
+            };
+          }
+        }
+        return changed;
+      };
+      const generateChangeDescription = (changes) => {
+        return Object.entries(changes)
+          .map(([key, value]) => `${key} changed from "${value.before}" to "${value.after}"`)
+          .join(", ");
+      };
             
     
-    const onSubmit = async (data) => {
+      const onSubmit = async (data) => {
         if (isEditMode && !isFormChanged) {
-            toast.error("No updates found!");
-            return;
-          }        try {
-            setLoading(true);
-    
-            // ✅ Convert type string to boolean
-            const typeBool = data.type === 'veg';
-    
-            // ✅ Common item payload
-            const itemFields = {
-                item_name: data?.itemName.trim(),
-                prep_time: parseInt(data.prepTime.trim()),
-                item_price: data?.price.trim(),
-                item_quantity: data?.quantity.trim(),
-                veg: typeBool,
-                vendor_created_category_id: data?.category,
-                item_category_id: data.cuisine,
-                item_description: data?.note?.trim() || '',
-            };
-            let imageUrl = itemData?.img_url || null;
-
-            if (previewImage === null) {
-                imageUrl = "NA";  // 👈 image remove hua hai, backend me bhi NA bhejna chahiye
-            } else if (typeof previewImage !== 'string') {
-                imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG,itemFields?.item_name||"unknown");
-            }
-
-            itemFields.img_url = imageUrl;
-
-    
-            let response;
-    
-            if (isEditMode) {
-                // 🔁 UPDATE logic
-                const updatePayload = {
-                    ...itemFields,
-                    updated_at: new Date(),
-                };
-    
-                response = await supabase
-                    .from(SUPABASE_TABLES?.ITEM)
-                    .update(updatePayload)
-                    .eq('item_id', itemData.item_id);
-    
-            } else {
-                // ➕ INSERT logic
-                const insertPayload = {
-                    ...itemFields,
-                    item_id: uuidv4(),
-                    vendor_id: vendorId,
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                };
-                console.log("➡️ Insert Payload:", insertPayload);
-
-                response = await supabase
-                    .from(SUPABASE_TABLES?.ITEM)
-                    .insert([insertPayload]);
-            }
-    
-            const { error } = response;
-            if (error) {
-                toast.error(isEditMode ? "Item update failed!" : "Item save failed!");
-                console.error(error);
-            } else {
-                toast.success(isEditMode ? "Item updated successfully!" : "Item saved successfully!");
-
-                // ✅ Fetch latest items before going to manage page
-                await fetchItems(true); // background fetch, no loader
-                navigate('/manage-items');
-                onSubmitSuccess?.();
-            }
-        } catch (err) {
-            console.error("❌ Unexpected error:", err);
-            toast.error("Something went wrong!");
-        } finally {
-            setLoading(false);
+          toast.error("No updates found!");
+          return;
         }
-    };
+      
+        try {
+          setLoading(true);
+      
+          const typeBool = data.type === 'veg';
+      
+          const itemFields = {
+            item_name: data?.itemName.trim(),
+            prep_time: parseInt(data.prepTime.trim()),
+            item_price: data?.price.trim(),
+            item_quantity: data?.quantity.trim(),
+            veg: typeBool,
+            vendor_created_category_id: data?.category,
+            item_category_id: data.cuisine,
+            item_description: data?.note?.trim() || '',
+          };
+      
+          if (selectedVendorId) {
+            itemFields.price_multiplier = parseFloat(data?.priceMultiplier);
+          }
+      
+          let imageUrl = itemData?.img_url || null;
+      
+          if (previewImage === null) {
+            imageUrl = "NA";
+          } else if (typeof previewImage !== 'string') {
+            imageUrl = await uploadFile(previewImage, BUCKET_NAMES.ITEM_IMG, itemFields?.item_name || "unknown");
+          }
+      
+          itemFields.img_url = imageUrl;
+      
+          let response, insertPayload, updatePayload;
+      
+          if (isEditMode) {
+            // 🔁 UPDATE logic
+            updatePayload = {
+              ...itemFields,
+              updated_at: new Date(),
+            };
+      
+            response = await supabase
+              .from(SUPABASE_TABLES?.ITEM)
+              .update(updatePayload)
+              .eq('item_id', itemData.item_id);
+          } else {
+            // ➕ INSERT logic
+            insertPayload = {
+              ...itemFields,
+              item_id: uuidv4(),
+              vendor_id: vendorId,
+              created_at: new Date(),
+              updated_at: new Date(),
+            };
+            console.log("➡️ Insert Payload:", insertPayload);
+      
+            response = await supabase
+              .from(SUPABASE_TABLES?.ITEM)
+              .insert([insertPayload]);
+          }
+      
+          const { error } = response;
+          if (error) {
+            toast.error(isEditMode ? "Item update failed!" : "Item save failed!");
+            console.error(error);
+          } else {
+            toast.success(isEditMode ? "Item updated successfully!" : "Item saved successfully!");
+      
+            // ✅ Admin Logs (Only if admin is logged in)
+            if (selectedVendorId) {
+              const { data: { user: currentUser } } = await supabase.auth.getUser();
+              const title = isEditMode ? "Updated Item" : "Added Item";
+              const action = isEditMode ? "updated" : "added";
+              const itemName = itemFields.item_name;
+      
+              let description = `Item "${itemName}" was ${action} for vendor ID ${selectedVendorId}.`;
+      
+              if (isEditMode) {
+                const changes = getChangedFields(itemData, itemFields);
+                if (Object.keys(changes).length > 0) {
+                  const changeDetails = generateChangeDescription(changes);
+                  description += ` Changes: ${changeDetails}`;
+                } else {
+                  description += " No fields were changed.";
+                }
+              }
+      
+              await supabase.from("admin_logs").insert([
+                {
+                  admin_id: session?.user?.id,
+                  title,
+                  description,
+                  timestamp: new Date(),
+                },
+              ]);
+            }
+      
+            await fetchItems(true);
+            navigate('/manage-items');
+            onSubmitSuccess?.();
+          }
+        } catch (err) {
+          console.error("❌ Unexpected error:", err);
+          toast.error("Something went wrong!");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
     
             
     
   
-
+console.log("iTemData",itemData)
  
     // console.log(vendorProfile?.v_id)
-    console.log("isValid",isValid)
+    console.log("isValid", isValid)
+    console.log("isFormChanged", isFormChanged)
    
     return (
         <div className='w-full  mx-auto flex justify-center'>
             {loading && <Loader/>}
             <div className='max-w-2xl w-full bg-gray-100    '>
                 {/* <Header title={isEditMode ? 'Edit Item' : 'Add Item'} /> */}
-            <div className='max-w-2xl w-full  pt-6  space-y-6 rounded-2xl shadow-lg  '>
+            <div className='max-w-2xl w-full  pt-6  space-y-6 rounded-2xl   '>
                     
-                    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6  p-2 py-8 space-y-6   bg-gray-100">
+                    <form ref={formRef}  onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6 mb-20  p-2 py-8 space-y-6   bg-gray-100">
                         <div className='flex flex-col gap-6 rounded-lg shadow-lg border-1 border-gray-300 bg-white  p-5'>
-                            <p className='text-gray-500 text-xl font-medium'>Item Details</p>
-                            <FormInput
+                        <h1 className="text-md md:text-2xl lg:text-2xl font-medium text-gray">ITEM DETAILS</h1>
+                        <FormInput
                                 id="itemName"
                                 label="Item Name"
                                 icon={FaUtensils}
@@ -1111,7 +1172,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                         />
 
                         <div className="p-4 shadow-lg rounded-lg w-full bg-white border border-gray-300">
-<label className="block mb-2 font-semibold  text-gray-500">Select Category</label>
+                            <h1 className="text-md lg:text-2xl font-medium mb-2 text-gray uppercase">Select Category</h1>
 {/* import { useState } from "react"; */}
 
 <Controller
@@ -1212,9 +1273,29 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                                 </div>
                             )}
                         </div>
-                        <div className='flex border-1 border-gray-300 bg-white rounded-lg p-4 shadow-lg '>
+                        <div className='flex border-1 flex-col gap-4 border-gray-300 bg-white rounded-lg p-4 shadow-lg '>
+                        {selectedVendorId && (
+  <FormInput
+    id="priceMultiplier"
+    label="Price Multiplier"
+    register={register}
+    validation={{
+      required: 'Price multiplier is required',
+      validate: (val) =>
+        parseFloat(val) >= 1 && parseFloat(val) <= 2 || "Must be between 1 and 2"
+    }}
+    error={errors.priceMultiplier}
+    watch={watch}
+    inputProps={{
+      onInput: (e) => {
+        e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+      },
+    }}
+  />
+                            )}
+                            
 
-                        <div className="relative w-full  col-span-2">
+                        <div className="relative w-full   col-span-2 ">
               <textarea
                 id="note"
                 rows={3}
@@ -1239,19 +1320,25 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                             register={register}
                             onChange={handleImageChange}
                         />
-                        <button
-                            type="submit"
+                        
+
+                    </form>
+                    <div className='fixed bottom-20 w-full max-w-2xl md:px-4 px-2'>
+                    <button
+                             onClick={() => {
+                                if (formRef.current) formRef.current.requestSubmit(); // ✅ triggers native submit
+                              }}
                             // disabled={!isFormChanged || loading || !isValid}
-                            className={`w-full px-4 mb-5 py-2 text-white rounded-md transition 
+                            className={`flex-1  rounded-[8px] h-11 flex items-center justify-center font-bold  text-white text-lg shadow-lg hover:shadow-xl transition-all w-full duration-300 hover:scale-[1.02] disabled:bg-orange/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white  
     ${!isFormChanged || loading || !isValid
                                     ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-blue-600 hover:bg-blue-700"
+                                    : "bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
                                 }`}
                         >
                             {isEditMode ? "Update Item" : "Add Item"}
                         </button>
-
-                    </form>
+                    </div>
+                    {/* class="flex-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white customRadius h-11 flex items-center justify-center font-bold text-lg shadow-lg hover:shadow-xl transition-all w-full duration-300 hover:scale-[1.02] disabled:bg-orange/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white " */}
                 
                 </div>
                 {catLoader && <TransparentLoader />}

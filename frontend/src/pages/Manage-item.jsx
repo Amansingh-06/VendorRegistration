@@ -291,82 +291,12 @@ const handleAddPriceMultiplier = async (itemId) => {
                                             className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl shadow-sm hover:shadow-md group/btn cursor-pointer"
                                         >
                               <FiTrash
-                            className="text-red-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
+                            className="text-red-600 group-hover/btn:scale-110 transition-transform duration-200 w-[15px] h-[15px] lg:w-[18px] lg:h-[18px]"
                             />
                                         </button>
                                     </div>
                                 </div>
-{selectedVendorId && (
-  <div className="flex flex-col w-full gap-1 mt-2">
-    <div className="flex gap-2">
-      <input
-        type="number"
-        placeholder="Price Multiplier"
-        min="1"
-        max="2"
-        step="0.01"
-        value={
-            multiplierValues[item.item_id] !== undefined
-              ? multiplierValues[item.item_id]
-              : item.price_multiplier || ""
-          }        onChange={(e) => handleMultiplierChange(item.item_id, e.target.value)}
-        className={`border px-2 py-1 w-full  rounded-md ${
-          multiplierErrors[item.item_id] ? "border-red-500" : "border-green-300"
-        }`}
-      />
-     {(() => {
-  const inputValue = multiplierValues[item.item_id];
-  const parsedValue = parseFloat(inputValue);
-  const currentMultiplier = item.price_multiplier;
 
-  const isInvalid =
-    inputValue === undefined ||
-    inputValue === "" ||
-    isNaN(parsedValue) ||
-    parsedValue < 1 ||
-    parsedValue > 2;
-
-  const isSame = parsedValue === currentMultiplier;
-
-  const isLoading = loadingItemId === item.item_id;
-
-  const showErrorToast = () => {
-    if (isInvalid) {
-      toast("Please enter a value between 1 and 2");
-    } else if (isSame) {
-      toast("No update found. Multiplier is unchanged.");
-    }
-  };
-
-  return (
-    <button
-      onClick={() => {
-        if (isInvalid || isSame) {
-          showErrorToast();
-        } else {
-          handleAddPriceMultiplier(item.item_id);
-        }
-      }}
-      disabled={isLoading}
-      className={`px-3 py-1 rounded-md text-white transition ${
-        !isInvalid && !isSame
-          ? "bg-green-600 hover:bg-green-700"
-          : "bg-gray-400 cursor-not-allowed"
-      }`}
-    >
-      {isLoading ? "Adding..." : "Add"}
-    </button>
-  );
-})()}
-
-
-
-    </div>
-    {multiplierErrors[item.item_id] && (
-      <p className="text-red-500 text-sm">{multiplierErrors[item.item_id]}</p>
-    )}
-  </div>
-)}
 
 
 
@@ -374,18 +304,26 @@ const handleAddPriceMultiplier = async (itemId) => {
                             </div>
                             
                         ))}
-                        <div>
-                        <button
-                                className="fixed   bottom-18 md:bottom-20 lg:right-110 md:right-20 right-4 w-10 h-10 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"
-                            aria-label="Add Item"
-                            onClick={() => navigate('/add-items')}
-                        >
-                            <FaPlus />
-                        </button>
-                        </div>
+                        
                        
-                    </div>
-                </div>
+            </div>
+           
+          </div>
+          <div className='bottom-13 max-w-2xl w-full fixed items-right-0 flex justify-end '>                         
+    <div className="flex flex-col items-center gap-2">
+              <div className=" flex flex-col justify-center items-center rounded-full  p-4 text-[13px]">
+              <button                                 
+            className="w-14 h-14 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl md:text-2xl z-30 cursor-pointer"                             
+            aria-label="Add Item"                             
+            onClick={() => navigate('/add-items')}                         
+        >                             
+            <FaPlus />                         
+        </button>
+            Add Item
+        </div>
+     
+    </div>                         
+</div>
 
                 <BottomNav />
             </div>

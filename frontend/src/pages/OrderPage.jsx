@@ -7,16 +7,57 @@ import Navbar from "../components/Navbar";
 import BottomNav from "../components/Footer";
 import ButtonGroup from "../components/FilterButton";
 import { toast } from "react-hot-toast";
+import OfferPopup from "../components/Popup";
+import { updateVendorDiscount } from "../utils/OfferUpdate";
+export { updateVendorDiscount } from "../utils/OfferUpdate"; // ✅ Export for testing
 const OrderPage = () => {
-  const [active, setActive] = useState("All");
-  // const { vendorProfile } = useAuth();
+  
   const { vendorProfile, selectedVendorId, session } = useAuth();
   const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
+  const [active, setActive] = useState("All");
+  const [offer, setOffer] = useState(`0%`);
+  const [newOffer, setNewOffer] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // const { vendorProfile } = useAuth();
 
   const { orders, setOrders, refreshOrders,hasMore, loadMore,isLoading } = useVendorOrders(
     vendorId,
     active
   );
+  useEffect(() => {
+    if (vendorProfile?.current_discount !== undefined) {
+      setOffer(`${vendorProfile.current_discount}%`);
+    }
+  }, [vendorProfile?.current_discount]);
+
+  const handleOfferSubmit = async () => {
+    if (!newOffer.trim()) return;
+
+    const discountValue = parseInt(newOffer);
+
+    if (isNaN(discountValue)) {
+      toast.error("Please enter a valid number.");
+      return;
+    }
+
+    setLoading(true);
+    const toastId = toast.loading("Updating offer...");
+
+    const { success } = await updateVendorDiscount(vendorId, discountValue);
+
+    toast.dismiss(toastId);
+    setLoading(false);
+    setShowPopup(false);
+
+    if (success) {
+      setOffer(`${discountValue}%`);
+      toast.success("Offer updated successfully!");
+    } else {
+      toast.error("Failed to update offer. Please try again.");
+    }
+  };
+
 
   const observer = useRef();
 
@@ -97,8 +138,8 @@ const OrderPage = () => {
   
         
       {/* </div> */}
-      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  mt-10 md:mt-18 py-3 gap-4 shadow-lg">
-          <h1 className="text-xl font-semibold text-gray-500">Orders</h1>
+      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  pt-12 md:mt-8 py-3 gap-4 shadow-lg">
+          <h1 className="text-md md:text-2xl lg:text-2xl font-medium text-gray">ORDERS</h1>
   
           {/* ✅ Vendor Not Verified Handling */}
           {vendorProfile?.status === "blocked" ? (
@@ -131,7 +172,28 @@ const OrderPage = () => {
   </div>
 ) 
  : (
-            <>
+              <>
+                 <div className="p-3 rounded-lg shadow-lg border flex justify-between border-gray-300 bg-orange-50">
+        <h1>
+          Current Offer:{" "}
+          <span className="text-orange-500 font-semibold">{offer}</span>
+        </h1>
+        <button
+          className="rounded-lg text-white bg-orange-500 px-3 py-1 text-xs"
+          onClick={() => setShowPopup(true)}
+        >
+          Change
+        </button>
+      </div>
+
+      {/* Popup */}
+      <OfferPopup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        onSubmit={handleOfferSubmit}
+        offerText={newOffer}
+        setOfferText={setNewOffer}
+      />
               <div className="flex flex-wrap">
                 <ButtonGroup active={active} setActive={setActive} />
               </div>

@@ -151,6 +151,7 @@ export const FILTER_BUTTON = {
     PREPARING: "Preparing",
     ON_THE_WAY: "On The Way",
     DELIVERED: "Delivered",
+    PENDING: "Pending",
     COLOR:"bg-green"
 }
 

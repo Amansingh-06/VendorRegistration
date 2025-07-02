@@ -80,7 +80,7 @@ const TypeRadio = ({ register, setValue, error, watch }) => {
     return (
         <div >
             <div className="rounded-lg bg-white shadow-lg px-5 p-4 border border-gray-300">
-                <h3 className="text-base font-semibold text-gray-500 mb-2">Select Type</h3>
+                <h1 className="text-md lg:text-2xl font-medium text-gray mb-2 uppercase">Select Type</h1>
                 <div className="flex gap-6 flex-wrap">
   {['veg', 'nonveg'].map((type) => (
     <label className="cursor-pointer" key={type}>
