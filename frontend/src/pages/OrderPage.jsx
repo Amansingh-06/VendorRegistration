@@ -61,7 +61,7 @@ const OrderPage = () => {
         const existingOffer = vendorProfile?.current_discount;
   
         const description = `Vendor discount updated for vendor ID ${selectedVendorId}. Changes: current_discount changed from "${existingOffer}" to "${discountValue}"`;
-  
+        {console.log("admin_id", session?.user?.id)}
         const { error: logError } = await supabase.from("admin_logs").insert([
           {
             admin_id: session?.user?.id,

@@ -15,7 +15,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
     const [showOtpPopup, setShowOtpPopup] = useState(false);
     const [otp, setOtp] = useState('');
     const [submittingOtp, setSubmittingOtp] = useState(false);
-    const {selectedVendorId} = useAuth()
+    const {selectedVendorId,session} = useAuth()
 
     useEffect(() => {
         setLocalStatus(order?.status);
