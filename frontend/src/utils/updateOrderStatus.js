@@ -5,7 +5,7 @@ export const updateOrderStatus = async (orderId, newStatus) => {
         accepted: "accepted_ts",
         preparing: "preparing_ts",
         prepared: "prepared_ts",
-        on_the_way: "on_the_way_ts",
+        "on the way": "on_the_way_ts",
         delivered: "delivered_ts"
     };
 
@@ -13,7 +13,7 @@ export const updateOrderStatus = async (orderId, newStatus) => {
 
     const updateFields = {
         status: newStatus,
-        updated_ts: new Date()
+        // updated_ts: new Date()
     };
 
     if (columnToUpdate) {

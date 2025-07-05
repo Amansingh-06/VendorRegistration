@@ -91,6 +91,12 @@ const OrderCard = ({ order, onStatusUpdate }) => {
         }))
         : [];
     
+        const total_amount = order?.total_amount || 0;
+const item_amount = total_amount / 2;
+const vendor_discount = order?.vendor_discount || 0;
+const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
+const final_amount = discounted_amount || 0;
+    
     return (
         <>
             <div className="rounded-xl shadow-md border border-gray-200 bg-white p-3 md:p-4 space-y-3 text-sm">
@@ -102,8 +108,17 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                         </p>
                         <div className='flex items-center gap-2'>
                         <div className="w-8 h-8">
-                            <img src={order?.user?.dp_url} alt="" className="w-full h-full object-cover rounded-full" />
-                            </div>
+  <img
+    src={
+      !order?.user?.dp_url || order?.user?.dp_url === "NA"
+        ? "/defaultuserImage.jpg"
+        : order?.user?.dp_url
+    }
+    alt="User"
+    className="w-full h-full object-cover rounded-full"
+  />
+</div>
+
                             <p>{order?.user?.name}</p>
                             </div>
                         
@@ -140,7 +155,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                         {capitalize(order?.delivery_type)}
                     </span>
                 </div>
-                <div className="w-full  border-1 border-orange-300/60 border-dashed "></div>
+                <div className="w-full mt-2  border-1 border-orange-300/60 border-dashed "></div>
 
                 {/* Items List */}
                 <div>
@@ -154,14 +169,14 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                     </div>
                 </div>
 
-                <div className="-mx-3 md:-mx-4 border border-orange border-solid mt-2"></div>
+                <div className="-mx-3 md:-mx-4 border border-orange-300/90  mt-2"></div>
 
                 {/* Price */}
                 <div className="flex justify-between items-center flex-wrap text-gray-700 text-sm">
                     <div className="flex items-center gap-1">
                         <FaIndianRupeeSign className="w-3 h-3 text-gray-500" />
-                        <p className="font-semibold">
-                            Total: <span className="text-orange">₹{order.transaction.amount}</span>
+                        <p className="font-semibold">Total :
+                        <span className="text-orange"> ₹{final_amount.toFixed(2)}</span>
                         </p>
                     </div>
                 </div>
@@ -250,7 +265,7 @@ console.log(otp,"order?.otp")
 
                                     setSubmittingOtp(false);
                                 }}
-                                className={`px-3 py-1 rounded text-white ${otp.length === 6 ? 'bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                                className={`px-3 py-1 rounded text-white ${otp.length === 6 ? 'bg-orange' : 'bg-gray-400 cursor-not-allowed'
                                     }`}
                                 disabled={otp.length !== 6 || submittingOtp}
                             >

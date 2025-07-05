@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from 'react-hot-toast';
 
 const OfferPopup = ({
   isOpen,
@@ -9,11 +10,9 @@ const OfferPopup = ({
 }) => {
   if (!isOpen) return null;
 
-  // Allow only digits, max 100
   const handleInputChange = (e) => {
     const value = e.target.value;
 
-    // ✅ Allow only numbers AND max value 100
     if (/^\d{0,3}$/.test(value)) {
       const num = parseInt(value);
       if (value === "" || (num >= 0 && num <= 100)) {
@@ -23,6 +22,15 @@ const OfferPopup = ({
   };
 
   const isValid = offerText.trim() !== "" && parseInt(offerText) <= 100;
+
+  const handleSubmit = () => {
+    const value = parseInt(offerText);
+    if (value < 0 || value > 60) {
+      toast.error("Discount must be between 0 and 60%");
+      return;
+    }
+    onSubmit(); // ✅ call original submit
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -36,7 +44,7 @@ const OfferPopup = ({
           value={offerText}
           onChange={handleInputChange}
           placeholder="e.g. 10"
-          maxLength={3} // ✅ prevent typing large numbers
+          maxLength={3}
           className={`w-full border rounded-lg px-4 py-2 mb-4 focus:outline-none ${
             isValid
               ? "border-gray-300 focus:ring-2 focus:ring-orange-500"
@@ -52,7 +60,7 @@ const OfferPopup = ({
             Cancel
           </button>
           <button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={!isValid}
             className={`px-4 py-2 rounded-lg text-white font-medium ${
               isValid

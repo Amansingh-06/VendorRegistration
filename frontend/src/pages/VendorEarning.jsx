@@ -17,6 +17,7 @@ import { useAuth } from "../context/authContext";
 import { fetchVendorOrders } from "../utils/fetchVendorOrders";
 import { fetchVendorRatings } from "../utils/fetchVendorRating";
 import { fetchVendorRatingStats } from '../utils/vendorRatingStats';
+import { Rating } from "@mui/material";
 
 const VendorEarnings = () => {
   const { vendorProfile, selectedVendorId } = useAuth();
@@ -83,6 +84,8 @@ const VendorEarnings = () => {
       }
     }
   };
+
+  // console.log(ratings," ratings");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -180,7 +183,11 @@ const VendorEarnings = () => {
         orders.forEach((order, index) => {
           const status = order?.status?.toLowerCase();
           const orderDate = new Date(order?.created_ts);
-          const amount = order?.transaction?.amount || 0;
+          const total_amount = order?.total_amount || 0;
+          const Item_amount = total_amount / 2;
+          const vendor_discount = order?.vendor_discount || 0;
+          const discounted_amount = (Item_amount* (100 - vendor_discount)) / 100;
+          const amount = discounted_amount || 0;
   
           if (status === "delivered") {
             deliveredOrders++;
@@ -259,8 +266,12 @@ const VendorEarnings = () => {
           rejectedCount = 0;
   
         orders.forEach((order) => {
-          const orderDate = new Date(order.created_ts);
-          const amount = order.transaction?.amount || 0;
+          const orderDate = new Date(order?.created_ts);
+          const total_amount = order?.total_amount || 0;
+          const Item_amount = total_amount / 2;
+          const vendor_discount = order?.vendor_discount || 0;
+          const discounted_amount = (Item_amount* (100 - vendor_discount)) / 100;
+          const amount = discounted_amount || 0;
   
           if (orderDate >= start && orderDate <= end) {
             const status = order.status?.toLowerCase();
@@ -314,6 +325,9 @@ const VendorEarnings = () => {
       getRatingStats();
     }
   }, [vendorId, vendorProfile?.status]);
+
+
+  
   
   return (
     <div className="">
@@ -360,8 +374,8 @@ const VendorEarnings = () => {
                     <p className="text-gray-600">
                       Today: {format(today, "dd MMM yyyy")}
                     </p>
-                    <p className="text-xl font-bold text-orange-600">
-                      ₹{todayStats?.total_amount}
+                    <p className="text-xl font-semibold text-orange-600">
+                      ₹{(todayStats?.total_amount).toFixed(2)}
                     </p>
                     <p className="text-sm text-gray-500">
                       {todayStats?.total_orders} orders
@@ -372,8 +386,8 @@ const VendorEarnings = () => {
                       This Week: {format(weekStart, "dd MMM")} -{" "}
                       {format(weekEnd, "dd MMM")}
                     </p>
-                    <p className="text-xl font-bold text-orange-600">
-                      ₹{thisWeek?.total_amount}
+                    <p className="text-xl font-semibold text-orange-600">
+                      ₹{(thisWeek?.total_amount).toFixed(2)}
                     </p>
                     <p className="text-sm text-gray-500">
                       {thisWeek?.total_orders} orders
@@ -384,8 +398,8 @@ const VendorEarnings = () => {
                       This Month: {format(monthStart, "dd MMM")} -{" "}
                       {format(monthEnd, "dd MMM")}
                     </p>
-                    <p className="text-xl font-bold text-orange-600">
-                      ₹{thisMonth?.total_amount}
+                    <p className="text-xl font-semibold text-orange-600">
+                      ₹{(thisMonth?.total_amount).toFixed(2)}
                     </p>
                     <p className="text-sm text-gray-500">
                       {thisMonth?.total_orders} orders
@@ -401,7 +415,7 @@ const VendorEarnings = () => {
                     Insights
                   </h2>
                   <div className="flex items-center  gap-2">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs text-gray-500">
                       {Array.isArray(dateRange)
                         ? `${dateRange[0].toLocaleDateString("en-US", {
                             day: "numeric",
@@ -449,19 +463,19 @@ const VendorEarnings = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 -50 gap-4 mt-6 text-left">
                   <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Earnings</p>
-                    <p className="text-xl font-bold text-orange-600">
-                      ₹{selectedStats?.earnings}
+                    <p className="text-xl font-semibold text-orange-600">
+                      ₹{(selectedStats?.earnings).toFixed(2)}
                     </p>
                   </div>
                   <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Orders</p>
-                    <p className="text-xl font-bold text-orange-600">
+                    <p className="text-xl font-semibold text-orange-600">
                       {selectedStats?.orders}
                     </p>
                   </div>
                   <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                     <p className="text-gray-600">Rejected</p>
-                    <p className="text-xl font-bold text-orange-600">
+                    <p className="text-xl font-semibold text-orange-600">
                       ₹{selectedStats?.rejected?.amount} (
                       {selectedStats?.rejected?.count} orders)
                     </p>
@@ -470,7 +484,7 @@ const VendorEarnings = () => {
               </section>
 
               {/* Ratings & Reviews */}
-              <section className="bg-white rounded-xl shadow p-4 md:p-6 mb-24">
+              <section className="bg-white rounded-lg shadow p-4 md:p-6 mb-10">
   <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
     Ratings & Reviews
                     </h2>
@@ -489,7 +503,7 @@ const VendorEarnings = () => {
       {ratings.map((rating) => (
         <div
           key={rating?.r_id}
-          className="border-orange-200 border-1 p-4 rounded-lg bg-gray-50 space-y-3"
+          className="border-orange-200 shadow-all border-1 p-4 rounded-lg bg-gray-50 space-y-3"
         >
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
@@ -507,8 +521,16 @@ const VendorEarnings = () => {
                 {rating?.user?.name}
               </h3>
               <div className="text-green-600 text-sm whitespace-nowrap">
-                <span className="text-gray-500 ">Spended</span>  ₹{rating.order?.total_amount}
-                  </div>
+  <span className="text-gray-500">Spended</span> ₹
+  {(() => {
+    const total = rating.order?.total_amount || 0;
+    const itemHalf = total / 2;
+    const discount = rating.order?.vendor_discount || 0;
+    const final = (itemHalf * (100 - discount)) / 100;
+    return final.toFixed(2);
+  })()}
+</div>
+
             </div>
             </div>
           </div>
@@ -521,11 +543,25 @@ const VendorEarnings = () => {
           </div>
 
           <div className="flex justify-between items-center text-sm mt-1">
-            <div className="text-yellow-500 leading-tight">
-              {"⭐".repeat(rating?.rating_number) +
-                "☆".repeat(5 - rating?.rating_number)}{" "}
-              ({rating?.rating_number}.0)
-            </div>
+          <div className="text-yellow-500 leading-tight flex items-center gap-1">
+  {/* Filled stars */}
+  {"⭐".repeat(rating?.rating_number).split("").map((star, i) => (
+    <span key={`filled-${i}`} className="text-base">
+      {star}
+    </span>
+  ))}
+
+  {/* Unfilled stars with bigger size */}
+  {"☆".repeat(5 - rating?.rating_number).split("").map((star, i) => (
+    <span key={`unfilled-${i}`} className="text-xl text-yellow-400">
+      {star}
+    </span>
+  ))}
+
+  {/* Rating text */}
+  <span className="ml-1 text-sm text-black">({rating?.rating_number}.0)</span>
+</div>
+
             
           </div>
         </div>

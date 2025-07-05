@@ -209,12 +209,12 @@ const Navbar = () => {
       
 
             {/* Content */}
-            <div className="relative z-10">
+            <div className="relative z-10 bg-orange-500/50">
   {!scrolled && (
     <div className="flex items-center justify-between px-2 lg:px-4 py-2  max-w-9xl mx-auto transition-all duration-1000">
       
       {/* 👤 Left Section - Profile */}
-      <div className="flex items-center gap-3 lg:gap-5 ">
+      <div className="flex items-center gap-3 lg:gap-5  ">
         
         {/* Profile Circle */}
         <div className="w-12 lg:w-16 h-12 lg:h-16 rounded-full overflow-hidden bg-gradient-to-br from-orange-500 to-yellow-500 ring-2 ring-white/30 shadow-lg">
@@ -242,29 +242,32 @@ const Navbar = () => {
         </div>
 
         {/* Shop Details */}
-        <div className="text-white flex flex-col -mt-1  justify-center">
+        <div className="text-white flex flex-col -mt-1   justify-center">
           {/* Shop Name + Toggle */}
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 ">
             <div
               className="text-base lg:text-2xl font-semibold truncate drop-shadow-sm"
               title={vendorProfile?.shop_name}
             >
-              {truncateLetters(vendorProfile?.shop_name, 12)}
+              {truncateLetters(vendorProfile?.shop_name, 20)}
             </div>
 
             {/* Toggle Button */}
-            <div className=" ">
+            
+          </div>
+
+                  {/* Vendor Name */}
+                  <div className='flex items-center gap-5'>
+          <div className="text-xs md:text-sm truncate max-w-[160px] - text-white/90">
+            {truncateLetters(vendorProfile?.v_name, 20)}
+                    </div>
+                    <div className=" ">
               <ToggleSwitch
                 switchOn={switchOn}
                 onToggle={handleSwitchChange}
               />
             </div>
-          </div>
-
-          {/* Vendor Name */}
-          <div className="text-xs md:text-sm truncate max-w-[160px] - text-white/90">
-            {truncateLetters(vendorProfile?.v_name, 20)}
-          </div>
+                    </div>
         </div>
       </div>
 

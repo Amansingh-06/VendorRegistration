@@ -2,7 +2,7 @@ export const ToggleSwitch = ({ switchOn, onToggle }) => {
     return (
       <div
         onClick={() => onToggle(!switchOn)}
-        className={`w-17 border-2 h-7 flex items-center rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
+        className={`w-16 border-2 h-6 flex items-center rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
           switchOn ? "bg-green-500  text-white" : "bg-gray-400"
         }`}
       >
@@ -22,8 +22,8 @@ export const ToggleSwitch = ({ switchOn, onToggle }) => {
         
         {/* Moving Circle with Icons */}
         <div
-          className={`bg-white w-4 h-4 rounded-full shadow-xl transform transition-all duration-500 ease-out absolute top-1 flex items-center justify-center ${
-            switchOn ? "translate-x-11.5" : "translate-x-1"
+          className={`bg-white w-4 h-4 rounded-full shadow-xl transform transition-all duration-500 ease-out absolute  flex items-center justify-center ${
+            switchOn ? "translate-x-10.5" : "translate-x-1"
           }`}
         >
           {switchOn ? (

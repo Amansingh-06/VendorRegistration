@@ -694,23 +694,24 @@
 import React, { useState, useRef,useEffect,useMemo } from 'react';
 import { useForm,Controller } from 'react-hook-form';
 import { FaUtensils, FaRupeeSign, FaRegClock, FaHashtag ,FaTimes} from 'react-icons/fa';
-import FormInput from '../components/FormInput';
-import TypeRadio from '../components/TypeRadio';
-import ImageUploader from '../components/ImageUploader';
-import Header from '../components/Header';
+import FormInput from '../../components/FormInput';
+import TypeRadio from '../../components/TypeRadio';
+import ImageUploader from '../../components/ImageUploader';
+import Header from '../../components/Header';
 import { useLocation } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { toast } from 'react-hot-toast'; // ya tum jahan se use kar rahe ho
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
-import BottomNav from '../components/Footer';
-import ItemCategory from '../components/ItemCategory';
-import { SUPABASE_TABLES, MESSAGES, BUCKET_NAMES, ITEM_DEFAULTS, ITEM_FIELDS } from '../utils/vendorConfig';
+import BottomNav from '../../components/Footer';
+import ItemCategory from '../../components/ItemCategory';
+import { SUPABASE_TABLES, MESSAGES, BUCKET_NAMES, ITEM_DEFAULTS, ITEM_FIELDS } from '../../utils/vendorConfig';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../components/Loader';
-import { useFetch } from '../context/FetchContext';
-import { uploadFile } from '../utils/uploadFile';
-import TransparentLoader from '../components/Transparentloader';
+import Loader from '../../components/Loader';
+import { useFetch } from '../../context/FetchContext';
+import { uploadFile } from '../../utils/uploadFile';
+import TransparentLoader from '../../components/Transparentloader';
+// import Navbar from './Navbar';
 
 
 
@@ -745,7 +746,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
             category: '',
             cuisine: [],
             type: null,
-            priceMultiplier:"1",
+            priceMultiplier:"1.5",
           },
     });
     const watchedFields = watch()
@@ -1089,7 +1090,8 @@ console.log("iTemData",itemData)
         <div className='w-full  mx-auto flex justify-center'>
             {loading && <Loader/>}
             <div className='max-w-2xl w-full bg-gray-100    '>
-                {/* <Header title={isEditMode ? 'Edit Item' : 'Add Item'} /> */}
+          {/* <Header title={isEditMode ? 'Edit Item' : 'Add Item'} /> */}
+          {/* <Navbar/> */}
             <div className='max-w-2xl w-full  pt-6  space-y-6 rounded-2xl   '>
                     
                     <form ref={formRef}  onSubmit={handleSubmit(onSubmit)} className="w-full h-full  mx-auto md:px-6 mb-20  p-2 py-8 space-y-6   bg-gray-100">
@@ -1303,7 +1305,7 @@ console.log("iTemData",itemData)
     validation={{
       required: 'Price multiplier is required',
       validate: (val) =>
-        parseFloat(val) >= 1 && parseFloat(val) <= 2 || "Must be between 1 and 2"
+        parseFloat(val) >= 1.5 && parseFloat(val) <= 2 || "Must be between 1.5 and 2"
     }}
     error={errors.priceMultiplier}
     watch={watch}

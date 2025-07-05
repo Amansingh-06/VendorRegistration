@@ -147,7 +147,7 @@ export default function ManageItemsPage() {
                 )}
 
                 <div className='max-w-2xl md:px-6 py-8 mt-7 px-2    bg-gray-100  shadow-lg min-h-[86vh]  pb-27 relative'>
-                    <div className="grid gap-6">
+                    <div className="grid gap-4">
                         {items.length === 0 && (
                             <p className="text-gray-500 text-lg text-center">
                                 No items found. Please add an item.
@@ -157,7 +157,7 @@ export default function ManageItemsPage() {
                         {items?.map((item) => (
                             <div
                                 key={item.item_id}
-                                className="relative bg-white border-gray-300 border-1  rounded-lg flex flex-col justify-center shadow-md p-2 hover:shadow-lg transition-all"
+                                className="relative  bg-white border-gray-300 border-1  rounded-lg flex flex-col justify-center shadow-md p-2 hover:shadow-lg transition-all "
                             >
                                 {/* <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full md:px-3 px-1 py-1 shadow-sm">
                                     <Switch
@@ -172,33 +172,33 @@ export default function ManageItemsPage() {
                                 </div> */}
 
                                 <div className="flex flex-1 sm:flex-row items-start   gap-2">
-                                    <div className=' rounded h-28  p-1 w-32    md:flex-1 '>
+                                    <div className=' rounded h-26  p-1 w-32    md:flex-1 '>
                                         <img
                                             src={item?.img_url && item.img_url !== "NA" ? item.img_url : "/public/defaultItem.jpeg"}
                                             alt={item?.item_name || "Preview"}
-                                            className="w-full h-full rounded-lg object-cover"
+                                            className="w-full h-full rounded-lg object-fill"
                                         />
                                     </div>
 
                                     <div className="flex-1 flex flex-col    ">
                                     <div className="flex items-start   gap-1">
   {/* Badge Box with shadow and rounded-lg */}
-  <div className="p-1 rounded-lg mt-1 shadow-lg bg-gray-100">
+  <div className={`p-1 rounded-lg mt-1.5 ml-0.5   ${item?.veg === true ? 'bg-green-100' : 'bg-red-100'}`}>
     <span
-      className={`w-3 h-3 block rounded-full 
+      className={`w-2.5 h-2.5 block rounded-full 
         ${item?.veg === true ? 'bg-green-600' : 'bg-red-600'}`}
     ></span>
   </div>
 
   {/* Item Name */}
-                                            <h3 className="text-lg font-semibold text-gray-800">
+                                            <h3 className=" font-semibold text-gray-800">
                                                 {truncateLetters(item?.item_name, 17)}
   </h3>
 </div>
 
-                                        <p className="text-gray-600  p-1 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-sm'>Quantity: {item?.item_quantity}</span></p>
-                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-sm'>Prep Time: {item?.prep_time}min</span></p>
-                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-sm'> Price: ₹{item?.item_price}</span></p>
+                                        <p className="text-gray-600  p-1 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-[13px]'>Quantity: {item?.item_quantity}</span></p>
+                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-[13px]'>Prep Time: {item?.prep_time}min</span></p>
+                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-[13px]'> Price: ₹{item?.item_price}</span></p>
                                     </div>
 
                                     {/* <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
@@ -231,19 +231,19 @@ export default function ManageItemsPage() {
                                         {item.available ? 'Available' : 'Unavailable'}
                                     </span>
                                     </div>
-                                    <div className=" sm:mt-auto sm:ml-auto flex  flex-1 justify-between md:justify-evenly  items-center ">
+                                    <div className=" sm:mt-auto sm:ml-auto flex  flex-1 justify-end gap-5 md:justify-evenly  items-center ">
                                         <button
                                             onClick={() => navigate('/add-items', { state: { itemData: item } })}
-                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl shadow-sm hover:shadow-md group/btn cursor-pointer"
+                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-lg shadow-all hover:shadow-md group/btn cursor-pointer"
                                         >
               <FiEdit
-                              className="text-blue-600 group-hover/btn:scale-110 transition-transform duration-200 w-[12px] h-[12px] lg:w-[14px] lg:h-[14px]"
+                              className="text-blue-600 group-hover/btn:scale-110 transition-transform duration-200 w-[15px] h-[15px] lg:w-[18px] lg:h-[18px]"
                             />                                            
                                         </button>
 
                                         <button
                                             onClick={() => confirmDelete(item.item_id, item.item_name)}
-                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl shadow-sm hover:shadow-md group/btn cursor-pointer"
+                                            className="transition-all duration-300 transform hover: scale-98 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-lg shadow-all hover:shadow-md group/btn cursor-pointer"
                                         >
                               <FiTrash
                             className="text-red-600 group-hover/btn:scale-110 transition-transform duration-200 w-[15px] h-[15px] lg:w-[18px] lg:h-[18px]"

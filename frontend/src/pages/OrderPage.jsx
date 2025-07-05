@@ -145,9 +145,10 @@ const OrderPage = () => {
       .from("orders")
       .select(
         `
-                *,
+                status,
+                order_id,
                 order_item (
-                    *,
+                    item_id,
                     item (
                         *
                     )
@@ -183,7 +184,7 @@ const OrderPage = () => {
   
         
       {/* </div> */}
-      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  pt-12 md:mt-8 py-3 gap-4 shadow-lg">
+      <div className="w-full max-w-2xl px-2  md:px-6 flex flex-col min-h-[85vh] bg-gray-100  pt-12 md:mt-4 py-3 gap-3 shadow-lg">
           <h1 className="text-md md:text-2xl lg:text-2xl font-medium text-gray">ORDERS</h1>
   
           {/* ✅ Vendor Not Verified Handling */}
@@ -218,10 +219,10 @@ const OrderPage = () => {
 ) 
  : (
               <>
-                 <div className="p-3 rounded-lg shadow-lg border flex justify-between border-gray-300 bg-orange-50">
+                 <div className="p-3 rounded-lg shadow-lg border flex justify-between border-gray-300 bg-orange-50 -mt-2">
         <h1>
           Current Offer:{" "}
-          <span className="text-orange-500 font-semibold">{offer}</span>
+          <span className="text-orange-500 text-[18px] font-semibold">{offer}</span>
         </h1>
         <button
           className="rounded-lg text-white bg-orange-500 px-3 py-1 text-xs"
@@ -239,7 +240,7 @@ const OrderPage = () => {
         offerText={newOffer}
         setOfferText={setNewOffer}
       />
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap -mt-1">
                 <ButtonGroup active={active} setActive={setActive} />
               </div>
   

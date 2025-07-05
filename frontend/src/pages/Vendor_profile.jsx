@@ -796,7 +796,7 @@ const formRef = useRef();
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                   {/* Banner Image */}
-                  <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-2 p-4">
+                  <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-1 p-4">
                     {bannerUrl ? (
                       <img
                         src={bannerUrl}
@@ -827,7 +827,7 @@ const formRef = useRef();
                   </div>
 
                   {/* Video */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-2">
+                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
                     {videoUrl ? (
                       <video
                         src={videoUrl}
@@ -858,7 +858,7 @@ const formRef = useRef();
                   </div>
 
                   {/* QR Code */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-2">
+                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
                     {qrUrl ? (
                       <img
                         src={qrUrl}
@@ -1066,7 +1066,7 @@ const formRef = useRef();
               />
 
               {/* Additional Note */}
-              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
+              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-4">
                 <label
                   className="block mb-1 font-medium text-gray uppercase"
                   htmlFor="note"

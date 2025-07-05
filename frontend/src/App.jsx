@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RegistrationPage from './components/VendorRegistration';
 import Header from './components/Header';
 import OrderPage from './pages/OrderPage';
-import AddEditItem from './pages/AddEditItems';
+import AddEditItem from './pages/AddEditItem/AddEditItems';
 import Login from './pages/Login/Login';
 import Otp from './pages/Login/Otp';
 import PrivateRoute from './Routes/ProtectedRoutes';

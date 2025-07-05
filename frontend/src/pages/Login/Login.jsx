@@ -239,7 +239,7 @@ const Login = () => {
                         {/* Country code dropdown */}
                         {showCountryDropdown && (
                             <div
-                            className={`absolute z-10 w-48 mt-1 overflow-scroll scrollbar-hide bg-white text-gray-700 rounded-md shadow-lg max-h-60 border border-gray-300`}
+                            className={`absolute  z-10 w-48 mt-1 overflow-scroll scrollbar-hide bg-white text-gray-700 rounded-md shadow-lg max-h-60 border scrollbar-hide border-gray-300`}
                             >
                                 <ul className="py-1">
                                     {countryCodes.map((country) => (
