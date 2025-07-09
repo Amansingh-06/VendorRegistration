@@ -11,6 +11,7 @@ export const fetchVendorRatings = async (vendorId, page = 1, limit = 5) => {
         created_at,
         rating_number,
         comment,
+        vendor_reply,
         user:u_id (
           user_id,
           name,
@@ -20,6 +21,7 @@ export const fetchVendorRatings = async (vendorId, page = 1, limit = 5) => {
         order:order_id (
           order_id,
           total_amount,
+          vendor_discount,
           order_item:order_item!order_item_order_id_fkey (
             quantity,
             final_price,

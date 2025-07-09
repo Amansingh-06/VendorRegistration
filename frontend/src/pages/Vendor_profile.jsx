@@ -21,6 +21,12 @@ import {
   streetValidation,
   streetKeyDown,
   streetInputClean,
+  cityStateValidation,
+  pincodeValidation,
+  cityStateInputClean,
+  cityStateKeyDown,
+  pincodeInputClean,
+  pincodeKeyDown,
 } from "../utils/Validation";
 import { useAuth } from "../context/authContext";
 import MediaUploader from "../components/MediaUploader";
@@ -441,8 +447,8 @@ const formRef = useRef();
         banner_url: uploadedBannerUrl,
         video_url: uploadedVideoUrl,
         payment_url: uploadedQrUrl,
-        latitude: selectedAddress?.lat || null,
-        longitude: selectedAddress?.long || null,
+        latitude: selectedAddress?.lat ,
+        longitude: selectedAddress?.long ,
         v_id: vendorId,
         u_id: vendorProfile?.u_id,
         updated_at: new Date(),
@@ -478,8 +484,8 @@ const formRef = useRef();
               banner: uploadedBannerUrl,
               video: uploadedVideoUrl,
               qr: uploadedQrUrl,
-              longitude: selectedAddress?.long || '',
-              latitude: selectedAddress?.lat || '',
+              longitude: selectedAddress?.long,
+              latitude: selectedAddress?.lat,
             };
         
             const changes = getChangedFields(initialFormState, newState);
@@ -589,7 +595,7 @@ const formRef = useRef();
                           : "border-gray-300"
                       }`}
                       onKeyDown={nameKeyDownHandler}
-                      onBlur={InputCleanup}
+                      onInput={InputCleanup}
                     />
                     {errors.vendor_name && (
                       <p className="text-red-500 text-sm">
@@ -614,7 +620,7 @@ const formRef = useRef();
                         errors.shop_name ? "border-red-500" : "border-gray-300"
                       }`}
                       onKeyDown={shopNameKeyDownHandler}
-                      onBlur={InputCleanup}
+                      onInput={InputCleanup}
                     />
                     {errors.shop_name && (
                       <p className="text-red-500 text-sm">
@@ -929,11 +935,13 @@ const formRef = useRef();
                     </label>
                     <input
                       id="city"
-                      {...register("city", { required: "City is required" })}
+                      {...register("city", cityStateValidation)}
                       placeholder="City"
                       className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.city ? "border-red-500" : "border-gray-300"
                       }`}
+                    onInput={cityStateInputClean}
+                    onKeyDown={cityStateKeyDown}
                     />
                     {errors.city && (
                       <p className="text-red-500 text-sm">
@@ -952,11 +960,13 @@ const formRef = useRef();
                     </label>
                     <input
                       id="state"
-                      {...register("state", { required: "State is required" })}
+                      {...register("state", cityStateValidation)}
                       placeholder="State"
                       className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.state ? "border-red-500" : "border-gray-300"
                       }`}
+                      onInput={cityStateInputClean}
+                      onKeyDown={cityStateKeyDown}
                     />
                     {errors.state && (
                       <p className="text-red-500 text-sm">
@@ -975,13 +985,13 @@ const formRef = useRef();
                     </label>
                     <input
                       id="pincode"
-                      {...register("pincode", {
-                        required: "Pincode is required",
-                      })}
+                      {...register("pincode", pincodeValidation)}
                       placeholder="Pincode"
                       className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
                         errors.pincode ? "border-red-500" : "border-gray-300"
                       }`}
+                      onInput={pincodeInputClean}
+                      onKeyDown={pincodeKeyDown}
                     />
                     {errors.pincode && (
                       <p className="text-red-500 text-sm">

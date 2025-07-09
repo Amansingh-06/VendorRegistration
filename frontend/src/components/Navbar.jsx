@@ -11,7 +11,9 @@ import { supabase } from '../utils/supabaseClient';
 import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
 import { SUPABASE_TABLES } from '../utils/vendorConfig';
 import { ToggleSwitch } from './ToggleSwitch';
-import { MessageCircle } from 'lucide-react';
+import { BiMessage } from 'react-icons/bi';
+// import { MessageCircle } from 'lucide-react';
+
 // Assuming you have a ToggleSwitch component
 // const IOSSwitch = styled((props) => (
 //     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -193,18 +195,18 @@ const Navbar = () => {
                   </div>
                   {/* Floating Icons */}
                   <div>
-                      <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 right-8 animate-bounce-slow pointer-events-none" />
-                      {/* <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-5 left-3 animate-float pointer-events-none" /> */}
-                      <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-4 lg:top-1/3 right-44 animate-float pointer-events-none" />
-                      <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl bottom-2 right-18 animate-bounce-slow pointer-events-none" />
-                      <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl bottom-0 lg:bottom-12 left-35 animate-bounce-slow pointer-events-none" />
-                      <GiFullPizza className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-1 left-70 animate-float pointer-events-none" />
-                      <PiBowlFood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-1 right-60 animate-bounce-slow pointer-events-none" />
-                      <GiChickenOven className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-12 right-[470px] animate-float pointer-events-none" />
-                      <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-10 left-60 lg:left-1/2 animate-bounce-slow pointer-events-none" />
-                      <GiFrenchFries className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-16 left-1/3 animate-bounce-slow pointer-events-none" />
-                      <MdOutlineFastfood className="absolute text-white z-40 opacity-30 text-2xl lg:text-4xl top-2 left-20 lg:left-[530px] animate-float pointer-events-none" />
-                      <FaIceCream className="absolute text-white z-40 opacity-15 text-2xl lg:text-4xl top-1 right-[570px] animate-bounce-slow pointer-events-none" />
+                      <GiFullPizza className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-2 right-8 animate-bounce-slow pointer-events-none" />
+                      <GiFrenchFries className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl bottom-5 left-1/2 animate-float pointer-events-none" />
+                      <GiChickenOven className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-4 lg:top-1/3 right-44 animate-float pointer-events-none" />
+                      <FaIceCream className="absolute text-white z-20 opacity-15 text-2xl lg:text-4xl bottom-2 right-18 animate-bounce-slow pointer-events-none" />
+                      <MdOutlineFastfood className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl bottom-0 lg:bottom-12 left-35 animate-bounce-slow pointer-events-none" />
+                      <GiFullPizza className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-1 left-70 animate-float pointer-events-none" />
+                      <PiBowlFood className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-1 right-60 animate-bounce-slow pointer-events-none" />
+                      <GiChickenOven className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-12 right-[470px] animate-float pointer-events-none" />
+                      <FaIceCream className="absolute text-white z-20 opacity-15 text-2xl lg:text-4xl top-10 left-60 lg:left-1/2 animate-bounce-slow pointer-events-none" />
+                      <GiFrenchFries className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-16 left-1/3 animate-bounce-slow pointer-events-none" />
+                      <MdOutlineFastfood className="absolute text-white z-20 opacity-30 text-2xl lg:text-4xl top-2 left-20 lg:left-[530px] animate-float pointer-events-none" />
+                      <FaIceCream className="absolute text-white z-20 opacity-15 text-2xl lg:text-4xl top-1 right-[570px] animate-bounce-slow pointer-events-none" />
                   </div>
       
 
@@ -258,7 +260,7 @@ const Navbar = () => {
 
                   {/* Vendor Name */}
                   <div className='flex items-center gap-5'>
-          <div className="text-xs md:text-sm truncate max-w-[160px] - text-white/90">
+          <div className="text-xs md:text-sm truncate max-w-[160px] - text-white/90 relative z-40 ">
             {truncateLetters(vendorProfile?.v_name, 20)}
                     </div>
                     <div className=" ">
@@ -273,8 +275,10 @@ const Navbar = () => {
 
       {/* 📩 Right Section - Icons */}
       <div className="flex items-center gap-2 lg:gap-4">
-        <button className="p-1.5 lg:p-2 text-orange bg-gray-100 hover:bg-white/90 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30 cursor-pointer">
-          <MessageCircle className="w-5 lg:w-6 h-5 lg:h-6 group-hover:text-orange-500 transition-colors drop-shadow-sm" />
+        <button  className="flex  justify-center items-center gap-1 p-1 lg:p-2 text-orange bg-gray-100 hover:bg-white/90 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30 cursor-pointer">
+        <BiMessage className="text-sm lg:text-2xl mt-[1px]" />
+          <div className="text-xs lg:text-base font-medium">Help</div>
+
         </button>
       </div>
     </div>

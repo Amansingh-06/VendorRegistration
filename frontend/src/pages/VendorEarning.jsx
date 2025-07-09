@@ -17,6 +17,7 @@ import { useAuth } from "../context/authContext";
 import { fetchVendorOrders } from "../utils/fetchVendorOrders";
 import { fetchVendorRatings } from "../utils/fetchVendorRating";
 import { fetchVendorRatingStats } from '../utils/vendorRatingStats';
+import { addVendorReply } from "../utils/VendorReply";
 import { Rating } from "@mui/material";
 
 const VendorEarnings = () => {
@@ -36,6 +37,7 @@ const VendorEarnings = () => {
   const [showAllItemsMap, setShowAllItemsMap] = useState({});
   const [replyingId, setReplyingId] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [replies, setReplies] = useState({});
   const [todayStats, setTodayStats] = useState({
     total_orders: 0,
     total_amount: 0,
@@ -115,30 +117,49 @@ const VendorEarnings = () => {
     setDateRange(value);
     setShowCalendar(false);
   };
+  const submitReply = async (id) => {
+    const trimmedReply = replyText.trim();
+  
+    if (!trimmedReply) {
+      toast.error("Please type a reply before submitting.");
+      return;
+    }
+  
+    const result = await addVendorReply(id, trimmedReply);
+  
+    if (result.success) {
+      setReplies((prev) => ({ ...prev, [id]: trimmedReply }));
+      setReplyingId(null);
+      setReplyText("");
+  
+      // ✅ Realtime UI Update
+      setRatings((prevRatings) =>
+        prevRatings.map((r) =>
+          r.r_id === id ? { ...r, vendor_reply: trimmedReply } : r
+        )
+      );
+    } else {
+      toast.error("Reply save nahi hua. Try again.");
+    }
+  };
+  
 
-  // const handleReplyClick = (id) => {
-  //   setReplyingId(id);
-  //   const existingReply = reviews.find((r) => r.id === id)?.reply || "";
-  //   setReplyText(existingReply);
-  // };
+  const handleReplyClick = (id) => {
+    setReplyingId(id);
+    setReplyText("");
+  };
+  
+  const handleReplyChange = (e) => {
+    setReplyText(e.target.value);
+  };
+  
+  const cancelReply = () => {
+    setReplyingId(null);
+    setReplyText("");
+  };
+  
+  
 
-  // const handleReplyChange = (e) => {
-  //   setReplyText(e.target.value);
-  // };
-
-  // const submitReply = (id) => {
-  //   const updated = reviews.map((review) =>
-  //     review.id === id ? { ...review, reply: replyText } : review
-  //   );
-  //   setReviews(updated);
-  //   setReplyingId(null);
-  //   setReplyText("");
-  // };
-
-  // const cancelReply = () => {
-  //   setReplyingId(null);
-  //   setReplyText("");
-  // };
 
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -503,7 +524,7 @@ const VendorEarnings = () => {
       {ratings.map((rating) => (
         <div
           key={rating?.r_id}
-          className="border-orange-200 shadow-all border-1 p-4 rounded-lg bg-gray-50 space-y-3"
+          className="border-orange-200 shadow-all border-1 p-4 rounded-lg bg-gray-50 space-y-1"
         >
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
@@ -517,16 +538,21 @@ const VendorEarnings = () => {
                 alt="User DP"
               />
               <div>
-              <h3 className="font-semibold text-gray-800">
-                {rating?.user?.name}
-              </h3>
+                <h3 className="font-semibold text-gray-800">
+                  {console.log('rating', rating)}
+                  {rating?.user?.name}
+                </h3>
               <div className="text-green-600 text-sm whitespace-nowrap">
   <span className="text-gray-500">Spended</span> ₹
   {(() => {
-    const total = rating.order?.total_amount || 0;
-    const itemHalf = total / 2;
-    const discount = rating.order?.vendor_discount || 0;
-    const final = (itemHalf * (100 - discount)) / 100;
+                    const total = rating.order?.total_amount || 0;
+
+                    const itemHalf = total / 2;
+                    console.log('Item half amount:', itemHalf)
+                    const discount = rating?.order?.vendor_discount || 0;
+                    console.log('Vendor discount:', rating?.order?.vendor_discount)
+                    const final = (itemHalf * (100 - discount)) / 100;
+                    console.log('Final spended amount:', final)
     return final.toFixed(2);
   })()}
 </div>
@@ -561,9 +587,130 @@ const VendorEarnings = () => {
   {/* Rating text */}
   <span className="ml-1 text-sm text-black">({rating?.rating_number}.0)</span>
 </div>
+            
 
             
           </div>
+         {/* Reply button: Only show if comment exists, and not already replied */}
+{/* Customer Comment with Image */}
+{rating.comment !== "NA" && (
+  <div className="flex items-start gap-2 mt-2">
+    <img
+      src={
+        !rating.user?.dp_url || rating.user?.dp_url === "NA"
+          ? "/defaultuserImage.jpg"
+          : rating.user.dp_url
+      }
+      alt="Customer"
+      className="w-6 h-6 rounded-full object-cover"
+    />
+
+    <div className=" max-w-md w-full text-sm overflow-auto break-words max-h-32">
+      <p className="text-gray-700 whitespace-pre-wrap">
+        {rating.comment}
+      </p>
+    </div>
+  </div>
+)}
+
+{/* Reply button: show only if comment exists and not already replied */}
+{rating.comment !== "NA" &&
+  !replies[rating.r_id] &&
+  replyingId !== rating.r_id &&
+  (!rating.vendor_reply || rating.vendor_reply === "NA") && (
+    <button
+      className="text-blue-500 text-sm underline mt-2"
+      onClick={() => handleReplyClick(rating.r_id)}
+    >
+      Reply
+    </button>
+)}
+
+
+{/* Reply input box with vendor image */}
+{/* Reply Input Box */}
+{replyingId === rating.r_id && (
+  <div className="flex items-start gap-2 mt-3">
+    {/* Vendor Image */}
+    <img
+      src={
+        !vendorProfile?.banner_url || vendorProfile?.banner_url === "NA"
+          ? "/defaultuserImage.jpg"
+          : vendorProfile.banner_url
+      }
+      className="w-6 h-6 rounded-full object-cover"
+      alt="Vendor"
+    />
+
+    <div className="flex-1 -mt-1.5 space-y-1">
+      {/* Input */}
+      <input
+        type="text"
+        className={`border w-full p-2 rounded text-sm ${
+          replyText.length > 50 ? "border-red-500" : ""
+        }`}
+        placeholder="Type your reply..."
+        value={replyText}
+        onChange={handleReplyChange}
+      />
+
+      {/* Error message */}
+      {replyText.length > 50 && (
+        <p className="text-red-500 text-xs">Maximum 30 characters allowed</p>
+      )}
+
+      {/* Buttons */}
+      <div className="flex gap-3 text-sm pt-1">
+        <button
+          onClick={() => submitReply(rating.r_id)}
+          disabled={!replyText.trim() || replyText.length > 30}
+          className={`px-3 py-1 rounded text-white ${
+            replyText.trim() && replyText.length <= 50
+              ? "bg-orange hover:bg-orange-700"
+              : "bg-orange-300 cursor-not-allowed"
+          }`}
+        >
+          Reply
+        </button>
+        <button
+          onClick={cancelReply}
+          className="bg-gray-300 px-3 py-1 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+{/* Show Reply (from backend) */}
+{rating.vendor_reply && rating.vendor_reply !== "NA" && (
+  <div className="flex items-start gap-2 mt-4">
+    {/* Vendor Image */}
+    <img
+      src={
+        !vendorProfile?.banner_url || vendorProfile?.banner_url === "NA"
+          ? "/defaultuserImage.jpg"
+          : vendorProfile.banner_url
+      }
+      alt="Vendor"
+      className="w-6 h-6 rounded-full object-cover"
+    />
+
+    {/* Reply Text */}
+    <div className="-mt-1 max-w-md w-full text-sm overflow-auto break-words max-h-32 bg-gray-50 p-2 rounded">
+      <p className="text-gray-700 whitespace-pre-wrap">
+                  {rating.vendor_reply}
+                  {console.log("Reply:", rating.vendor_reply)}
+      </p>
+    </div>
+  </div>
+)}
+
+
+
+
         </div>
       ))}
 

@@ -2,14 +2,23 @@
 
 export const nameValidation = {
     required: "Name is required",
-    validate: (value) => {
-        const onlyLetters = value.replace(/\s/g, ""); // remove spaces
-        if (onlyLetters.length < 3) {
-            return "At least 3 letters required (excluding spaces)";
-        }
-        return true;
+    minLength: {
+      value: 3,
+      message: "Minimum 3 characters required",
     },
-};
+    maxLength: {
+      value: 30,
+      message: "Maximum 30 characters allowed",
+    },
+    validate: (value) => {
+      const onlyLetters = value.replace(/\s/g, ""); // spaces hata ke count
+      if (onlyLetters.length < 3) {
+        return "At least 3 letters required (excluding spaces)";
+      }
+      return true;
+    },
+  };
+  
 
 
 export const nameKeyDownHandler = (e) => {
@@ -34,12 +43,17 @@ export const InputCleanup = (e) => {
 // Similarly for shop name:
 export const shopNameValidation = {
     required: "Shop Name is required",
-    validate: (value) => {
-        if (/^\s/.test(value)) return "Cannot start with space"; // space se start not allowed
-        if (!/^[A-Za-z0-9 ]+$/.test(value)) return "Only letters, numbers, and spaces allowed"; // multiple spaces allowed
-        return true;
+    maxLength: {
+      value: 30,
+      message: "Maximum 30 characters allowed",
     },
-};
+    validate: (value) => {
+      if (/^\s/.test(value)) return "Cannot start with space";
+      if (!/^[A-Za-z0-9 ]+$/.test(value)) return "Only letters, numbers, and spaces allowed";
+      return true;
+    },
+  };
+  
 
 export const shopNameKeyDownHandler = (e) => {
     const allowedChars = /^[a-zA-Z0-9 ]$/;
@@ -59,13 +73,18 @@ export const shopNameKeyDownHandler = (e) => {
 
 export const streetValidation = {
     required: "Street is required",
-    validate: (value) => {
-        if (!value.trim()) return "Street is required";
-        if (/^\s/.test(value)) return "Street cannot start with space";
-        if (!/^[A-Za-z0-9 ,.\-#\/']+$/.test(value)) return "Invalid characters in street";
-        return true;
+    maxLength: {
+      value: 50,
+      message: "Maximum 50 characters allowed",
     },
-};
+    validate: (value) => {
+      if (!value.trim()) return "Street is required";
+      if (/^\s/.test(value)) return "Street cannot start with space";
+      if (!/^[A-Za-z0-9 ,.\-#\/']+$/.test(value)) return "Invalid characters in street";
+      return true;
+    },
+  };
+  
 
 export const streetKeyDown = (e) => {
     const allowed = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete", " "];
@@ -91,13 +110,18 @@ export const streetInputClean = (e) => {
 // 🌆 CITY & STATE (Only letters + spaces)
 export const cityStateValidation = {
     required: "This field is required",
-    validate: (value) => {
-        if (!value.trim()) return "This field is required";
-        if (/^\s/.test(value)) return "Cannot start with space";
-        if (!/^[A-Za-z ]+$/.test(value)) return "Only letters and spaces allowed";
-        return true;
+    maxLength: {
+      value: 20,
+      message: "Maximum 20 characters allowed",
     },
-};
+    validate: (value) => {
+      if (!value.trim()) return "This field is required";
+      if (/^\s/.test(value)) return "Cannot start with space";
+      if (!/^[A-Za-z ]+$/.test(value)) return "Only letters and spaces allowed";
+      return true;
+    },
+  };
+  
 
 export const cityStateKeyDown = (e) => {
     const allowed = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete", " "];

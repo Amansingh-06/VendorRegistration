@@ -2,7 +2,7 @@ export const ToggleSwitch = ({ switchOn, onToggle }) => {
     return (
       <div
         onClick={() => onToggle(!switchOn)}
-        className={`w-16 border-2 h-6 flex items-center rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
+        className={`w-16 border-2 h-6 flex items-center z-40 rounded-full  cursor-pointer transition-all duration-300 shadow-lg relative overflow-hidden ${
           switchOn ? "bg-green-500  text-white" : "bg-gray-400"
         }`}
       >

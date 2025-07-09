@@ -183,7 +183,7 @@ export default function ManageItemsPage() {
                                     <div className="flex-1 flex flex-col    ">
                                     <div className="flex items-start   gap-1">
   {/* Badge Box with shadow and rounded-lg */}
-  <div className={`p-1 rounded-lg mt-1.5 ml-0.5   ${item?.veg === true ? 'bg-green-100' : 'bg-red-100'}`}>
+  <div className={`p-1 rounded-lg mt-1 ml-0.5   ${item?.veg === true ? 'bg-green-100' : 'bg-red-100'}`}>
     <span
       className={`w-2.5 h-2.5 block rounded-full 
         ${item?.veg === true ? 'bg-green-600' : 'bg-red-600'}`}
@@ -196,9 +196,9 @@ export default function ManageItemsPage() {
   </h3>
 </div>
 
-                                        <p className="text-gray-600  p-1 text-base flex items-center gap-1 "><GiFruitBowl/> <span className='text-gray-600 text-[13px]'>Quantity: {item?.item_quantity}</span></p>
-                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-[13px]'>Prep Time: {item?.prep_time}min</span></p>
-                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-[13px]'> Price: ₹{item?.item_price}</span></p>
+                                <p className="text-gray-600  p-1 text-base flex items-center gap-1 "><GiFruitBowl /> <span className='text-gray-600 text-[13px]'>Quantity: {truncateLetters(item?.item_quantity,8)}</span></p>
+                                <p className="text-gray-600  p-1 text-sm flex items-center gap-1"><FaRegClock /> <span className='text-gray-600 text-[13px]'>Prep Time: {truncateLetters(item?.prep_time,8)}min</span></p>
+                                        <p className="text-gray-600  p-1 text-sm flex items-center gap-1"> <FaIndianRupeeSign /> <span className='text-gray-600 text-[13px]'> Price: ₹{truncateLetters(item?.item_price,8)}</span></p>
                                     </div>
 
                                     {/* <div className="mt-2 mr-10 sm:mt-auto sm:ml-auto flex flex-col gap-2 items-start">
