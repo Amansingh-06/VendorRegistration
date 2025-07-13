@@ -313,43 +313,62 @@ export default function VendorProfile() {
     fetchReadableAddress();
   }, [initialFormState?.latitude, initialFormState?.longitude]);
 
+  const normalizeTime = (time) => {
+    if (!time) return "";
+    // Check if it contains AM/PM
+    if (time.includes("AM") || time.includes("PM")) {
+      return moment(time, "hh:mm A").format("HH:mm");
+    }
+  
+    // It may be HH:mm:ss or HH:mm
+    const parts = time.split(":");
+    return `${parts[0].padStart(2, "0")}:${parts[1]}`;
+  };
+  
+  
+  
   const isChanged = useMemo(() => {
     if (!initialFormState) return false;
-
+  
     const areCuisinesSame = (() => {
       const a = [...selectedCuisineIds].map(String).sort();
       const b = [...(initialFormState.cuisines || [])].map(String).sort();
-
+  
       if (a.length !== b.length) return false;
       return a.every((val, index) => val === b[index]);
     })();
-
-    console.log("selectedAddresssssss", selectedAddress);
+  
     const isLocationSame =
       selectedAddress?.lat != null && selectedAddress?.long != null
         ? String(initialFormState?.latitude) === String(selectedAddress?.lat) &&
           String(initialFormState?.longitude) === String(selectedAddress?.long)
         : true;
-
-    console.log(
-      "initial lat/lng:",
-      initialFormState.latitude,
-      initialFormState.longitude
-    );
-    console.log(
-      "current lat/lng:",
-      selectedAddress?.lat,
-      selectedAddress?.long
-    );
-    console.log(location);
-
+  
+    // 👉 Console logs for debugging
+    console.log("🚩 [Check] vendor_name", watchedFields.vendor_name, initialFormState.vendor_name);
+    console.log("🚩 [Check] shop_name", watchedFields.shop_name, initialFormState.shop_name);
+    console.log("🚩 [Check] shift1_start", normalizeTime(watchedFields.shift1_start), normalizeTime(initialFormState.shift1_start));
+    console.log("🚩 [Check] shift1_close", normalizeTime(watchedFields.shift1_close), normalizeTime(initialFormState.shift1_close));
+    console.log("🚩 [Check] shift2_start", normalizeTime(watchedFields.shift2_start), normalizeTime(initialFormState.shift2_start));
+    console.log("🚩 [Check] shift2_close", normalizeTime(watchedFields.shift2_close), normalizeTime(initialFormState.shift2_close));
+    console.log("🚩 [Check] street", watchedFields.street, initialFormState.street);
+    console.log("🚩 [Check] city", watchedFields.city, initialFormState.city);
+    console.log("🚩 [Check] state", watchedFields.state, initialFormState.state);
+    console.log("🚩 [Check] pincode", watchedFields.pincode, initialFormState.pincode);
+    console.log("🚩 [Check] note", watchedFields.note, initialFormState.note);
+    console.log("🚩 [Check] bannerUrl", bannerUrl, initialFormState.banner);
+    console.log("🚩 [Check] videoUrl", videoUrl, initialFormState.video);
+    console.log("🚩 [Check] qrUrl", qrUrl, initialFormState.qr);
+    console.log("🚩 [Check] areCuisinesSame", areCuisinesSame);
+    console.log("🚩 [Check] isLocationSame", isLocationSame);
+  
     return (
       watchedFields.vendor_name !== initialFormState.vendor_name ||
       watchedFields.shop_name !== initialFormState.shop_name ||
-      watchedFields.shift1_start !== initialFormState.shift1_start ||
-      watchedFields.shift1_close !== initialFormState.shift1_close ||
-      watchedFields.shift2_start !== initialFormState.shift2_start ||
-      watchedFields.shift2_close !== initialFormState.shift2_close ||
+      normalizeTime(watchedFields.shift1_start) !== normalizeTime(initialFormState.shift1_start) ||
+      normalizeTime(watchedFields.shift1_close) !== normalizeTime(initialFormState.shift1_close) ||
+      normalizeTime(watchedFields.shift2_start) !== normalizeTime(initialFormState.shift2_start) ||
+      normalizeTime(watchedFields.shift2_close) !== normalizeTime(initialFormState.shift2_close) ||
       watchedFields.street !== initialFormState.street ||
       watchedFields.city !== initialFormState.city ||
       watchedFields.state !== initialFormState.state ||
@@ -359,7 +378,7 @@ export default function VendorProfile() {
       videoUrl !== initialFormState.video ||
       qrUrl !== initialFormState.qr ||
       !areCuisinesSame ||
-      !isLocationSame // ✅ Location check added
+      !isLocationSame
     );
   }, [
     watchedFields,
@@ -370,6 +389,7 @@ export default function VendorProfile() {
     selectedAddress,
     initialFormState,
   ]);
+  
 
   const uploadFile = async (file, bucketName) => {
     if (!file) return null;
@@ -675,7 +695,9 @@ const formRef = useRef();
                           setStartTime1(backendTime); // state me backend format me save karo (string)
                           setValue("shift1_start", backendTime); // form ke liye backend format (string)
                           setStartView1(false);
-                        }}
+                      }}
+                                            initialTime={startTime1}
+
                       />
                     </div>
 
@@ -719,7 +741,9 @@ const formRef = useRef();
                           setEndTime1(backendTime);
                           setEndView1(false);
                           setValue("shift1_close", backendTime);
-                        }}
+                      }}
+                      initialTime={endTime1}
+                      
                       />
                     </div>
 
@@ -754,7 +778,8 @@ const formRef = useRef();
                           setStartTime2(backendTime);
                           setStartView2(false);
                           setValue("shift2_start", backendTime);
-                        }}
+                      }}
+                      initialTime={startTime2}
                       />
                     </div>
 
@@ -788,7 +813,8 @@ const formRef = useRef();
                           setEndTime2(backendTime);
                           setEndView2(false);
                           setValue("shift2_close", backendTime);
-                        }}
+                      }}
+                      initialTime={endTime2}
                       />
                     </div>
                   </div>

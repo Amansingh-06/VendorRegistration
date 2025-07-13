@@ -63,7 +63,7 @@ export const fetchVendorOrders = async (
         (statusPriority[a.status?.toLowerCase()] || 99) -
         (statusPriority[b.status?.toLowerCase()] || 99);
       if (statusDiff !== 0) return statusDiff;
-      return new Date(b.created_ts) - new Date(a.created_ts);
+      return new Date(a.created_ts) - new Date(b.created_ts); // ⬅️ ascending (oldest first)
     });
 
     // ✅ Apply manual pagination only if fullFetch is false

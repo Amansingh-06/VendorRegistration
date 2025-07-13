@@ -3,11 +3,21 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimeClock } from '@mui/x-date-pickers/TimeClock';
-import { TIME_CLOCK_CONFIG } from '../utils/vendorConfig'; // 👈 import config
+import { TIME_CLOCK_CONFIG } from '../utils/vendorConfig';
 
-export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
+export default function TimeClockFull({ isOpen, onClose, onTimeSelect, initialTime }) {
     const [value, setValue] = React.useState(dayjs());
     const [view, setView] = React.useState('hours');
+
+    // 🆕 Set initial value from prop when modal opens
+    React.useEffect(() => {
+        if (isOpen && initialTime) {
+            const parsed = dayjs(initialTime, "HH:mm:ss");
+            if (parsed.isValid()) {
+                setValue(parsed);
+            }
+        }
+    }, [isOpen, initialTime]);
 
     const handleAmPmChange = (e) => {
         const selected = e.target.value;
@@ -35,7 +45,6 @@ export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
     return (
         <div className="inset-0 z-50 backdrop-blur-sm bg-black/30 fixed flex items-center justify-center px-4">
             <div className={`bg-white md:p-6 p-3 rounded-lg shadow-lg w-full ${TIME_CLOCK_CONFIG.MODAL_STYLE.MAX_WIDTH} relative flex flex-col items-center jus ${TIME_CLOCK_CONFIG.MODAL_STYLE.SMALL_WIDTH}`}>
-                {/* Close Button */}
                 <button
                     onClick={onClose}
                     className={TIME_CLOCK_CONFIG.CLOSE_BUTTON.CLASSNAME}
@@ -45,7 +54,6 @@ export default function TimeClockFull({ isOpen, onClose, onTimeSelect }) {
 
                 <h2 className="text-xl font-semibold mb-2 text-primary">{TIME_CLOCK_CONFIG.TITLE}</h2>
 
-                {/* Analog Clock */}
                 <div
                     className="flex justify-center items-center"
                     style={{

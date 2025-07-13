@@ -2,11 +2,14 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { fetchVendorOrders } from '../utils/fetchVendorOrders';
 
+// 🔧 Helper for case-insensitive status match
+const isStatusMatch = (a, b) => (a || '').toLowerCase() === (b || '').toLowerCase();
+
 export const useVendorOrders = (vendorId, activeStatus = 'All') => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 3;
+  const LIMIT = 10;
 
   const initialLoaded = useRef(false);
   const debounceRef = useRef(null);
@@ -14,10 +17,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
   const loadOrders = useCallback(
     async (reset = false) => {
       if (!vendorId || isLoading) {
-        console.log('🛑 Skipped loadOrders because:', {
-          vendorId,
-          isLoading
-        });
+        console.log('🛑 Skipped loadOrders because:', { vendorId, isLoading });
         return;
       }
 
@@ -33,10 +33,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
         offset
       );
 
-      console.log('✅ API response:', {
-        dataLength: data?.length,
-        data
-      });
+      console.log('✅ API response:', { dataLength: data?.length, data });
 
       if (success) {
         if (reset) {
@@ -93,7 +90,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
       .on(
         'postgres_changes',
         {
-          event: '*', // listen to INSERT + UPDATE + DELETE
+          event: '*',
           schema: 'public',
           table: 'orders',
           filter: `v_id=eq.${vendorId}`,
@@ -106,8 +103,8 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
             const updatedOrder = payload.new;
 
             const matchesFilter =
-              activeStatus === 'All' ||
-              updatedOrder?.status?.toLowerCase() === activeStatus?.toLowerCase();
+              activeStatus.toLowerCase() === 'all' ||
+              isStatusMatch(updatedOrder?.status, activeStatus);
 
             if (matchesFilter) {
               console.log('🔃 Reloading due to realtime update...');
@@ -115,7 +112,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
             } else {
               console.log('🟡 Update ignored due to unmatched status.');
             }
-          }, 300); // ⏳ 300ms debounce
+          }, 300);
         }
       )
       .subscribe();
