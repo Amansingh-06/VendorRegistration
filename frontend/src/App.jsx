@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RegistrationPage from './components/VendorRegistration';
 import Header from './components/Header';
@@ -18,19 +18,51 @@ import ManageItemsPage from './pages/Manage-item';
 import InstallPrompt from './components/InstallPrompt';
 import AdminProtectedRoute from './Routes/AdminAccess';
 import ScrollToTop from './components/ScrolltoTop';
-
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './pages/Layout'; // 👈 import your new Layout
-// ... all other imports remain
+import Layout from './pages/Layout';
 
 function App() {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log("✅ You are online");
+      setIsOnline(true);
+    };
+    const handleOffline = () => {
+      console.warn("📴 You are offline");
+      setIsOnline(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Initial check
+    if (!navigator.onLine) {
+      console.warn("📴 You are offline at first load");
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // ❌ Don't render anything when offline
+  if (!isOnline) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif" }}>
+        <h1>📴 You are offline</h1>
+        <p>Please check your internet connection.</p>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <div className="poppins-regular">
-      <ScrollToTop />
+        <ScrollToTop />
 
         <Routes>
-
           {/* Guest Routes */}
           <Route path="/" element={<ProtectedGuestRoute><Login /></ProtectedGuestRoute>} />
           <Route path="/otp" element={<ProtectedGuestRoute><Otp /></ProtectedGuestRoute>} />
@@ -44,7 +76,6 @@ function App() {
               </AdminProtectedRoute>
             }
           >
-            {/* Routes under Layout */}
             <Route path="/home" element={<OrderPage />} />
             <Route path="/manage-items" element={<ManageItemsPage />} />
             <Route path="/add-items" element={<AddEditItem />} />
@@ -53,7 +84,6 @@ function App() {
             <Route path="/address" element={<Address />} />
             <Route path="/edit_address" element={<EditAddress />} />
           </Route>
-
         </Routes>
 
         <InstallPrompt />
@@ -63,4 +93,3 @@ function App() {
 }
 
 export default App;
-

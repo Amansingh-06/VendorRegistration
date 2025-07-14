@@ -38,6 +38,7 @@ import { useSearch } from "../context/SearchContext";
 import TransparentLoader from "../components/Transparentloader";
 import { FiMapPin } from "react-icons/fi";
 import { getChangedFields, generateChangeDescription } from "../utils/AdminLogs";
+// import { isValid } from "date-fns";
 
 export default function VendorProfile() {
   const { vendorProfile, selectedVendorId, session, refreshVendorProfile } =
@@ -97,8 +98,11 @@ export default function VendorProfile() {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
+// logic
+
+
   const navigate = useNavigate();
 
   const watchedFields = watch();
@@ -452,17 +456,17 @@ const formRef = useRef();
       if (qrFile) setQrUrl(uploadedQrUrl);
   
       const insertData = {
-        v_name: formData?.vendor_name,
-        shop_name: formData?.shop_name,
+        v_name: formData?.vendor_name?.trim(),
+        shop_name: formData?.shop_name?.trim(),
         shift1_opening_time: formData?.shift1_start,
         shift1_closing_time: formData?.shift1_close,
         shift2_opening_time: formData?.shift2_start,
         shift2_closing_time: formData?.shift2_close,
-        street: formData?.street,
-        city: formData?.city,
-        state: formData?.state,
+        street: formData?.street?.trim(),
+        city: formData?.city?.trim(),
+        state: formData?.state?.trim(),
         pincode: formData.pincode,
-        note_from_vendor: formData?.note || "",
+        note_from_vendor: formData?.note?.trim()  || "",
         categories_available: selectedCuisineIds,
         banner_url: uploadedBannerUrl,
         video_url: uploadedVideoUrl,
@@ -489,17 +493,17 @@ const formRef = useRef();
             // const { data: { user: currentUser } } = await supabase.auth.getUser();
         
             const newState = {
-              vendor_name: formData?.vendor_name,
-              shop_name: formData?.shop_name,
+              vendor_name: formData?.vendor_name?.trim(),
+              shop_name: formData?.shop_name?.trim(),
               shift1_start: formData?.shift1_start,
               shift1_close: formData?.shift1_close,
               shift2_start: formData?.shift2_start,
               shift2_close: formData?.shift2_close,
-              street: formData?.street,
-              city: formData?.city,
-              state: formData?.state,
+              street: formData?.street?.trim(),
+              city: formData?.city?.trim(),
+              state: formData?.state?.trim(),
               pincode: formData.pincode,
-              note: formData?.note || '',
+              note: formData?.note?.trim() || '',
               cuisines: selectedCuisineIds,
               banner: uploadedBannerUrl,
               video: uploadedVideoUrl,
@@ -579,6 +583,9 @@ const formRef = useRef();
     selectedAddress,
     fetchedAddress,
   });
+
+  const showGrayLook =
+  loading || !isValid || !isChanged; // Or !isDirty if you're using that
 
   return (
     <div className=" flex justify-center items-start ">
@@ -1129,27 +1136,27 @@ const formRef = useRef();
       </div>
       <div className="max-w-2xl md:bottom-17 w-full bottom-13 fixed md:px-4 px-2">
           <button
-                onClick={() => {
-                  if (formRef.current) formRef.current.requestSubmit(); // ✅ triggers native submit
-                }}
-                disabled={loading}
-                title={
-                  loading
-                    ? "Saving..."
-                    : isFormIncomplete
-                    ? "Please fill all required fields"
-                    : !isChanged
-                    ? "No changes made"
-                    : ""
-                }
-                className={` md:mb-5 h-11 font-bold mb-8 px-4 w-full py-2 rounded-lg text-white ${
-                  loading || isFormIncomplete || !isChanged
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : " bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
-                }`}
-              >
-                {loading ? "Saving..." : "Save Profile"}
-              </button>
+          onClick={() => {
+    if (formRef.current) formRef.current.requestSubmit();
+  }}
+  title={
+    loading
+      ? "Saving..."
+      : !isValid
+      ? "Please fix validation errors"
+      : !isChanged
+      ? "No changes made"
+      : ""
+  }
+  className={`md:mb-5 h-11 font-bold mb-8 px-4 w-full py-2 rounded-lg text-white transition-all duration-200 ${
+    showGrayLook
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-gradient-to-br from-orange via-yellow to-orange hover:scale-95 cursor-pointer"
+  }`}
+>
+  {loading ? "Saving..." : "Save Profile"}
+</button>
+
           </div>
     </div>
   );

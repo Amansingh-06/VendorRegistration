@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import BottomNav from "../components/Footer";
 import Header from "../components/Header";
 import { BsCalendarDate } from "react-icons/bs";
@@ -21,6 +21,7 @@ import { addVendorReply } from "../utils/VendorReply";
 import { Rating } from "@mui/material";
 
 const VendorEarnings = () => {
+  const firstLoadRef = useRef(true)
   const { vendorProfile, selectedVendorId } = useAuth();
   const vendorId = vendorProfile?.v_id || selectedVendorId;
   const [ratings, setRatings] = useState([]);
@@ -77,15 +78,24 @@ const VendorEarnings = () => {
     }
   }, [page, vendorId, vendorProfile?.status]);
 
-  const loadMoreRatings = async () => {
-    const { success, data } = await fetchVendorRatings(vendorId, page, LIMIT);
-    if (success) {
-      setRatings((prev) => [...prev, ...data]);
-      if (data.length < LIMIT) {
-        setHasMore(false); // no more data
-      }
+const loadMoreRatings = async () => {
+  console.log("📥 Fetching ratings for vendorId:", vendorId, "Page:", page);
+  const { success, data } = await fetchVendorRatings(vendorId, page, LIMIT);
+
+  if (success && Array.isArray(data)) {
+    // ✅ Remove duplicate reviews using r_id
+    setRatings((prev) => {
+      const newIds = new Set(prev.map((r) => r.r_id));
+      const filtered = data.filter((r) => !newIds.has(r.r_id));
+      return [...prev, ...filtered];
+    });
+
+    if (data.length < LIMIT) {
+      setHasMore(false);
     }
-  };
+  }
+};
+
 
   // console.log(ratings," ratings");
 
