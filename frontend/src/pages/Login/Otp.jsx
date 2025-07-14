@@ -31,6 +31,7 @@ import {
 } from "../../utils/auth";
 import ResendButton from "../../components/ResendButton";
 import Loader from "../../components/Loader";
+import { set } from "date-fns";
 
 const Otp = () => {
     const navigate = useNavigate();
@@ -210,8 +211,13 @@ const Otp = () => {
 
     // Runs the OTP autofill function when OTP is sent
     useEffect(() => {
-        attemptOtpAutofill();
-    }, []);
+        if (phone) {
+            const timer = setTimeout(() => {
+                attemptOtpAutofill();
+            }, 500);
+            return () => clearTimeout(timer); // Cleanup the timer
+       }
+    }, [phone]);
 
     return (
         <div className="flex flex-col lg:flex-row min-h-screen h-full bg-white ">
