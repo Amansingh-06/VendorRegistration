@@ -211,7 +211,7 @@ const Navbar = () => {
       
 
             {/* Content */}
-            <div className="relative z-10 bg-orange-500/50">
+            <div className="relative z-10 ">
   {!scrolled && (
     <div className="flex items-center justify-between px-2 lg:px-4 py-2  max-w-9xl mx-auto transition-all duration-1000">
       

@@ -21,7 +21,7 @@ const OrderPage = () => {
   const [loading, setLoading] = useState(false);
   // const { vendorProfile } = useAuth();
 
-  const { orders, setOrders, refreshOrders,hasMore, loadMore,isLoading } = useVendorOrders(
+  const { orders,hasMore, loadMore,isLoading } = useVendorOrders(
     vendorId,
     active
   );
@@ -124,54 +124,10 @@ const OrderPage = () => {
   );
   
 
-  const hasRefreshedOnce = useRef(false);
 
-  useEffect(() => {
-    if (
-      vendorId &&
-      vendorProfile?.status === "verified" &&
-      !hasRefreshedOnce.current
-    ) {
-      console.log("✅ Running initial refreshOrders");
-      refreshOrders();
-      hasRefreshedOnce.current = true;
-    }
-  }, [vendorId, vendorProfile?.status, refreshOrders]);
   
 
-  // Refresh full list after status update (instead of updating just one order)
-  const handleRefreshOrder = async (orderId) => {
-    const { data, error } = await supabase
-      .from("orders")
-      .select(
-        `
-                status,
-                order_id,
-                order_item (
-                    item_id,
-                    item (
-                        *
-                    )
-                )
-            `
-      )
-      .eq("order_id", orderId)
-      .single();
-
-    if (!error) {
-      // ✅ TEMPORARY: If status is "accepted", assign dummy dp_id
-      if (data.status === "accepted") {
-        await supabase
-          .from("orders")
-          .update({ dp_id: "43c6aeba-34e0-4ad7-9caf-9eb661b2e043" }) // 🟢 koi bhi ID yahan daal sakte ho
-          .eq("order_id", orderId);
-      }
-
-      await refreshOrders(); // ✅ Always refresh orders after update
-    } else {
-      console.error("Failed to refresh order:", error);
-    }
-  };
+ 
 
   console.log("Current Orders:", orders.map(o => o.order_id));
 
@@ -257,7 +213,6 @@ const OrderPage = () => {
                         >
                           <OrderCard
                             order={order}
-                            onStatusUpdate={handleRefreshOrder}
                           />
                         </div>
                       );
