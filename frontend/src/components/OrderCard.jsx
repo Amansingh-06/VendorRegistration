@@ -8,6 +8,7 @@ import { capitalize } from '../utils/vendorConfig';
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
+import { SUPABASE_TABLES } from '../utils/constants/Table&column';
 
 
 const OrderCard = ({ order, onStatusUpdate }) => {
@@ -60,7 +61,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                   adminId = user.id;
                 }
               }
-            const { error } = await supabase.from("admin_logs").insert([
+            const { error } = await supabase.from(SUPABASE_TABLES.ADMIN_LOGS).insert([
               {
                 // log_id: crypto.randomUUID(), // Only if not defaulted
                 admin_id: adminId,

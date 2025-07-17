@@ -1,6 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { fetchVendorOrders } from '../utils/fetchVendorOrders';
+import {
+  ORDER_KEYS,
+  ORDER_CHANNELS,
+  ORDER_PAGINATION,
+  ORDER_SELECT_QUERY
+} from '../utils/constants/orderConfig';
+import { SUPABASE_TABLES } from '../utils/constants/Table&column'; // adjust as needed
 
 const isStatusMatch = (a, b) => (a || '').toLowerCase() === (b || '').toLowerCase();
 
@@ -8,7 +15,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 10;
+  const LIMIT = ORDER_PAGINATION.LIMIT;
 
   const initialLoaded = useRef(false);
 
@@ -31,8 +38,8 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
         setOrders((prev) => {
           if (reset) return data;
 
-          const existingIds = new Set(prev.map((o) => o.order_id));
-          const newOrders = data.filter((o) => !existingIds.has(o.order_id));
+          const existingIds = new Set(prev.map((o) => o[ORDER_KEYS.ORDER_ID]));
+          const newOrders = data.filter((o) => !existingIds.has(o[ORDER_KEYS.ORDER_ID]));
           return [...prev, ...newOrders];
         });
 
@@ -57,66 +64,38 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
     loadOrders(true);
   }, [vendorId, activeStatus, loadOrders]);
 
-  // ✅ Realtime listener (no sorting)
   useEffect(() => {
     if (!vendorId) return;
 
     const channel = supabase
-      .channel('realtime-orders')
+      .channel(ORDER_CHANNELS.VENDOR_ORDERS)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'orders',
-          filter: `v_id=eq.${vendorId}`,
+          table: SUPABASE_TABLES.ORDERS,
+          filter: `${ORDER_KEYS.VENDOR_ID}=eq.${vendorId}`,
         },
         async (payload) => {
           const updatedOrder = payload.new;
-          const eventType = payload.eventType;
 
           const matchesFilter =
             activeStatus.toLowerCase() === 'all' ||
-            isStatusMatch(updatedOrder?.status, activeStatus);
+            isStatusMatch(updatedOrder?.[ORDER_KEYS.STATUS], activeStatus);
 
-          // ✅ Re-fetch full order with foreign keys
           const { data: fullOrder, error } = await supabase
-            .from('orders')
-            .select(`
-              *,
-              order_item:order_item!order_item_order_id_fkey (
-                order_item_id,
-                quantity,
-                final_price,
-                items:item_id (
-                  item_id,
-                  item_name,
-                  item_price,
-                  img_url,
-                  veg
-                )
-              ),
-              transaction:t_id (
-                t_id,
-                amount,
-                payment_id,
-                status,
-                payement_mehtod,
-                created_at
-              ),
-              user:u_id (
-                user_id,
-                name,
-                dp_url
-              )
-            `)
-            .eq('order_id', updatedOrder.order_id)
+            .from(SUPABASE_TABLES.ORDERS)
+            .select(ORDER_SELECT_QUERY)
+            .eq(ORDER_KEYS.ORDER_ID, updatedOrder[ORDER_KEYS.ORDER_ID])
             .single();
 
           if (error || !fullOrder) return;
 
           setOrders((prev) => {
-            const index = prev.findIndex((o) => o.order_id === fullOrder.order_id);
+            const index = prev.findIndex(
+              (o) => o[ORDER_KEYS.ORDER_ID] === fullOrder[ORDER_KEYS.ORDER_ID]
+            );
 
             if (!matchesFilter) {
               if (index !== -1) {
@@ -128,12 +107,10 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
             }
 
             if (index !== -1) {
-              // ✅ Update existing
               const updated = [...prev];
               updated[index] = fullOrder;
               return updated;
             } else {
-              // ✅ Add to top (no sorting)
               return [fullOrder, ...prev];
             }
           });

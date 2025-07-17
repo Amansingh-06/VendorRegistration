@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from './authContext';
-import { ITEM_FIELDS, SELECTED_COLUMN, SUPABASE_TABLES } from '../utils/vendorConfig';
+import { ITEM_FIELDS, SELECTED_COLUMN, SUPABASE_TABLES } from '../utils/constants/Table&column';
 
 const FetchContext = createContext();
 

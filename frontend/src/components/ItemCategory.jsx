@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { supabase } from "../utils/supabaseClient";
-import { SUPABASE_TABLES } from "../utils/vendorConfig";
+import { SUPABASE_TABLES } from '../utils/constants/Table&column';
 
 export default function ItemCategory({
     name = "category",

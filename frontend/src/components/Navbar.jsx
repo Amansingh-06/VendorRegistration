@@ -8,11 +8,12 @@ import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
-import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
-import { SUPABASE_TABLES } from '../utils/vendorConfig';
+import { truncateLetters } from '../utils/vendorConfig';
+import { SUPABASE_TABLES } from '../utils/constants/Table&column';
 import { ToggleSwitch } from './ToggleSwitch';
 import { BiMessage } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
+import { VENDOR_FIELD } from '../utils/constants/Table&column';
 // import { MessageCircle } from 'lucide-react';
 
 // Assuming you have a ToggleSwitch component
@@ -105,9 +106,9 @@ const Navbar = () => {
       if (!vendorProfile?.v_id) return;
     
       const { error } = await supabase
-        .from(SUPABASE_TABLES?.VENDOR)
+        .from(SUPABASE_TABLES.VENDOR)
         .update({ available: checked })
-        .eq(VENDOR_DATA_KEYS?.V_ID, vendorProfile?.v_id);
+        .eq(VENDOR_FIELD?.V_ID, vendorProfile?.v_id);
     
       if (error) {
         console.error("Failed to update vendor availability:", error.message);
@@ -129,7 +130,7 @@ const Navbar = () => {
           adminId = user.id;
         }
         
-        await supabase.from("admin_logs").insert([
+        await supabase.from(SUPABASE_TABLES.ADMIN_LOGS).insert([
           {
             admin_id: adminId,
             title: "Vendor Availability Updated",

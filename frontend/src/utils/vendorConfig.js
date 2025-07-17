@@ -54,9 +54,7 @@ export const VENDOR_DATA_KEYS = {
     U_ID:'u_id'
 };
 
-export const SELECTED_COLUMN = {
-    ALL:"*"
-}
+
 
 export const ORDER_STATUS = {
     PENDING: "pending",
@@ -184,6 +182,12 @@ export const ITEM_FIELDS = {
 };
 
 // ITEM Default values
+
+  export const SELECTED_COLUMN = {
+    ALL:"*"
+}
+
+
 export const ITEM_DEFAULTS = {
     NAME: "NA",
     CUISINE: "NA",
@@ -194,4 +198,3 @@ export const ITEM_DEFAULTS = {
     CATEGORY: "NA",
     IMG_URL: "NA",
 };
-  

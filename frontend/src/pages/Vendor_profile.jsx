@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 import TimeClockFull from "../components/ClockPopup";
 import dayjs from "dayjs";
 import moment from "moment";
-import { BUCKET_NAMES, SUPABASE_TABLES } from "../utils/vendorConfig";
+import { BUCKET_NAMES, SUPABASE_TABLES } from "../utils/constants/Table&column";
 import ItemCategory from "../components/ItemCategory";
 import { getCurrentLocation } from "../utils/address";
 import { MdAddLocationAlt, MdGpsFixed } from "react-icons/md";
