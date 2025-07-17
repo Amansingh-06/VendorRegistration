@@ -122,17 +122,7 @@ const OrderPage = () => {
     },
     [hasMore, loadMore, isLoading]
   );
-  
 
-
-  
-
- 
-
-  console.log("Current Orders:", orders.map(o => o.order_id));
-
-
-  console.log("Vendor verified", vendorProfile?.status);
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">
       {/* <div className="w-full max-w-2xl flex flex-col gap-4"> */}

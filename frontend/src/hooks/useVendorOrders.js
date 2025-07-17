@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { fetchVendorOrders } from '../utils/fetchVendorOrders';
 
-// 🔧 Helper for case-insensitive status match
 const isStatusMatch = (a, b) => (a || '').toLowerCase() === (b || '').toLowerCase();
 
 export const useVendorOrders = (vendorId, activeStatus = 'All') => {
@@ -12,47 +11,32 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
   const LIMIT = 10;
 
   const initialLoaded = useRef(false);
-  const debounceRef = useRef(null);
 
   const loadOrders = useCallback(
     async (reset = false) => {
-      if (!vendorId || isLoading) {
-        console.log('🛑 Skipped loadOrders because:', { vendorId, isLoading });
-        return;
-      }
+      if (!vendorId || isLoading) return;
 
       const offset = reset ? 0 : orders.length;
-      console.log(`📦 Fetching orders... (reset=${reset}) offset=${offset}`);
-
       setIsLoading(true);
 
       const { success, data } = await fetchVendorOrders(
         vendorId,
         activeStatus,
         LIMIT,
-        offset
+        offset,
+        false
       );
 
-      console.log('✅ API response:', { dataLength: data?.length, data });
-
       if (success) {
-        if (reset) {
-          console.log('🔁 Resetting orders...');
-          setOrders(data);
-        } else {
-          console.log('➕ Appending more orders with deduplication...');
-          setOrders((prev) => {
-            const existingIds = new Set(prev.map(o => o.order_id));
-            const newOrders = data.filter(o => !existingIds.has(o.order_id));
-            return [...prev, ...newOrders];
-          });
-        }
+        setOrders((prev) => {
+          if (reset) return data;
 
-        const more = data.length === LIMIT;
-        setHasMore(more);
-        console.log('📊 hasMore:', more);
-      } else {
-        console.log('❌ Error fetching orders');
+          const existingIds = new Set(prev.map((o) => o.order_id));
+          const newOrders = data.filter((o) => !existingIds.has(o.order_id));
+          return [...prev, ...newOrders];
+        });
+
+        setHasMore(data.length === LIMIT);
       }
 
       setIsLoading(false);
@@ -60,32 +44,24 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
     [vendorId, activeStatus, orders.length, isLoading]
   );
 
-  // ✅ Reset on vendor/status change
   useEffect(() => {
     if (!vendorId) return;
-
-    console.log('🔄 useEffect: vendor/status changed, resetting...');
     initialLoaded.current = false;
     setOrders([]);
     setHasMore(true);
   }, [vendorId, activeStatus]);
 
-  // ✅ Load once after reset
   useEffect(() => {
     if (!vendorId || initialLoaded.current) return;
-
-    console.log('🚀 Initial loadOrders triggered');
     initialLoaded.current = true;
     loadOrders(true);
   }, [vendorId, activeStatus, loadOrders]);
 
-  // ✅ Realtime updates with debounce
+  // ✅ Realtime listener (no sorting)
   useEffect(() => {
     if (!vendorId) return;
 
-    console.log('📡 Subscribed to realtime-orders');
-
-    const ordersChannel = supabase
+    const channel = supabase
       .channel('realtime-orders')
       .on(
         'postgres_changes',
@@ -95,34 +71,80 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
           table: 'orders',
           filter: `v_id=eq.${vendorId}`,
         },
-        (payload) => {
-          console.log('🔔 Realtime update triggered:', payload);
-          clearTimeout(debounceRef.current);
+        async (payload) => {
+          const updatedOrder = payload.new;
+          const eventType = payload.eventType;
 
-          debounceRef.current = setTimeout(() => {
-            const updatedOrder = payload.new;
+          const matchesFilter =
+            activeStatus.toLowerCase() === 'all' ||
+            isStatusMatch(updatedOrder?.status, activeStatus);
 
-            const matchesFilter =
-              activeStatus.toLowerCase() === 'all' ||
-              isStatusMatch(updatedOrder?.status, activeStatus);
+          // ✅ Re-fetch full order with foreign keys
+          const { data: fullOrder, error } = await supabase
+            .from('orders')
+            .select(`
+              *,
+              order_item:order_item!order_item_order_id_fkey (
+                order_item_id,
+                quantity,
+                final_price,
+                items:item_id (
+                  item_id,
+                  item_name,
+                  item_price,
+                  img_url,
+                  veg
+                )
+              ),
+              transaction:t_id (
+                t_id,
+                amount,
+                payment_id,
+                status,
+                payement_mehtod,
+                created_at
+              ),
+              user:u_id (
+                user_id,
+                name,
+                dp_url
+              )
+            `)
+            .eq('order_id', updatedOrder.order_id)
+            .single();
 
-            if (matchesFilter) {
-              console.log('🔃 Reloading due to realtime update...');
-              loadOrders(true);
-            } else {
-              console.log('🟡 Update ignored due to unmatched status.');
+          if (error || !fullOrder) return;
+
+          setOrders((prev) => {
+            const index = prev.findIndex((o) => o.order_id === fullOrder.order_id);
+
+            if (!matchesFilter) {
+              if (index !== -1) {
+                const updated = [...prev];
+                updated.splice(index, 1);
+                return updated;
+              }
+              return prev;
             }
-          }, 300);
+
+            if (index !== -1) {
+              // ✅ Update existing
+              const updated = [...prev];
+              updated[index] = fullOrder;
+              return updated;
+            } else {
+              // ✅ Add to top (no sorting)
+              return [fullOrder, ...prev];
+            }
+          });
         }
       )
       .subscribe();
 
     return () => {
-      console.log('🧹 Unsubscribed from realtime-orders');
-      clearTimeout(debounceRef.current);
-      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(channel);
     };
-  }, [vendorId, activeStatus, loadOrders]);
+  }, [vendorId]);
 
   return {
     orders,

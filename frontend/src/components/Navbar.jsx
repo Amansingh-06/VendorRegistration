@@ -12,6 +12,7 @@ import { truncateLetters, VENDOR_DATA_KEYS } from '../utils/vendorConfig';
 import { SUPABASE_TABLES } from '../utils/vendorConfig';
 import { ToggleSwitch } from './ToggleSwitch';
 import { BiMessage } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 // import { MessageCircle } from 'lucide-react';
 
 // Assuming you have a ToggleSwitch component
@@ -88,7 +89,8 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [switchOn, setSwitchOn] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const { session, vendorProfile, selectedVendorId } = useAuth();
+  const { session, vendorProfile, selectedVendorId } = useAuth();
+  const Navigate =useNavigate()
 
     // ✅ Initialize switch based on vendorProfile.available
     useEffect(() => {
@@ -275,7 +277,7 @@ const Navbar = () => {
 
       {/* 📩 Right Section - Icons */}
       <div className="flex items-center gap-2 lg:gap-4">
-        <button  className="flex  justify-center items-center gap-1 p-1 lg:p-2 text-orange bg-gray-100 hover:bg-white/90 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30 cursor-pointer">
+        <button onClick={() => Navigate('/support')}  className="flex  justify-center items-center gap-1 p-1 lg:p-2 text-orange bg-gray-100 hover:bg-white/90 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group backdrop-blur-sm border border-white/10 hover:border-white/30 cursor-pointer">
         <BiMessage className="text-sm lg:text-2xl mt-[1px]" />
           <div className="text-xs lg:text-base font-medium">Help</div>
 

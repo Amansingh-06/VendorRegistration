@@ -20,6 +20,7 @@ import AdminProtectedRoute from './Routes/AdminAccess';
 import ScrollToTop from './components/ScrolltoTop';
 import Layout from './pages/Layout';
 import BackRedirect from './components/BackRedirectToHome';
+import Support from './pages/Contactsupport';
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -85,6 +86,8 @@ function App() {
             <Route path="/profile" element={<VendorProfile />} />
             <Route path="/address" element={<Address />} />
             <Route path="/edit_address" element={<EditAddress />} />
+            <Route path="/support" element={<Support/>} />
+            
           </Route>
         </Routes>
 
