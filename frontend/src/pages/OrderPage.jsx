@@ -175,16 +175,16 @@ const OrderPage = () => {
     }
   };
 
-  const handlePaste = (e) => {
-    const pasted = e.clipboardData.getData("text").trim();
-    if (!/^\d+$/.test(pasted)) {
-      e.preventDefault();
-      seterror("Only numeric Order ID is allowed");
-    } else {
-      setSearchQuery(pasted); // trimmed numeric paste allowed
-      seterror("");
-    }
-  };
+  // const handlePaste = (e) => {
+  //   const pasted = e.clipboardData.getData("text").trim();
+  //   if (!/^\d+$/.test(pasted)) {
+  //     e.preventDefault();
+  //     seterror("Only numeric Order ID is allowed");
+  //   } else {
+  //     setSearchQuery(pasted); // trimmed numeric paste allowed
+  //     seterror("");
+  //   }
+  // };
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">
       {/* <div className="w-full max-w-2xl flex flex-col gap-4"> */}
@@ -267,7 +267,6 @@ const OrderPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onPaste={handlePaste}
                 placeholder="Search by Order ID "
                 className="w-full pl-10 pr-28 py-2 bg-white text-sm border  border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-green-300"
               />
