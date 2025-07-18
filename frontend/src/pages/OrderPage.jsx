@@ -291,7 +291,19 @@ const handleKeyDown = (e) => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
+                    onKeyDown={handleKeyDown}
+                    onBeforeInput={(e) => {
+    if (e.inputType === "insertText" && /\s/.test(e.data)) {
+      const cursorPos = e.target.selectionStart;
+      const valueLen = e.target.value.length;
+      const isMiddle = cursorPos !== 0 && cursorPos !== valueLen;
+
+      if (isMiddle) {
+        e.preventDefault();
+        seterror("Space is not allowed in the middle");
+      }
+    }
+  }}
                 placeholder="Search by Order ID "
                 className="w-full pl-10 pr-28 py-2 bg-white text-sm border  border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-green-300"
               />
