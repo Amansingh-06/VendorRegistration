@@ -1,16 +1,17 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '../utils/supabaseClient';
-import { fetchVendorOrders } from '../utils/fetchVendorOrders';
+import { useEffect, useState, useCallback, useRef } from "react";
+import { supabase } from "../utils/supabaseClient";
+import { fetchVendorOrders } from "../utils/fetchVendorOrders";
 import {
   ORDER_KEYS,
   ORDER_CHANNELS,
   ORDER_PAGINATION,
-} from '../utils/constants/orderConfig';
-import { SUPABASE_TABLES } from '../utils/constants/Table&column';
+} from "../utils/constants/orderConfig";
+import { SUPABASE_TABLES } from "../utils/constants/Table&column";
 
-const isStatusMatch = (a, b) => (a || '').toLowerCase() === (b || '').toLowerCase();
+const isStatusMatch = (a, b) =>
+  (a || "").toLowerCase() === (b || "").toLowerCase();
 
-export const useVendorOrders = (vendorId, activeStatus = 'All') => {
+export const useVendorOrders = (vendorId, activeStatus = "All") => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -38,7 +39,9 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
           if (reset) return data;
 
           const existingIds = new Set(prev.map((o) => o[ORDER_KEYS.ORDER_ID]));
-          const newOrders = data.filter((o) => !existingIds.has(o[ORDER_KEYS.ORDER_ID]));
+          const newOrders = data.filter(
+            (o) => !existingIds.has(o[ORDER_KEYS.ORDER_ID])
+          );
           return [...prev, ...newOrders];
         });
 
@@ -69,10 +72,10 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
     const channel = supabase
       .channel(ORDER_CHANNELS.VENDOR_ORDERS)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
+          event: "*",
+          schema: "public",
           table: SUPABASE_TABLES.ORDERS,
           filter: `${ORDER_KEYS.VENDOR_ID}=eq.${vendorId}`,
         },
@@ -80,7 +83,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
           const updatedOrder = payload.new;
 
           const matchesFilter =
-            activeStatus.toLowerCase() === 'all' ||
+            activeStatus.toLowerCase() === "all" ||
             isStatusMatch(updatedOrder?.[ORDER_KEYS.STATUS], activeStatus);
 
           const { success, data } = await fetchVendorOrders(

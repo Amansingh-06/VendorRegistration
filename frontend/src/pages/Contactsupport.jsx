@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { connectSupport } from '../utils/support'
+import { connectSupport } from "../utils/support";
 import BottomNav from "../components/Footer";
 
 const Support = () => {
@@ -26,15 +26,17 @@ const Support = () => {
       <button
         onClick={handleSupport}
         disabled={loading}
-        className={`${!loading? 'button-gradientBG':'bg-orange/30'} cursor-pointer text-white w-48 flex items-center justify-center py-2 rounded`}
+        className={`${
+          !loading ? "button-gradientBG" : "bg-orange/30"
+        } cursor-pointer text-white w-48 flex items-center justify-center py-2 rounded`}
       >
         {loading ? (
           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         ) : (
           "Connect on WhatsApp"
         )}
-          </button>
-          <BottomNav/>
+      </button>
+      <BottomNav />
     </div>
   );
 };

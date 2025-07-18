@@ -37,7 +37,10 @@ import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import TransparentLoader from "../components/Transparentloader";
 import { FiMapPin } from "react-icons/fi";
-import { getChangedFields, generateChangeDescription } from "../utils/AdminLogs";
+import {
+  getChangedFields,
+  generateChangeDescription,
+} from "../utils/AdminLogs";
 // import { isValid } from "date-fns";
 
 export default function VendorProfile() {
@@ -100,8 +103,7 @@ export default function VendorProfile() {
     setValue,
     formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
-// logic
-
+  // logic
 
   const navigate = useNavigate();
 
@@ -193,7 +195,8 @@ export default function VendorProfile() {
           city: data.city || "",
           state: data.state || "",
           pincode: data.pincode || "",
-          note: data.note_from_vendor === 'NA' ? '' : data.note_from_vendor || '',
+          note:
+            data.note_from_vendor === "NA" ? "" : data.note_from_vendor || "",
         });
         if (data.latitude && data.longitude) {
           const loc = {
@@ -233,7 +236,8 @@ export default function VendorProfile() {
           city: data.city || "",
           state: data.state || "",
           pincode: data.pincode || "",
-          note: data.note_from_vendor === 'NA' ? '' : data.note_from_vendor || '',
+          note:
+            data.note_from_vendor === "NA" ? "" : data.note_from_vendor || "",
           cuisines: data.categories_available || [],
           banner: data.banner_url || "",
           video: data.video_url || "",
@@ -323,56 +327,94 @@ export default function VendorProfile() {
     if (time.includes("AM") || time.includes("PM")) {
       return moment(time, "hh:mm A").format("HH:mm");
     }
-  
+
     // It may be HH:mm:ss or HH:mm
     const parts = time.split(":");
     return `${parts[0].padStart(2, "0")}:${parts[1]}`;
   };
-  
-  
-  
+
   const isChanged = useMemo(() => {
     if (!initialFormState) return false;
-  
+
     const areCuisinesSame = (() => {
       const a = [...selectedCuisineIds].map(String).sort();
       const b = [...(initialFormState.cuisines || [])].map(String).sort();
-  
+
       if (a.length !== b.length) return false;
       return a.every((val, index) => val === b[index]);
     })();
-  
+
     const isLocationSame =
       selectedAddress?.lat != null && selectedAddress?.long != null
         ? String(initialFormState?.latitude) === String(selectedAddress?.lat) &&
           String(initialFormState?.longitude) === String(selectedAddress?.long)
         : true;
-  
+
     // 👉 Console logs for debugging
-    console.log("🚩 [Check] vendor_name", watchedFields.vendor_name, initialFormState.vendor_name);
-    console.log("🚩 [Check] shop_name", watchedFields.shop_name, initialFormState.shop_name);
-    console.log("🚩 [Check] shift1_start", normalizeTime(watchedFields.shift1_start), normalizeTime(initialFormState.shift1_start));
-    console.log("🚩 [Check] shift1_close", normalizeTime(watchedFields.shift1_close), normalizeTime(initialFormState.shift1_close));
-    console.log("🚩 [Check] shift2_start", normalizeTime(watchedFields.shift2_start), normalizeTime(initialFormState.shift2_start));
-    console.log("🚩 [Check] shift2_close", normalizeTime(watchedFields.shift2_close), normalizeTime(initialFormState.shift2_close));
-    console.log("🚩 [Check] street", watchedFields.street, initialFormState.street);
+    console.log(
+      "🚩 [Check] vendor_name",
+      watchedFields.vendor_name,
+      initialFormState.vendor_name
+    );
+    console.log(
+      "🚩 [Check] shop_name",
+      watchedFields.shop_name,
+      initialFormState.shop_name
+    );
+    console.log(
+      "🚩 [Check] shift1_start",
+      normalizeTime(watchedFields.shift1_start),
+      normalizeTime(initialFormState.shift1_start)
+    );
+    console.log(
+      "🚩 [Check] shift1_close",
+      normalizeTime(watchedFields.shift1_close),
+      normalizeTime(initialFormState.shift1_close)
+    );
+    console.log(
+      "🚩 [Check] shift2_start",
+      normalizeTime(watchedFields.shift2_start),
+      normalizeTime(initialFormState.shift2_start)
+    );
+    console.log(
+      "🚩 [Check] shift2_close",
+      normalizeTime(watchedFields.shift2_close),
+      normalizeTime(initialFormState.shift2_close)
+    );
+    console.log(
+      "🚩 [Check] street",
+      watchedFields.street,
+      initialFormState.street
+    );
     console.log("🚩 [Check] city", watchedFields.city, initialFormState.city);
-    console.log("🚩 [Check] state", watchedFields.state, initialFormState.state);
-    console.log("🚩 [Check] pincode", watchedFields.pincode, initialFormState.pincode);
+    console.log(
+      "🚩 [Check] state",
+      watchedFields.state,
+      initialFormState.state
+    );
+    console.log(
+      "🚩 [Check] pincode",
+      watchedFields.pincode,
+      initialFormState.pincode
+    );
     console.log("🚩 [Check] note", watchedFields.note, initialFormState.note);
     console.log("🚩 [Check] bannerUrl", bannerUrl, initialFormState.banner);
     console.log("🚩 [Check] videoUrl", videoUrl, initialFormState.video);
     console.log("🚩 [Check] qrUrl", qrUrl, initialFormState.qr);
     console.log("🚩 [Check] areCuisinesSame", areCuisinesSame);
     console.log("🚩 [Check] isLocationSame", isLocationSame);
-  
+
     return (
       watchedFields.vendor_name !== initialFormState.vendor_name ||
       watchedFields.shop_name !== initialFormState.shop_name ||
-      normalizeTime(watchedFields.shift1_start) !== normalizeTime(initialFormState.shift1_start) ||
-      normalizeTime(watchedFields.shift1_close) !== normalizeTime(initialFormState.shift1_close) ||
-      normalizeTime(watchedFields.shift2_start) !== normalizeTime(initialFormState.shift2_start) ||
-      normalizeTime(watchedFields.shift2_close) !== normalizeTime(initialFormState.shift2_close) ||
+      normalizeTime(watchedFields.shift1_start) !==
+        normalizeTime(initialFormState.shift1_start) ||
+      normalizeTime(watchedFields.shift1_close) !==
+        normalizeTime(initialFormState.shift1_close) ||
+      normalizeTime(watchedFields.shift2_start) !==
+        normalizeTime(initialFormState.shift2_start) ||
+      normalizeTime(watchedFields.shift2_close) !==
+        normalizeTime(initialFormState.shift2_close) ||
       watchedFields.street !== initialFormState.street ||
       watchedFields.city !== initialFormState.city ||
       watchedFields.state !== initialFormState.state ||
@@ -393,7 +435,6 @@ export default function VendorProfile() {
     selectedAddress,
     initialFormState,
   ]);
-  
 
   const uploadFile = async (file, bucketName) => {
     if (!file) return null;
@@ -427,22 +468,22 @@ export default function VendorProfile() {
   };
 
   console.log(cuisines, "cusine");
-const formRef = useRef();
+  const formRef = useRef();
   const onSubmit = async (formData) => {
     if (!session?.user?.id) return alert("User not logged in");
-  
+
     if (isFormIncomplete) {
       toast.error("Please fill all required fields.");
       return;
     }
-  
+
     if (!isChanged) {
       toast.error("No changes made.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const [uploadedVideoUrl, uploadedBannerUrl, uploadedQrUrl] =
         await Promise.all([
@@ -450,11 +491,11 @@ const formRef = useRef();
           bannerFile ? uploadFile(bannerFile, BUCKET_NAMES.BANNER) : bannerUrl,
           qrFile ? uploadFile(qrFile, BUCKET_NAMES.PAYMENT) : qrUrl,
         ]);
-  
+
       if (bannerFile) setBannerUrl(uploadedBannerUrl);
       if (videoFile) setVideoUrl(uploadedVideoUrl);
       if (qrFile) setQrUrl(uploadedQrUrl);
-  
+
       const insertData = {
         v_name: formData?.vendor_name?.trim(),
         shop_name: formData?.shop_name?.trim(),
@@ -466,79 +507,79 @@ const formRef = useRef();
         city: formData?.city?.trim(),
         state: formData?.state?.trim(),
         pincode: formData.pincode,
-        note_from_vendor: formData?.note?.trim()  || "",
+        note_from_vendor: formData?.note?.trim() || "",
         categories_available: selectedCuisineIds,
         banner_url: uploadedBannerUrl,
         video_url: uploadedVideoUrl,
         payment_url: uploadedQrUrl,
-        latitude: selectedAddress?.lat ,
-        longitude: selectedAddress?.long ,
+        latitude: selectedAddress?.lat,
+        longitude: selectedAddress?.long,
         v_id: vendorId,
         u_id: vendorProfile?.u_id,
         updated_at: new Date(),
       };
-  
+
       const { error } = await supabase
         .from(SUPABASE_TABLES.VENDOR)
         .upsert(insertData, { onConflict: "v_id" });
-  
-        if (error) {
-          console.error("❌ Supabase error:", error);
-          toast.error("Update Fail");
-        } else {
-          toast.success("Profile Updated Successfully");
-        
-          // ✅ 1. Log only if admin is acting on another vendor
-          if (selectedVendorId) {
-            // const { data: { user: currentUser } } = await supabase.auth.getUser();
-        
-            const newState = {
-              vendor_name: formData?.vendor_name?.trim(),
-              shop_name: formData?.shop_name?.trim(),
-              shift1_start: formData?.shift1_start,
-              shift1_close: formData?.shift1_close,
-              shift2_start: formData?.shift2_start,
-              shift2_close: formData?.shift2_close,
-              street: formData?.street?.trim(),
-              city: formData?.city?.trim(),
-              state: formData?.state?.trim(),
-              pincode: formData.pincode,
-              note: formData?.note?.trim() || '',
-              cuisines: selectedCuisineIds,
-              banner: uploadedBannerUrl,
-              video: uploadedVideoUrl,
-              qr: uploadedQrUrl,
-              longitude: selectedAddress?.long,
-              latitude: selectedAddress?.lat,
-            };
-        
-            const changes = getChangedFields(initialFormState, newState);
-            const description = `Vendor profile updated for vendor ID ${selectedVendorId}. Changes: ${generateChangeDescription(changes)}`;
-        
-            await supabase.from("admin_logs").insert([
-              {
-                // log_id: crypto.randomUUID(),
-                admin_id: session?.user?.id,
-                title: "Vendor Profile Updated",
-                description,
-                timestamp: new Date(),
-              },
-            ]);
-          }
-        
-          // ✅ 2. Refresh the vendor profile after update
-          await refreshVendorProfile();
-          navigate("/home");
+
+      if (error) {
+        console.error("❌ Supabase error:", error);
+        toast.error("Update Fail");
+      } else {
+        toast.success("Profile Updated Successfully");
+
+        // ✅ 1. Log only if admin is acting on another vendor
+        if (selectedVendorId) {
+          // const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+          const newState = {
+            vendor_name: formData?.vendor_name?.trim(),
+            shop_name: formData?.shop_name?.trim(),
+            shift1_start: formData?.shift1_start,
+            shift1_close: formData?.shift1_close,
+            shift2_start: formData?.shift2_start,
+            shift2_close: formData?.shift2_close,
+            street: formData?.street?.trim(),
+            city: formData?.city?.trim(),
+            state: formData?.state?.trim(),
+            pincode: formData.pincode,
+            note: formData?.note?.trim() || "",
+            cuisines: selectedCuisineIds,
+            banner: uploadedBannerUrl,
+            video: uploadedVideoUrl,
+            qr: uploadedQrUrl,
+            longitude: selectedAddress?.long,
+            latitude: selectedAddress?.lat,
+          };
+
+          const changes = getChangedFields(initialFormState, newState);
+          const description = `Vendor profile updated for vendor ID ${selectedVendorId}. Changes: ${generateChangeDescription(
+            changes
+          )}`;
+
+          await supabase.from("admin_logs").insert([
+            {
+              // log_id: crypto.randomUUID(),
+              admin_id: session?.user?.id,
+              title: "Vendor Profile Updated",
+              description,
+              timestamp: new Date(),
+            },
+          ]);
         }
-        
+
+        // ✅ 2. Refresh the vendor profile after update
+        await refreshVendorProfile();
+        navigate("/home");
+      }
     } catch (err) {
       console.error("Upload failed:", err.message);
       toast.error("Upload failed");
     }
-  
+
     setLoading(false);
   };
-  
 
   const bannerInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -584,580 +625,574 @@ const formRef = useRef();
     fetchedAddress,
   });
 
-  const showGrayLook =
-  loading || !isValid || !isChanged; // Or !isDirty if you're using that
+  const showGrayLook = loading || !isValid || !isChanged; // Or !isDirty if you're using that
 
   return (
     <div className=" flex justify-center items-start ">
       {loading && <Loader />}
 
       {/* <div className="max-w-2xl shadow-lg rounded-2xl "> */}
-        {/* <Header title="Profile" /> */}
-        
+      {/* <Header title="Profile" /> */}
+
       {/* </div> */}
       <div className="  max-w-2xl w-full md:mt-8 mt-3  pt-10  shadow-lg bg-gray-100  md:p-6 p-2">
-          <div className="max-w-2xl mx-auto  ">
-            <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-24 ">
-              {/* Basic Info */}
-              <section className="flex flex-col rounded-lg bg-white border-gray-300 border-1 shadow-lg px-4 py-6">
-                <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
-                  Basic Information
-                </h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {/* Vendor Name */}
+        <div className="max-w-2xl mx-auto  ">
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6 mb-24 "
+          >
+            {/* Basic Info */}
+            <section className="flex flex-col rounded-lg bg-white border-gray-300 border-1 shadow-lg px-4 py-6">
+              <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
+                Basic Information
+              </h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Vendor Name */}
+                <div>
+                  <label
+                    className="block mb-1 font-medium text-sm text-gray-500"
+                    htmlFor="vendor_name"
+                  >
+                    Vendor Name
+                  </label>
+                  <input
+                    id="vendor_name"
+                    {...register("vendor_name", nameValidation)}
+                    placeholder="Vendor Name"
+                    className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
+                      errors.vendor_name ? "border-red-500" : "border-gray-300"
+                    }`}
+                    onKeyDown={nameKeyDownHandler}
+                    onInput={InputCleanup}
+                  />
+                  {errors.vendor_name && (
+                    <p className="text-red-500 text-sm">
+                      {errors.vendor_name.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Shop Name */}
+                <div>
+                  <label
+                    className="block mb-1 font-medium text-sm text-gray-500"
+                    htmlFor="shop_name"
+                  >
+                    Shop Name
+                  </label>
+                  <input
+                    id="shop_name"
+                    {...register("shop_name", shopNameValidation)}
+                    placeholder="Shop Name"
+                    className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
+                      errors.shop_name ? "border-red-500" : "border-gray-300"
+                    }`}
+                    onKeyDown={shopNameKeyDownHandler}
+                    onInput={InputCleanup}
+                  />
+                  {errors.shop_name && (
+                    <p className="text-red-500 text-sm">
+                      {errors.shop_name.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Shift 1 Start */}
+                <div className="grid md:grid-cols-2 gap-6  md:col-span-2">
+                  {/* Shift 1 Start */}
                   <div>
                     <label
                       className="block mb-1 font-medium text-sm text-gray-500"
-                      htmlFor="vendor_name"
+                      htmlFor="shift1_start"
                     >
-                      Vendor Name
+                      Shift 1 Start
                     </label>
                     <input
-                      id="vendor_name"
-                      {...register("vendor_name", nameValidation)}
-                      placeholder="Vendor Name"
+                      type="text"
+                      id="shift1_start"
+                      value={
+                        startTime1
+                          ? moment(startTime1, "HH:mm:ss").format("hh:mm A")
+                          : ""
+                      }
+                      onClick={() => setStartView1(true)}
+                      readOnly
+                      {...register("shift1_start", {
+                        required: "Shift 1 Start is required",
+                      })}
                       className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
-                        errors.vendor_name
+                        errors.shift1_start
                           ? "border-red-500"
                           : "border-gray-300"
                       }`}
-                      onKeyDown={nameKeyDownHandler}
-                      onInput={InputCleanup}
                     />
-                    {errors.vendor_name && (
+                    {errors.shift1_start && (
                       <p className="text-red-500 text-sm">
-                        {errors.vendor_name.message}
+                        {errors.shift1_start.message}
                       </p>
                     )}
+                    <TimeClockFull
+                      isOpen={startView1}
+                      onClose={() => setStartView1(false)}
+                      onTimeSelect={(time) => {
+                        console.log(time);
+                        // time yaha moment object ho sakta hai ya string, usko moment me parse karo
+                        // backend ke liye HH:mm:ss format me bhejo
+                        const backendTime = time.format("HH:mm:ss");
+
+                        setStartTime1(backendTime); // state me backend format me save karo (string)
+                        setValue("shift1_start", backendTime); // form ke liye backend format (string)
+                        setStartView1(false);
+                      }}
+                      initialTime={startTime1}
+                    />
                   </div>
 
-                  {/* Shop Name */}
+                  {/* Shift 1 Close */}
                   <div>
                     <label
-                      className="block mb-1 font-medium text-sm text-gray-500"
-                      htmlFor="shop_name"
+                      className="block mb-1 font-medium text-gray-500 text-sm"
+                      htmlFor="shift1_close"
                     >
-                      Shop Name
+                      Shift 1 Close
                     </label>
                     <input
-                      id="shop_name"
-                      {...register("shop_name", shopNameValidation)}
-                      placeholder="Shop Name"
+                      type="text"
+                      id="shift1_close"
+                      value={
+                        endTime1
+                          ? moment(endTime1, "HH:mm:ss").format("hh:mm A")
+                          : ""
+                      }
+                      onClick={() => setEndView1(true)}
+                      readOnly
+                      {...register("shift1_close", {
+                        required: "Shift 1 Close is required",
+                      })}
                       className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
-                        errors.shop_name ? "border-red-500" : "border-gray-300"
+                        errors.shift1_close
+                          ? "border-red-500"
+                          : "border-gray-300"
                       }`}
-                      onKeyDown={shopNameKeyDownHandler}
-                      onInput={InputCleanup}
                     />
-                    {errors.shop_name && (
+                    {errors.shift1_close && (
                       <p className="text-red-500 text-sm">
-                        {errors.shop_name.message}
+                        {errors.shift1_close.message}
                       </p>
                     )}
-                  </div>
-
-                  {/* Shift 1 Start */}
-                  <div className="grid md:grid-cols-2 gap-6  md:col-span-2">
-                    {/* Shift 1 Start */}
-                    <div>
-                      <label
-                        className="block mb-1 font-medium text-sm text-gray-500"
-                        htmlFor="shift1_start"
-                      >
-                        Shift 1 Start
-                      </label>
-                      <input
-                        type="text"
-                        id="shift1_start"
-                        value={
-                          startTime1
-                            ? moment(startTime1, "HH:mm:ss").format("hh:mm A")
-                            : ""
-                        }
-                        onClick={() => setStartView1(true)}
-                        readOnly
-                        {...register("shift1_start", {
-                          required: "Shift 1 Start is required",
-                        })}
-                        className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
-                          errors.shift1_start
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      {errors.shift1_start && (
-                        <p className="text-red-500 text-sm">
-                          {errors.shift1_start.message}
-                        </p>
-                      )}
-                      <TimeClockFull
-                        isOpen={startView1}
-                        onClose={() => setStartView1(false)}
-                        onTimeSelect={(time) => {
-                          console.log(time);
-                          // time yaha moment object ho sakta hai ya string, usko moment me parse karo
-                          // backend ke liye HH:mm:ss format me bhejo
-                          const backendTime = time.format("HH:mm:ss");
-
-                          setStartTime1(backendTime); // state me backend format me save karo (string)
-                          setValue("shift1_start", backendTime); // form ke liye backend format (string)
-                          setStartView1(false);
-                      }}
-                                            initialTime={startTime1}
-
-                      />
-                    </div>
-
-                    {/* Shift 1 Close */}
-                    <div>
-                      <label
-                        className="block mb-1 font-medium text-gray-500 text-sm"
-                        htmlFor="shift1_close"
-                      >
-                        Shift 1 Close
-                      </label>
-                      <input
-                        type="text"
-                        id="shift1_close"
-                        value={
-                          endTime1
-                            ? moment(endTime1, "HH:mm:ss").format("hh:mm A")
-                            : ""
-                        }
-                        onClick={() => setEndView1(true)}
-                        readOnly
-                        {...register("shift1_close", {
-                          required: "Shift 1 Close is required",
-                        })}
-                        className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
-                          errors.shift1_close
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      {errors.shift1_close && (
-                        <p className="text-red-500 text-sm">
-                          {errors.shift1_close.message}
-                        </p>
-                      )}
-                      <TimeClockFull
-                        isOpen={endView1}
-                        onClose={() => setEndView1(false)}
-                        onTimeSelect={(time) => {
-                          const backendTime = time.format("HH:mm:ss");
-                          setEndTime1(backendTime);
-                          setEndView1(false);
-                          setValue("shift1_close", backendTime);
+                    <TimeClockFull
+                      isOpen={endView1}
+                      onClose={() => setEndView1(false)}
+                      onTimeSelect={(time) => {
+                        const backendTime = time.format("HH:mm:ss");
+                        setEndTime1(backendTime);
+                        setEndView1(false);
+                        setValue("shift1_close", backendTime);
                       }}
                       initialTime={endTime1}
-                      
-                      />
-                    </div>
+                    />
+                  </div>
 
-                    {/* Shift 2 Start (Optional) */}
-                    <div>
-                      <label
-                        className="block mb-1 font-medium text-gray-500 text-sm"
-                        htmlFor="shift2_start"
-                      >
-                        Shift 2 Start (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        id="shift2_start"
-                        placeholder="e.g. 03:30 pm"
-
-                        value={
-                          startTime2 && startTime2 !== "00:00:00"
-                            ? moment(startTime2, "HH:mm:ss").format("hh:mm A")
-                            : ""
-                        }
-                        onClick={() => setStartView2(true)}
-                        readOnly
-                        {...register("shift2_start")}
-                        className="input-field w-full text-gray-800 rounded-lg border p-2 border-gray-300"
-                      />
-                      <TimeClockFull
-                        isOpen={startView2}
-                        onClose={() => setStartView2(false)}
-                        onTimeSelect={(time) => {
-                          const backendTime = time.format("HH:mm:ss");
-                          setStartTime2(backendTime);
-                          setStartView2(false);
-                          setValue("shift2_start", backendTime);
+                  {/* Shift 2 Start (Optional) */}
+                  <div>
+                    <label
+                      className="block mb-1 font-medium text-gray-500 text-sm"
+                      htmlFor="shift2_start"
+                    >
+                      Shift 2 Start (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="shift2_start"
+                      placeholder="e.g. 03:30 pm"
+                      value={
+                        startTime2 && startTime2 !== "00:00:00"
+                          ? moment(startTime2, "HH:mm:ss").format("hh:mm A")
+                          : ""
+                      }
+                      onClick={() => setStartView2(true)}
+                      readOnly
+                      {...register("shift2_start")}
+                      className="input-field w-full text-gray-800 rounded-lg border p-2 border-gray-300"
+                    />
+                    <TimeClockFull
+                      isOpen={startView2}
+                      onClose={() => setStartView2(false)}
+                      onTimeSelect={(time) => {
+                        const backendTime = time.format("HH:mm:ss");
+                        setStartTime2(backendTime);
+                        setStartView2(false);
+                        setValue("shift2_start", backendTime);
                       }}
                       initialTime={startTime2}
-                      />
-                    </div>
+                    />
+                  </div>
 
-                    {/* Shift 2 Close (Optional) */}
-                    <div>
-                      <label
-                        className="block mb-1 font-medium text-gray-500 text-sm"
-                        htmlFor="shift2_close"
-                      >
-                        Shift 2 Close (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        id="shift2_close"
-                        placeholder="e.g. 03:30 pm"
-                        value={
-                          endTime2 && endTime2 !== "00:00:00"
-                            ? moment(endTime2, "HH:mm:ss").format("hh:mm A")
-                            : ""
-                        }
-                        onClick={() => setEndView2(true)}
-                        readOnly
-                        {...register("shift2_close")}
-                        className="input-field w-full rounded-lg text-gray-800 border p-2 border-gray-300"
-                      />
-                      <TimeClockFull
-                        isOpen={endView2}
-                        onClose={() => setEndView2(false)}
-                        onTimeSelect={(time) => {
-                          const backendTime = time.format("HH:mm:ss");
-                          setEndTime2(backendTime);
-                          setEndView2(false);
-                          setValue("shift2_close", backendTime);
+                  {/* Shift 2 Close (Optional) */}
+                  <div>
+                    <label
+                      className="block mb-1 font-medium text-gray-500 text-sm"
+                      htmlFor="shift2_close"
+                    >
+                      Shift 2 Close (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="shift2_close"
+                      placeholder="e.g. 03:30 pm"
+                      value={
+                        endTime2 && endTime2 !== "00:00:00"
+                          ? moment(endTime2, "HH:mm:ss").format("hh:mm A")
+                          : ""
+                      }
+                      onClick={() => setEndView2(true)}
+                      readOnly
+                      {...register("shift2_close")}
+                      className="input-field w-full rounded-lg text-gray-800 border p-2 border-gray-300"
+                    />
+                    <TimeClockFull
+                      isOpen={endView2}
+                      onClose={() => setEndView2(false)}
+                      onTimeSelect={(time) => {
+                        const backendTime = time.format("HH:mm:ss");
+                        setEndTime2(backendTime);
+                        setEndView2(false);
+                        setValue("shift2_close", backendTime);
                       }}
                       initialTime={endTime2}
-                      />
-                    </div>
+                    />
                   </div>
                 </div>
-              </section>
+              </div>
+            </section>
 
-              {/* Media Uploads */}
+            {/* Media Uploads */}
             <section className="flex flex-col rounded-lg  bg-white  border-gray-300 border-1 shadow-lg px-4 py-6">
-            <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
-                  Proofs
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                  {/* Banner Image */}
-                  <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-1 p-4">
-                    {bannerUrl ? (
-                      <img
-                        src={bannerUrl}
-                        alt="banner"
-                        className="h-32 w-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
-                        No banner selected
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg"
-                      onClick={() => bannerInputRef.current.click()}
-                    >
-                      Select Banner
-                    </button>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={bannerInputRef}
-                      className="hidden"
-                      onChange={(e) =>
-                        handleFileChange(e, setBannerUrl, setBannerFile)
-                      }
+              <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
+                Proofs
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                {/* Banner Image */}
+                <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-1 p-4">
+                  {bannerUrl ? (
+                    <img
+                      src={bannerUrl}
+                      alt="banner"
+                      className="h-32 w-full object-cover rounded-lg"
                     />
-                  </div>
-
-                  {/* Video */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
-                    {videoUrl ? (
-                      <video
-                        src={videoUrl}
-                        controls
-                        className="h-32 w-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
-                        No video selected
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg "
-                      onClick={() => videoInputRef.current.click()}
-                    >
-                      Select Video
-                    </button>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      ref={videoInputRef}
-                      className="hidden"
-                      onChange={(e) =>
-                        handleFileChange(e, setVideoUrl, setVideoFile)
-                      }
-                    />
-                  </div>
-
-                  {/* QR Code */}
-                  <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
-                    {qrUrl ? (
-                      <img
-                        src={qrUrl}
-                        alt="QR code"
-                        className="h-32 w-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
-                        No QR selected
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange rounded-[8px] text-white "
-                      onClick={() => qrInputRef.current.click()}
-                    >
-                      Select QR
-                    </button>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={qrInputRef}
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, setQrUrl, setQrFile)}
-                    />
-                  </div>
+                  ) : (
+                    <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                      No banner selected
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg"
+                    onClick={() => bannerInputRef.current.click()}
+                  >
+                    Select Banner
+                  </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={bannerInputRef}
+                    className="hidden"
+                    onChange={(e) =>
+                      handleFileChange(e, setBannerUrl, setBannerFile)
+                    }
+                  />
                 </div>
-              </section>
 
-              {/* Address Section */}
-              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
-                <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
-                  Address
-                </h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {/* Street with validation */}
-                  <div>
-                    <label
-                      className="block mb-1 text-sm font-medium text-gray-500"
-                      htmlFor="street"
-                    >
-                      House No. / Plot No. / Street Name
-                    </label>
-                    <input
-                      id="street"
-                      {...register("street", streetValidation)}
-                      placeholder="House No. / Plot No. / Street Name"
-                      className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
-                        errors.street ? "border-red-500" : "border-gray-300"
-                      }`}
-                      onKeyDown={streetKeyDown}
-                      onInput={streetInputClean}
+                {/* Video */}
+                <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
+                  {videoUrl ? (
+                    <video
+                      src={videoUrl}
+                      controls
+                      className="h-32 w-full object-cover rounded-lg"
                     />
-                    {errors.street && (
-                      <p className="text-red-500 text-sm">
-                        {errors.street.message}
-                      </p>
-                    )}
-                  </div>
+                  ) : (
+                    <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                      No video selected
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white rounded-lg "
+                    onClick={() => videoInputRef.current.click()}
+                  >
+                    Select Video
+                  </button>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    ref={videoInputRef}
+                    className="hidden"
+                    onChange={(e) =>
+                      handleFileChange(e, setVideoUrl, setVideoFile)
+                    }
+                  />
+                </div>
 
-                  {/* City */}
-                  <div>
-                    <label
-                      className="block mb-1 text-sm font-medium text-gray-500"
-                      htmlFor="city"
-                    >
-                      City
-                    </label>
-                    <input
-                      id="city"
-                      {...register("city", cityStateValidation)}
-                      placeholder="City"
-                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
-                        errors.city ? "border-red-500" : "border-gray-300"
-                      }`}
+                {/* QR Code */}
+                <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
+                  {qrUrl ? (
+                    <img
+                      src={qrUrl}
+                      alt="QR code"
+                      className="h-32 w-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                      No QR selected
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    className="mt-3 w-full px-3 py-1 bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange rounded-[8px] text-white "
+                    onClick={() => qrInputRef.current.click()}
+                  >
+                    Select QR
+                  </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={qrInputRef}
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, setQrUrl, setQrFile)}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* Address Section */}
+            <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-6">
+              <h2 className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4">
+                Address
+              </h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Street with validation */}
+                <div>
+                  <label
+                    className="block mb-1 text-sm font-medium text-gray-500"
+                    htmlFor="street"
+                  >
+                    House No. / Plot No. / Street Name
+                  </label>
+                  <input
+                    id="street"
+                    {...register("street", streetValidation)}
+                    placeholder="House No. / Plot No. / Street Name"
+                    className={`input-field w-full text-gray-800 rounded-lg border p-2 ${
+                      errors.street ? "border-red-500" : "border-gray-300"
+                    }`}
+                    onKeyDown={streetKeyDown}
+                    onInput={streetInputClean}
+                  />
+                  {errors.street && (
+                    <p className="text-red-500 text-sm">
+                      {errors.street.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* City */}
+                <div>
+                  <label
+                    className="block mb-1 text-sm font-medium text-gray-500"
+                    htmlFor="city"
+                  >
+                    City
+                  </label>
+                  <input
+                    id="city"
+                    {...register("city", cityStateValidation)}
+                    placeholder="City"
+                    className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
+                      errors.city ? "border-red-500" : "border-gray-300"
+                    }`}
                     onInput={cityStateInputClean}
                     onKeyDown={cityStateKeyDown}
-                    />
-                    {errors.city && (
-                      <p className="text-red-500 text-sm">
-                        {errors.city.message}
-                      </p>
-                    )}
-                  </div>
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-sm">
+                      {errors.city.message}
+                    </p>
+                  )}
+                </div>
 
-                  {/* State */}
-                  <div>
-                    <label
-                      className="block mb-1 text-sm font-medium text-gray-500"
-                      htmlFor="state"
-                    >
-                      State
-                    </label>
-                    <input
-                      id="state"
-                      {...register("state", cityStateValidation)}
-                      placeholder="State"
-                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
-                        errors.state ? "border-red-500" : "border-gray-300"
-                      }`}
-                      onInput={cityStateInputClean}
-                      onKeyDown={cityStateKeyDown}
-                    />
-                    {errors.state && (
-                      <p className="text-red-500 text-sm">
-                        {errors.state.message}
-                      </p>
-                    )}
-                  </div>
+                {/* State */}
+                <div>
+                  <label
+                    className="block mb-1 text-sm font-medium text-gray-500"
+                    htmlFor="state"
+                  >
+                    State
+                  </label>
+                  <input
+                    id="state"
+                    {...register("state", cityStateValidation)}
+                    placeholder="State"
+                    className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
+                      errors.state ? "border-red-500" : "border-gray-300"
+                    }`}
+                    onInput={cityStateInputClean}
+                    onKeyDown={cityStateKeyDown}
+                  />
+                  {errors.state && (
+                    <p className="text-red-500 text-sm">
+                      {errors.state.message}
+                    </p>
+                  )}
+                </div>
 
-                  {/* Pincode */}
-                  <div>
-                    <label
-                      className="block mb-1 text-sm font-medium text-gray-500"
-                      htmlFor="pincode"
-                    >
-                      Pincode
-                    </label>
-                    <input
-                      id="pincode"
-                      {...register("pincode", pincodeValidation)}
-                      placeholder="Pincode"
-                      className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
-                        errors.pincode ? "border-red-500" : "border-gray-300"
-                      }`}
-                      onInput={pincodeInputClean}
-                      onKeyDown={pincodeKeyDown}
-                    />
-                    {errors.pincode && (
-                      <p className="text-red-500 text-sm">
-                        {errors.pincode.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2  ">
-                    <button
-                      type="button"
-                      onClick={() => setShowPopup(true)}
-                      disabled={waitloading}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white transition 
+                {/* Pincode */}
+                <div>
+                  <label
+                    className="block mb-1 text-sm font-medium text-gray-500"
+                    htmlFor="pincode"
+                  >
+                    Pincode
+                  </label>
+                  <input
+                    id="pincode"
+                    {...register("pincode", pincodeValidation)}
+                    placeholder="Pincode"
+                    className={`input-field w-full rounded-lg text-gray-800 border p-2 ${
+                      errors.pincode ? "border-red-500" : "border-gray-300"
+                    }`}
+                    onInput={pincodeInputClean}
+                    onKeyDown={pincodeKeyDown}
+                  />
+                  {errors.pincode && (
+                    <p className="text-red-500 text-sm">
+                      {errors.pincode.message}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2  ">
+                  <button
+                    type="button"
+                    onClick={() => setShowPopup(true)}
+                    disabled={waitloading}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white transition 
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
                                             : "bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
                                         }`}
-                    >
-                      <MdAddLocationAlt className="text-lg" />
-                      {isLocationUpdated
-  ? "Updated Location"
-  : selectedAddress?.lat && selectedAddress?.long
-  ? "Update Location"
-  : "Current Location"}
+                  >
+                    <MdAddLocationAlt className="text-lg" />
+                    {isLocationUpdated
+                      ? "Updated Location"
+                      : selectedAddress?.lat && selectedAddress?.long
+                      ? "Update Location"
+                      : "Current Location"}
+                  </button>
 
-                    </button>
-
-                    {/* Popup */}
-                    {showPopup && (
-                      <LocationPopup
-                        setLocation={(loc) => {
-                          setLocation(loc);
+                  {/* Popup */}
+                  {showPopup && (
+                    <LocationPopup
+                      setLocation={(loc) => {
+                        setLocation(loc);
                         setSelectedAddress(loc);
                         setIsLocationUpdated(true);
-                          // setShowPopup(false);
-                        }}
-                        show={showPopup}
-                        onClose={() => setShowPopup(false)}
-                      />
-                    )}
+                        // setShowPopup(false);
+                      }}
+                      show={showPopup}
+                      onClose={() => setShowPopup(false)}
+                    />
+                  )}
 
-                    <button
-                      type="button"
-                      onClick={handleCurrentLocation}
-                      disabled={waitloading}
-                      className={`flex justify-center items-center rounded-full p-2 
+                  <button
+                    type="button"
+                    onClick={handleCurrentLocation}
+                    disabled={waitloading}
+                    className={`flex justify-center items-center rounded-full p-2 
                                         ${
                                           waitloading
                                             ? "bg-gray-400 cursor-not-allowed"
                                             : "bg-gradient-to-br from-orange via-yellow  active:scale-95 to-orange cursor-pointer"
                                         }`}
-                    >
-                      <MdGpsFixed className="text-2xl text-white" />
-                    </button>
-                  </div>
-                  {selectedAddress || location || fetchedAddress ? (
-                    <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
-                      <FiMapPin className="inline-block mr-1" />
-                      {selectedAddress?.area && selectedAddress?.city
+                  >
+                    <MdGpsFixed className="text-2xl text-white" />
+                  </button>
+                </div>
+                {selectedAddress || location || fetchedAddress ? (
+                  <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
+                    <FiMapPin className="inline-block mr-1" />
+                    {
+                      selectedAddress?.area && selectedAddress?.city
                         ? `${selectedAddress.area}, ${selectedAddress.city}`
                         : selectedAddress?.landmark
-                        // ? selectedAddress.landmark
-                        // : fetchedAddress?.area && fetchedAddress?.city
-                        // ? `${fetchedAddress.area}, ${fetchedAddress.city}`
+                      // ? selectedAddress.landmark
+                      // : fetchedAddress?.area && fetchedAddress?.city
+                      // ? `${fetchedAddress.area}, ${fetchedAddress.city}`
                       // : fetchedAddress?.landmark || "N/A"
                     }
-                    </p>
-                  ) : null}
-                </div>
-              </section>
+                  </p>
+                ) : null}
+              </div>
+            </section>
 
-              {/* Cuisines */}
-              <ItemCategory
-                value={selectedCuisineIds}
-                onChange={setSelectedCuisineIds}
-                error={
-                  !selectedCuisineIds.length
-                    ? "Please select at least one."
-                    : ""
-                }
+            {/* Cuisines */}
+            <ItemCategory
+              value={selectedCuisineIds}
+              onChange={setSelectedCuisineIds}
+              error={
+                !selectedCuisineIds.length ? "Please select at least one." : ""
+              }
+            />
+
+            {/* Additional Note */}
+            <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-4">
+              <label
+                className="block mb-1 font-medium text-gray uppercase"
+                htmlFor="note"
+              >
+                Additional Note (Optional)
+              </label>
+              <textarea
+                id="note"
+                {...register("note")}
+                rows={3}
+                placeholder="Write anything you want here..."
+                className="w-full rounded-lg text-gray-800 border border-gray-300 p-2"
               />
+            </section>
 
-              {/* Additional Note */}
-              <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-4">
-                <label
-                  className="block mb-1 font-medium text-gray uppercase"
-                  htmlFor="note"
-                >
-                  Additional Note (Optional)
-                </label>
-                <textarea
-                  id="note"
-                  {...register("note")}
-                  rows={3}
-                  placeholder="Write anything you want here..."
-                  className="w-full rounded-lg text-gray-800 border border-gray-300 p-2"
-                />
-              </section>
-
-              {/* Submit */}
-              
+            {/* Submit */}
           </form>
-          
-            {waitloading && <TransparentLoader/>}
+
+          {waitloading && <TransparentLoader />}
         </div>
-       
-          <BottomNav />
+
+        <BottomNav />
       </div>
       <div className="max-w-2xl md:bottom-17 w-full bottom-13 fixed md:px-4 px-2">
-          <button
+        <button
           onClick={() => {
-    if (formRef.current) formRef.current.requestSubmit();
-  }}
-  title={
-    loading
-      ? "Saving..."
-      : !isValid
-      ? "Please fix validation errors"
-      : !isChanged
-      ? "No changes made"
-      : ""
-  }
-  className={`md:mb-5 h-11 font-bold mb-8 px-4 w-full py-2 rounded-lg text-white transition-all duration-200 ${
-    showGrayLook
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-gradient-to-br from-orange via-yellow to-orange hover:scale-95 cursor-pointer"
-  }`}
->
-  {loading ? "Saving..." : "Save Profile"}
-</button>
-
-          </div>
+            if (formRef.current) formRef.current.requestSubmit();
+          }}
+          title={
+            loading
+              ? "Saving..."
+              : !isValid
+              ? "Please fix validation errors"
+              : !isChanged
+              ? "No changes made"
+              : ""
+          }
+          className={`md:mb-5 h-11 font-bold mb-8 px-4 w-full py-2 rounded-lg text-white transition-all duration-200 ${
+            showGrayLook
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-br from-orange via-yellow to-orange hover:scale-95 cursor-pointer"
+          }`}
+        >
+          {loading ? "Saving..." : "Save Profile"}
+        </button>
+      </div>
     </div>
   );
 }

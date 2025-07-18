@@ -9,10 +9,8 @@ import Otp from './pages/Login/Otp';
 import PrivateRoute from './Routes/ProtectedRoutes';
 import ProtectedGuestRoute from './Routes/ProtectedGuestRoutes';
 import VendorProfile from './pages/Vendor_profile';
-import EditAddress from './pages/Address/EditAddress';
-import Address from './pages/Address/Address';
-import LocationPopup from './components/LocationPopUP';
-import VendorRegistration from './components/VendorRegistration';
+// import EditAddress from './pages/Address/EditAddress';
+// import Address from './pages/Address/Address'
 import VendorEarnings from './pages/VendorEarning';
 import ManageItemsPage from './pages/Manage-item';
 import InstallPrompt from './components/InstallPrompt';
@@ -84,8 +82,8 @@ function App() {
             <Route path="/add-items" element={<AddEditItem />} />
             <Route path="/earning" element={<VendorEarnings />} />
             <Route path="/profile" element={<VendorProfile />} />
-            <Route path="/address" element={<Address />} />
-            <Route path="/edit_address" element={<EditAddress />} />
+            {/* <Route path="/address" element={<Address />} /> */}
+            {/* <Route path="/edit_address" element={<EditAddress />} /> */}
             <Route path="/support" element={<Support/>} />
             
           </Route>

@@ -1,13 +1,7 @@
 import React, { useState } from "react";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
-const OfferPopup = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  offerText,
-  setOfferText,
-}) => {
+const OfferPopup = ({ isOpen, onClose, onSubmit, offerText, setOfferText }) => {
   const [error, setError] = useState(""); // for inline errors
 
   if (!isOpen) return null;
@@ -78,9 +72,7 @@ const OfferPopup = ({
           }`}
         />
 
-        {error && (
-          <p className="text-red-500 text-sm mt-1">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
         <div className="flex justify-end gap-3 mt-4">
           <button

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function InputField({
   id,
@@ -7,21 +7,21 @@ function InputField({
   register,
   validation,
   error,
-  value,         // 👈 watch() value from parent
+  value, // 👈 watch() value from parent
   onKeyDown,
   onInput,
-  inputRef       // 👈 ref for scrolling
+  inputRef, // 👈 ref for scrolling
 }) {
   return (
     <div className="relative">
       {Icon && <Icon className="absolute left-3 top-4 text-black text-lg" />}
-      
+
       <input
         id={id}
         placeholder={placeholder}
         {...register(id, validation)}
         ref={(el) => {
-          register(id, validation).ref(el);   // for react-hook-form
+          register(id, validation).ref(el); // for react-hook-form
           if (inputRef) inputRef.current = el; // 👈 for scrollToRef
         }}
         onKeyDown={onKeyDown}
