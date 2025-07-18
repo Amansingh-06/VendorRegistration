@@ -170,20 +170,20 @@ const handleKeyDown = (e) => {
 
   const isNumberKey = /^[0-9]$/.test(e.key);
   const isAllowedKey = allowedKeys.includes(e.key);
+  const isSpaceKey = e.key === " " || e.code === "Space";
 
-  if (!isNumberKey && !isAllowedKey && e.key !== " ") {
+  if (!isNumberKey && !isAllowedKey && !isSpaceKey) {
     e.preventDefault();
     seterror("Only numeric Order ID is allowed");
     return;
   }
 
   // ❗ If user types space
-  if (e.key === " ") {
+  if (isSpaceKey) {
     const input = e.target;
     const cursorPosition = input.selectionStart;
     const inputLength = input.value.length;
 
-    // Block space if NOT at start (0) or end (inputLength)
     const isMiddle = cursorPosition !== 0 && cursorPosition !== inputLength;
 
     if (isMiddle) {
@@ -193,9 +193,9 @@ const handleKeyDown = (e) => {
     }
   }
 
-  // ✅ Clear error if valid
   seterror("");
 };
+
 
 
 
