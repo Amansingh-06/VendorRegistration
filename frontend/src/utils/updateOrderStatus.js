@@ -26,7 +26,6 @@ export const updateOrderStatus = async (orderId, newStatus) => {
         .eq("order_id", orderId);
 
     if (error) {
-        console.error("Error updating order status:", error);
         return { success: false, error };
     }
 

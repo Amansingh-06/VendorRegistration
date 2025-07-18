@@ -94,8 +94,7 @@ const Login = () => {
   }
 
   const onSubmit = async (data) => {
-    // console.log("Phone Number:", selectedCountryCode + data.phoneNumber);
-    // console.log('referral',referral);
+  
     const isFormValid = await trigger();
 
     if (!data?.phoneNumber || !data?.phoneNumber.trim()) {
@@ -115,14 +114,11 @@ const Login = () => {
     }
 
     const fullPhone = selectedCountryCode + data?.phoneNumber;
-    console.log("FullPhone");
     if (!isValidPhoneNumber(fullPhone)) {
-      // console.log("yaha aaya ?");
       toast.error("Not a valid phone number format");
       return;
     }
     const toastId = toast.loading("Sending OTP");
-    console.log(fullPhone, "fullPhone");
     try {
       setSendingOtp(true);
       const { data: userData, error } = await supabase
@@ -131,7 +127,6 @@ const Login = () => {
         .eq("mobile_number", fullPhone)
         .single();
 
-      // console.log(userData);
 
       const isUserRegistered = userData && !error;
 
@@ -139,7 +134,6 @@ const Login = () => {
         // toast.info("Number already registered! Please login instead.");
         setIsLogin(true);
       } else {
-        console.log(error);
         setIsLogin(false);
       }
 
@@ -148,7 +142,6 @@ const Login = () => {
       // Navigate to OTP page
       toast.success("OTP sent successfully!");
       setSendingOtp(false);
-      console.log("Is user registered (from vender_request):", isLogin);
 
       toast.dismiss(toastId);
       navigate("/otp", {
@@ -161,8 +154,7 @@ const Login = () => {
         },
       });
     } catch (error) {
-      // console.error("Error during OTP submission:", error);
-      // toast.error("An error occurred while sending the OTP. Please try again.");
+  
       toast.dismiss(toastId);
       handleAuthError(error);
       setSendingOtp(false);
@@ -327,10 +319,6 @@ const Login = () => {
           <FaArrowRight className="text-xl" />
         </button>
 
-        {/* Console log to debug */}
-        {console.log("sendingOtp:", sendingOtp, "isValid:", isValid)}
-
-        {/* Optional: Help Text */}
 
         <Terms />
       </form>

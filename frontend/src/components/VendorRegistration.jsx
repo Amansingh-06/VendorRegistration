@@ -122,7 +122,6 @@ function VendorRegistration() {
   const onSubmit = async (data) => {
     // const customValid = validateCustomFields();
     // if (!customValid) return;
-    console.log("✅ handleSubmit called with data:", data); // 👈 YEH CHECK HAI
 
     setLoading(true);
     const vendor_name = data[FORM_FIELDS?.NAME] || "unknown";
@@ -168,7 +167,6 @@ function VendorRegistration() {
         .insert(fullVendorData);
 
       if (error) {
-        console.error("Insert Error:", error.message);
         toast.error(MESSAGES.REGISTER_FAILED);
         return;
       }
@@ -202,7 +200,6 @@ function VendorRegistration() {
         toast.error(MESSAGES.SESSION_NOT_UPDATED);
       }
     } catch (err) {
-      console.error("Unexpected Error:", err);
       toast.error(MESSAGES.UNEXPECTED_ERROR);
     } finally {
       setLoading(false);
@@ -339,16 +336,13 @@ function VendorRegistration() {
       toast.dismiss(toastId);
 
       if (!success || locError) {
-        console.log("location returned", locError);
         return;
       }
 
       setLocationError(false);
-      console.log("✅ Current location fetched");
       setWaitLoading(false);
     } catch (err) {
       toast.dismiss(toastId);
-      console.error("❌ Location Error:", err);
     }
   };
 
@@ -370,12 +364,10 @@ function VendorRegistration() {
   };
   
   const scrollToRef = (ref) => {
-    console.log("📍 Trying to scroll to:", ref?.current); // 👈 Console added here
     if (ref?.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
       ref.current.focus?.();
     } else {
-      console.warn("❌ Ref not found for scrolling");
     }
   };
   
@@ -390,41 +382,28 @@ function VendorRegistration() {
   
       // Debug logs for every condition:
       if (!values.name?.trim()) {
-        console.log("❌ Missing: name");
         scrollToRef(refs.name);
       } else if (!values.shopName?.trim()) {
-        console.log("❌ Missing: shopName");
         scrollToRef(refs.shopName);
       } else if (!values.street?.trim()) {
-        console.log("❌ Missing: street");
         scrollToRef(refs.street);
       } else if (!values.city?.trim()) {
-        console.log("❌ Missing: city");
         scrollToRef(refs.city);
       } else if (!values.state?.trim()) {
-        console.log("❌ Missing: state");
         scrollToRef(refs.state);
       } else if (!values.pincode?.trim()) {
-        console.log("❌ Missing: pincode");
         scrollToRef(refs.pincode);
       } else if (!values.startTime1) {
-        console.log("❌ Missing: startTime1");
         scrollToRef(refs.startTime1);
       } else if (!values.endTime1) {
-        console.log("❌ Missing: endTime1");
         scrollToRef(refs.endTime1);
       } else if (!values.cuisines || values.cuisines.length === 0) {
-        console.log("❌ Missing: cuisines");
         scrollToRef(refs.cuisines);
       } else if (!paymentFile) {
-        console.log("❌ Missing: paymentFile (QR)");
         scrollToRef(refs.uploads);
       } else if (!bannerFile && !videoFile) {
-        console.log("❌ Missing: bannerFile or videoFile");
         scrollToRef(refs.uploads);
       } else if (!selectedAddress?.lat || !selectedAddress?.long) {
-        console.log("❌ Missing: location");
-        console.log("⛳ Location missing, scrolling to locationSection", refs.locationSection?.current);
         scrollToRef(refs.locationSection);
       }
   

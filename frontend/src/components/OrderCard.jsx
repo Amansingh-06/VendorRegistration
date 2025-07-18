@@ -10,6 +10,8 @@ import { useAuth } from "../context/authContext";
 import { supabase } from "../utils/supabaseClient";
 import { SUPABASE_TABLES } from "../utils/constants/Table&column";
 import { MdLocalShipping } from "react-icons/md";
+import { IoMdCall } from "react-icons/io";
+
 
 const OrderCard = ({ order, onStatusUpdate }) => {
   const [localStatus, setLocalStatus] = useState(order?.status);
@@ -71,7 +73,6 @@ const OrderCard = ({ order, onStatusUpdate }) => {
             error,
           } = await supabase.auth.getUser();
           if (error || !user) {
-            console.error("❌ Could not fetch current user:", error?.message);
             toast.error("Could not fetch admin user");
             return;
           } else {
@@ -91,7 +92,6 @@ const OrderCard = ({ order, onStatusUpdate }) => {
           ]);
 
         if (error) {
-          console.error("❌ Failed to log admin order update:", error.message);
         }
       }
     } else {
@@ -115,9 +115,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
   const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
   const final_amount = discounted_amount || 0;
 
-  {
-    console.log(order?.delivery_person, "dp");
-  }
+  
 
   return (
     <>
@@ -216,10 +214,10 @@ const OrderCard = ({ order, onStatusUpdate }) => {
           </div>
         </div>
 
-        {order?.delivery_person && (
+        {order?.delivery_person && order?.status !== "delivered" && (
           <div className=" bg-white w-full max-w-sm">
             {/* First Line: Image + Name */}
-            <div className="flex items-center ">
+            <div className="flex items-center gap-1 ">
               <p className="font-semibold text-gray-800 flex justify-center items-center gap-1">
                 {" "}
                 <MdLocalShipping /> Delivery By:
@@ -227,7 +225,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
               <img
                 src={order?.delivery_person?.photo_url || "/placeholder-dp.png"}
                 alt="DP"
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-6 h-6 rounded-full object-cover"
               />
               <p className="font-medium text-gray-800">
                 {order?.delivery_person?.name || "Delivery Partner"}
@@ -238,9 +236,9 @@ const OrderCard = ({ order, onStatusUpdate }) => {
             <div>
               <a
                 href={`tel:${order?.delivery_person?.mobile_no}`}
-                className="inline-flex items-center justify-center gap-2 bg-orange  text-white px-2 py-1 rounded-lg text-sm transition-all"
+                className="inline-flex items-center justify-center gap-1  text-blue mt-1  text-sm transition-all"
               >
-                📞 Call {order?.delivery_person?.mobile_no}
+                <span className="p-1 rounded-full shadow text-red"><IoMdCall/></span> {order?.delivery_person?.mobile_no}
               </a>
             </div>
           </div>
@@ -314,7 +312,6 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                   if (!otp || otp.length !== 6) return;
 
                   setSubmittingOtp(true);
-                  console.log(otp, "order?.otp");
                   if (parseInt(otp) !== parseInt(order?.dp_otp)) {
                     setSubmittingOtp(false);
                     toast.error("Invalid OTP. Please try again.");

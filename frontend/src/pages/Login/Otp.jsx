@@ -98,19 +98,15 @@ const Otp = () => {
   useEffect(() => {
     // on a hard reload or when user clicks Back/Forward, navType === "POP"
     // and in both cases location.state will be undefined
-    // console.log("navType",navType);
     if (navType === "POP" || !location?.state) {
       navigate("/", { replace: true });
     } else {
-      console.log(location?.state);
       setPhone(location?.state?.phone);
       setIsLogin(location?.state?.isLogin);
       setCountryCode(location?.state?.countryCode);
     }
-    console.log(isLogin, "isLogin");
   }, [navType, location?.state, navigate]);
   useEffect(() => {
-    console.log("✅ isLogin value set to:", isLogin);
   }, [isLogin]);
 
   const [authenticating, setAuthenticating] = useState(false);
@@ -128,10 +124,8 @@ const Otp = () => {
 
       if (!validateOtp(otp)) return;
 
-      console.log("Verifying OTP for:", phone, "with code:", otp);
 
       const otpData = await verifyOtp(phone, otp);
-      console.log("otpData", otpData);
 
       if (isLogin) {
         await handleLogin(phone, navigate);
@@ -154,15 +148,12 @@ const Otp = () => {
     }
   };
 
-  console.log("Phone received:", location?.state?.phone);
-  console.log("Send OTP to:", phone);
-  console.log("Verify OTP with:", otp);
+
 
   // Otp auto detection
   const attemptOtpAutofill = async () => {
     if ("OTPCredential" in window) {
       try {
-        console.log("Starting OTP detection...");
         // Listen the SMS and get the OTP
         const abortController = new AbortController();
         const timeout = setTimeout(() => abortController.abort(), 60000);
@@ -177,7 +168,6 @@ const Otp = () => {
         clearTimeout(timeout);
 
         if (content && content.code) {
-          console.log("OTP detected:", content?.code);
           setValue("otp", content?.code);
 
           setTimeout(() => {
@@ -185,22 +175,18 @@ const Otp = () => {
               '#otp-form button[type="submit"]'
             );
             if (submitButton) {
-              console.log("Focusing submit button");
               submitButton.focus();
             } else {
-              console.warn("Submit button not found");
             }
           }, 100);
           toast.success("OTP Filled Automatically");
         }
       } catch (error) {
         if (error.name !== "AbortError") {
-          console.error("OTP Autofill Error: ", error);
         }
       }
     } else {
       // toast.error("OTP Autofill not supported in this browser.");
-      console.warn("OTP Credential API not supported in this browser.");
     }
   };
 

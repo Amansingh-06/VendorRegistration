@@ -22,7 +22,6 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 if (fallback) {
                     setIsAllowed(false); // Vendor
                 } else {
-                    console.warn("⛔ No token and no fallback. Redirecting.");
                     navigate("/");
                 }
                 return;
@@ -35,16 +34,13 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
             });
 
             if (sessionError) {
-                console.error("❌ Failed to set session:", sessionError);
                 navigate("/");
                 return;
             }
 
             const { data: { user }, error: userError } = await supabase.auth.getUser();
-            console.log("user",user)
             if (!user || userError) {
                 
-                console.error("❌ Failed to fetch user:", userError?.message);
                 navigate("/");
                 return;
             }
@@ -56,7 +52,6 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 .single();
 
             if (error || !profile || profile.role !== "Admin") {
-                console.warn("⛔ Not an admin");
                 navigate("/");
                 return;
             }

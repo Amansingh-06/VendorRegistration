@@ -7,7 +7,6 @@ const BackRedirect = () => {
 
   useEffect(() => {
     const handlePopState = () => {
-      console.log("🔙 Back pressed, redirecting to /home");
       navigate("/home", { replace: true });
     };
 

@@ -78,7 +78,6 @@ const Navbar = () => {
       .eq(VENDOR_FIELD?.V_ID, vendorProfile?.v_id);
 
     if (error) {
-      console.error("Failed to update vendor availability:", error.message);
       return;
     }
 
@@ -94,7 +93,6 @@ const Navbar = () => {
           error,
         } = await supabase.auth.getUser();
         if (error || !user) {
-          console.error("❌ Could not fetch current user:", error?.message);
           return;
         }
         adminId = user.id;

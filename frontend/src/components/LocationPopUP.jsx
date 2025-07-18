@@ -44,9 +44,7 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
 
   const getAddressFromMarker = async (latitude, longitude) => {
     try {
-      console.log("uaha");
       const data = await getAddressFromLatLng(latitude, longitude);
-      console.log("yaha v");
       const address = data?.results[0].formatted_address;
       const areaName = data?.results[0].address_components.find(
         (component) =>
@@ -92,7 +90,6 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
   const ClickHandler = ({ setPosition }) => {
     useMapEvents({
       click(e) {
-        console.log(e);
         const { lat, lng } = e.latlng;
         setPosition([lat, lng]); // update marker position
         // getAddressFromLatLng(lat,lng);
@@ -119,7 +116,6 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
         },
         (err) => {
           // setErr(err); // if needed for showing message
-          console.log("err", err);
           // setLocationError(true); // optional flag
         },
         setSelectedAddress
@@ -130,17 +126,14 @@ const LocationPopup = ({ show, onClose, setLocation }) => {
       setLoading(false);
 
       if (!success || locError) {
-        console.error("Location Error:", locError);
         return;
       }
 
       // setLocationError(false);
-      console.log("✅ Current location fetched");
     } catch (err) {
       toast.dismiss(toastId);
       // setWaitLoading(false);
       setLoading(false);
-      console.error("❌ Location fetch failed:", err);
     }
   };
 

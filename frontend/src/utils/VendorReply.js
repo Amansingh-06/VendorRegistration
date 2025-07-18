@@ -7,7 +7,6 @@ export const addVendorReply = async (ratingId, replyText) => {
     .eq("r_id", ratingId);
 
   if (error) {
-    console.error("❌ Supabase error:", error);
     return { success: false, error };
   }
 

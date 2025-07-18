@@ -13,7 +13,6 @@ export const validateName = (name) => {
 };
 
 export const validateOtp = (otp) => {
-    console.log("otp",otp)
     if (!otp || otp.length !== 6) {
         toast.error("Please enter a valid 6-digit OTP!");
         return false;
@@ -22,17 +21,14 @@ export const validateOtp = (otp) => {
 };
 
 export const sendOtp = async (fullPhone) => {
-    console.log("Sending OTP to:", fullPhone);
 
     const { data, error: otpError } = await supabase.auth.signInWithOtp({
         phone: fullPhone,
     });
 
-    console.log("OTP send response data:", data);
-    console.log("OTP send response error:", otpError);
+  
 
     if (otpError) {
-        console.error("Error sending OTP:", otpError?.message || otpError);
         toast.error("Failed to send OTP. Please try again.");
         throw new Error("Couldn't send OTP. Retry in a moment.");
     }
@@ -62,8 +58,7 @@ export const handleLogin = async (phone, navigate) => {
         data: { isRegistered: true },
     });
 
-    // console.log("User updated:", data);
-    // console.log("isRegistered:", data?.user?.user_metadata?.isRegistered);
+    
     navigate("/home");
 };
 
@@ -93,8 +88,7 @@ export const handleSignupFlow = async (
             //   data: { isRegistered: true },
             // });
 
-            console.log("User updated:", data);
-            console.log("isRegistered in handlesignup:", data?.user?.user_metadata?.isRegistered);
+            
             navigate("/vendor-registration");
         }
     }
@@ -104,13 +98,11 @@ export const handleSignup = async (data, flag = false, navigate, setSession, set
     const v_id = uuidv4(); // Generate a unique vendor ID
 
     try {
-        console.log("data", data);
 
         const {
             data: { session },
         } = await supabase.auth.getSession();
 
-        console.log("session", session);
 
         // 👉 Set the session globally
         if (session) {
@@ -134,7 +126,6 @@ export const handleSignup = async (data, flag = false, navigate, setSession, set
         // ⛔️ insertError ka code missing tha — yeh fix karo ya hatao
         // Agar insert nahi karna to yeh error check hata do
         // if (insertError) {
-        //     console.log("Error in inserting into table", insertError);
         //     return false;
         // }
 
@@ -142,7 +133,6 @@ export const handleSignup = async (data, flag = false, navigate, setSession, set
 
         return true;
     } catch (error) {
-        console.log("Error in handleSignup", error);
         return false;
     }
 };
@@ -157,7 +147,6 @@ export const logout = async (setSession, setLoggingOut) => {
         // toast.success("Logged out");
     } catch (error) {
         toast.error("Error in logging out");
-        console.log(error);
     } finally {
         setLoggingOut(false);
     }
@@ -165,6 +154,5 @@ export const logout = async (setSession, setLoggingOut) => {
 
 
 export const handleAuthError = (error) => {
-    console.error("Authentication Error:", error);
     toast.error(error.message);
 };

@@ -52,9 +52,7 @@ const ProtectedGuestRoute = ({ children }) => {
         getUserData();
     }, [retryCount, setSession]);
 
-    console.log("session:", session);
-    console.log("isRegistered:", isRegistered);
-    console.log("isLoading:", isLoading);
+   
 
 
     if (isLoading || isRegistered === null) {

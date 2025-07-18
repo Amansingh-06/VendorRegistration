@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
             queryField = VENDOR_FIELD?.U_ID;
             value = session.user.id;
         }
-        console.log("selectedVendorId",selectedVendorId)
 
         if (queryField && value) {
             const { data, error } = await supabase
@@ -35,13 +34,10 @@ export const AuthProvider = ({ children }) => {
                 .single();
 
             if (error) {
-                console.error("❌ Error fetching vendor profile:", error.message);
             } else {
-                console.log("✅ Vendor Profile:", data);
                 setVendorProfile(data);
             }
         } else {
-            console.warn("⚠️ No valid vendor identifier found");
         }
     };
 

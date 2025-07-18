@@ -48,7 +48,6 @@ const InstallPrompt = () => {
 
   const handleInstall = () => {
     if (!deferredPrompt) {
-      console.log("Installation prompt not available");
       return;
     }
 
@@ -58,7 +57,6 @@ const InstallPrompt = () => {
     // Wait for the user to respond to the prompt
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === "accepted") {
-        console.log("User accepted the install prompt");
       } else {
         console.log("User dismissed the install prompt");
       }

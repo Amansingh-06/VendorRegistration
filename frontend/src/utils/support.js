@@ -10,11 +10,9 @@ export const connectSupport = async () => {
       .single();
 
     if (error) {
-      console.error("Error fetching support:", error);
       return { success: false, message: error.message, error };
     }
 
-    console.log('✅ Support Team Data:', data);
 
     if (data?.user?.mobile_number) {
       // ✅ Redirect to WhatsApp with the mobile number
@@ -25,7 +23,6 @@ export const connectSupport = async () => {
     }
 
   } catch (err) {
-    console.error("Unexpected error:", err);
     return { success: false, message: "Something went wrong.", error: err };
   }
 };

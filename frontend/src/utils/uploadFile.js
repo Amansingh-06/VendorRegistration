@@ -16,7 +16,6 @@ export const uploadFile = async (file, bucketName, name) => {
         });
 
     if (error) {
-        console.error('Error uploading file:', error?.message);
         toast.error("Error uploading file");
         throw new Error(error?.message); // Throw error to stop further processing
     }
@@ -26,7 +25,6 @@ export const uploadFile = async (file, bucketName, name) => {
         .getPublicUrl(filePath);
 
     if (urlError) {
-        console.error('Error getting public URL:', urlError?.message);
         throw new Error(urlError?.message); // Throw error to stop further processing
     }
 

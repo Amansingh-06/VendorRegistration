@@ -50,7 +50,6 @@ export default function ManageItemsPage() {
       .eq("item_id", id);
 
     if (error) {
-      console.error("Update failed:", error.message);
       setItems(oldItems);
     } else if (selectedVendorId) {
       const {
@@ -100,7 +99,6 @@ export default function ManageItemsPage() {
       .eq("item_id", deleteItemId);
 
     if (error) {
-      console.error("Delete failed:", error.message);
       setItems(oldItems);
     } else if (selectedVendorId) {
       const {
@@ -125,7 +123,6 @@ export default function ManageItemsPage() {
     setDeleteItemName("");
   };
 
-  console.log(items);
 
   return (
     <section>

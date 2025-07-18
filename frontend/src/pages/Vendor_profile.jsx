@@ -120,7 +120,6 @@ export default function VendorProfile() {
       !watchedFields.state ||
       !watchedFields.pincode ||
       selectedCuisineIds.length === 0);
-  console.log("Address", selectedAddress);
   useEffect(() => {
     const fetchCuisines = async () => {
       const { data, error } = await supabase
@@ -128,7 +127,6 @@ export default function VendorProfile() {
         .select("c_id, name");
 
       if (error) {
-        console.error("Error fetching cuisines:", error.message);
       } else {
         setCuisines(data || []);
       }
@@ -136,7 +134,6 @@ export default function VendorProfile() {
 
     fetchCuisines();
   }, []);
-  console.log("cuisine", cuisines);
   const handleCurrentLocation = async () => {
     setWaitLoading(true);
     const toastId = toast.loading("Getting current Location");
@@ -156,16 +153,13 @@ export default function VendorProfile() {
       toast.dismiss(toastId);
 
       if (!success || locError) {
-        console.log("location returned", locError);
         return;
       }
 
       setLocationError(false);
-      console.log("✅ Current location fetched");
       setWaitLoading(false);
     } catch (err) {
       toast.dismiss(toastId);
-      console.error("❌ Location Error:", err);
     }
   };
 
@@ -181,9 +175,7 @@ export default function VendorProfile() {
         .single();
 
       if (error) {
-        console.error("Error fetching vendor:", error.message);
       } else if (data) {
-        console.log("data", data);
         reset({
           vendor_name: data.v_name || "",
           shop_name: data.shop_name || "",
@@ -206,7 +198,6 @@ export default function VendorProfile() {
           setPosition(loc);
           setLocation(loc); // 👈 Important for form comparison and submit
           setSelectedAddress(loc);
-          console.log("Long,lat", data?.longitude, data?.latitude);
         }
 
         // ✅ Set time values to states
@@ -255,21 +246,15 @@ export default function VendorProfile() {
   }, [vendorId, reset]);
 
   useEffect(() => {
-    console.log(
-      "📍 Checking lat/lng:",
-      initialFormState?.latitude,
-      initialFormState?.longitude
-    );
+ 
 
     const fetchReadableAddress = async () => {
       if (initialFormState.latitude && initialFormState.longitude) {
-        console.log("📦 Coordinates found, fetching address...");
         const response = await getAddressFromLatLng(
           initialFormState.latitude,
           initialFormState.longitude
         );
         const addressData = response?.results?.[0];
-        console.log("addressData", addressData);
 
         if (addressData) {
           const components = addressData.address_components;
@@ -309,12 +294,9 @@ export default function VendorProfile() {
           // setFetchedAddress(addressToSet);
           setSelectedAddress(addressToSet);
 
-          console.log("✅ fetchedAddress:", addressToSet);
         } else {
-          console.log("⚠️ No address data found");
         }
       } else {
-        console.log("❌ Latitude or Longitude missing");
       }
     };
 
@@ -350,59 +332,8 @@ export default function VendorProfile() {
           String(initialFormState?.longitude) === String(selectedAddress?.long)
         : true;
 
-    // 👉 Console logs for debugging
-    console.log(
-      "🚩 [Check] vendor_name",
-      watchedFields.vendor_name,
-      initialFormState.vendor_name
-    );
-    console.log(
-      "🚩 [Check] shop_name",
-      watchedFields.shop_name,
-      initialFormState.shop_name
-    );
-    console.log(
-      "🚩 [Check] shift1_start",
-      normalizeTime(watchedFields.shift1_start),
-      normalizeTime(initialFormState.shift1_start)
-    );
-    console.log(
-      "🚩 [Check] shift1_close",
-      normalizeTime(watchedFields.shift1_close),
-      normalizeTime(initialFormState.shift1_close)
-    );
-    console.log(
-      "🚩 [Check] shift2_start",
-      normalizeTime(watchedFields.shift2_start),
-      normalizeTime(initialFormState.shift2_start)
-    );
-    console.log(
-      "🚩 [Check] shift2_close",
-      normalizeTime(watchedFields.shift2_close),
-      normalizeTime(initialFormState.shift2_close)
-    );
-    console.log(
-      "🚩 [Check] street",
-      watchedFields.street,
-      initialFormState.street
-    );
-    console.log("🚩 [Check] city", watchedFields.city, initialFormState.city);
-    console.log(
-      "🚩 [Check] state",
-      watchedFields.state,
-      initialFormState.state
-    );
-    console.log(
-      "🚩 [Check] pincode",
-      watchedFields.pincode,
-      initialFormState.pincode
-    );
-    console.log("🚩 [Check] note", watchedFields.note, initialFormState.note);
-    console.log("🚩 [Check] bannerUrl", bannerUrl, initialFormState.banner);
-    console.log("🚩 [Check] videoUrl", videoUrl, initialFormState.video);
-    console.log("🚩 [Check] qrUrl", qrUrl, initialFormState.qr);
-    console.log("🚩 [Check] areCuisinesSame", areCuisinesSame);
-    console.log("🚩 [Check] isLocationSame", isLocationSame);
+  
+   
 
     return (
       watchedFields.vendor_name !== initialFormState.vendor_name ||
@@ -450,7 +381,6 @@ export default function VendorProfile() {
       });
 
     if (error) {
-      console.error("Error uploading file:", error?.message);
       toast.error("Error uploading file");
       throw new Error(error?.message); // Throw error to stop further processing
     }
@@ -460,14 +390,12 @@ export default function VendorProfile() {
       .getPublicUrl(filePath);
 
     if (urlError) {
-      console.error("Error getting public URL:", urlError?.message);
       throw new Error(urlError?.message); // Throw error to stop further processing
     }
 
     return urlData?.publicUrl;
   };
 
-  console.log(cuisines, "cusine");
   const formRef = useRef();
   const onSubmit = async (formData) => {
     if (!session?.user?.id) return alert("User not logged in");
@@ -524,7 +452,6 @@ export default function VendorProfile() {
         .upsert(insertData, { onConflict: "v_id" });
 
       if (error) {
-        console.error("❌ Supabase error:", error);
         toast.error("Update Fail");
       } else {
         toast.success("Profile Updated Successfully");
@@ -574,7 +501,6 @@ export default function VendorProfile() {
         navigate("/home");
       }
     } catch (err) {
-      console.error("Upload failed:", err.message);
       toast.error("Upload failed");
     }
 
@@ -586,44 +512,28 @@ export default function VendorProfile() {
   const qrInputRef = useRef(null);
 
   // Helper to handle file selection and create preview URL
-  console.log("🍜 All cuisines:", cuisines); // should contain c_id and name
-  console.log("✅ Selected IDs:", selectedCuisineIds); // should be array of strings
+
 
   useEffect(() => {
-    console.log("🍜 All cuisines:", cuisines);
-    console.log("✅ Selected IDs:", selectedCuisineIds);
+
 
     if (cuisines.length > 0 && selectedCuisineIds.length > 0) {
       const cuisineIds = cuisines.map((c) => c?.c_id?.toString().trim());
       const selectedIds = selectedCuisineIds.map((id) => id?.toString().trim());
 
-      console.log("🔍 All cuisine IDs:", cuisineIds);
-      console.log("🔍 SelectedCuisineIds (trimmed):", selectedIds);
+
 
       const matched = cuisines.filter((cuisine) =>
         selectedIds.includes(cuisine?.c_id?.toString().trim())
       );
 
-      console.log("✅ Matched Cuisines:", matched);
 
       setSelectedCuisines(matched);
     } else {
-      console.warn("⛔ Skipped matching - one of the arrays is empty");
     }
   }, [selectedCuisineIds, cuisines]);
 
-  console.log("selected", selectedCuisines);
 
-  console.log({
-    isFormIncomplete,
-    isChanged,
-    loading,
-    vendor_name: watchedFields.vendor_name,
-    shop_name: watchedFields.shop_name,
-    selectedCuisineIds,
-    selectedAddress,
-    fetchedAddress,
-  });
 
   const showGrayLook = loading || !isValid || !isChanged; // Or !isDirty if you're using that
 
@@ -736,7 +646,6 @@ export default function VendorProfile() {
                       isOpen={startView1}
                       onClose={() => setStartView1(false)}
                       onTimeSelect={(time) => {
-                        console.log(time);
                         // time yaha moment object ho sakta hai ya string, usko moment me parse karo
                         // backend ke liye HH:mm:ss format me bhejo
                         const backendTime = time.format("HH:mm:ss");

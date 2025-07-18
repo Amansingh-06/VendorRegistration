@@ -8,7 +8,6 @@ export const updateVendorDiscount = async (vendorId, discountValue) => {
     .eq("v_id", vendorId);
 
   if (error) {
-    console.error("❌ Error updating discount:", error);
     return { success: false, error };
   }
 

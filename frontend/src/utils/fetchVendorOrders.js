@@ -98,7 +98,6 @@ export const fetchVendorOrders = async (
 
     return { success: true, data: enrichedOrders };
   } catch (error) {
-    console.error("❌ Exception fetching vendor completed orders:", error);
     return { success: false, data: [] };
   }
 };

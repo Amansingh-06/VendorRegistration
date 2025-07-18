@@ -79,7 +79,6 @@ const VendorEarnings = () => {
   }, [page, vendorId, vendorProfile?.status]);
 
   const loadMoreRatings = async () => {
-    console.log("📥 Fetching ratings for vendorId:", vendorId, "Page:", page);
     const { success, data } = await fetchVendorRatings(vendorId, page, LIMIT);
 
     if (success && Array.isArray(data)) {
@@ -96,7 +95,6 @@ const VendorEarnings = () => {
     }
   };
 
-  // console.log(ratings," ratings");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -116,7 +114,6 @@ const VendorEarnings = () => {
     };
   }, [ratings, hasMore]);
 
-  console.log("rating", ratings);
 
   const toggleItems = (id) => {
     setShowAllItemsMap((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -175,7 +172,6 @@ const VendorEarnings = () => {
   useEffect(() => {
     if (vendorId && vendorProfile?.status === "verified") {
       const fetchStats = async () => {
-        console.log("🔄 Fetching orders for vendorId:", vendorId);
 
         const { success, data: orders } = await fetchVendorOrders(
           vendorId,
@@ -186,11 +182,9 @@ const VendorEarnings = () => {
         );
 
         if (!success || !orders) {
-          console.warn("⚠️ Failed to fetch orders or no data returned.");
           return;
         }
 
-        console.log("✅ Total orders fetched:", orders.length);
 
         const today = new Date();
         const weekRange = {
@@ -225,10 +219,7 @@ const VendorEarnings = () => {
           if (status === "delivered") {
             deliveredOrders++;
 
-            console.log(`✅ Delivered order #${index}:`, {
-              orderDate,
-              amount,
-            });
+        
 
             if (isWithinInterval(orderDate, weekRange)) {
               weekOrders++;
@@ -249,35 +240,14 @@ const VendorEarnings = () => {
               todayAmount += amount;
             }
           } else {
-            console.log(`⛔ Not delivered order #${index} - Status:`, status);
           }
         });
 
-        // 🟢 Final Summary
-        console.log("📦 Total Orders:", totalOrders);
-        console.log("✅ Delivered Orders:", deliveredOrders);
-        console.log("❌ Non-Delivered Orders:", totalOrders - deliveredOrders);
+       
 
         // 📊 Earnings Summary
-        console.log("📊 Final Stats:");
-        console.log(
-          "  🔹 Today     => Orders:",
-          todayOrders,
-          "Amount:",
-          todayAmount
-        );
-        console.log(
-          "  🔹 This Week => Orders:",
-          weekOrders,
-          "Amount:",
-          weekAmount
-        );
-        console.log(
-          "  🔹 This Month=> Orders:",
-          monthOrders,
-          "Amount:",
-          monthAmount
-        );
+     
+      
 
         setThisWeek({ total_orders: weekOrders, total_amount: weekAmount });
         setThisMonth({ total_orders: monthOrders, total_amount: monthAmount });
@@ -350,13 +320,7 @@ const VendorEarnings = () => {
   }, [vendorId, dateRange, vendorProfile?.status]);
 
   // Track state changes separately
-  useEffect(() => {
-    console.log("✅ thisWeek Updated:", thisWeek);
-  }, [thisWeek]);
 
-  useEffect(() => {
-    console.log("✅ thisMonth Updated:", thisMonth);
-  }, [thisMonth]);
 
   useEffect(() => {
     if (vendorId && vendorProfile?.status === "verified") {
@@ -565,7 +529,6 @@ const VendorEarnings = () => {
                             />
                             <div>
                               <h3 className="font-semibold text-gray-800">
-                                {console.log("rating", rating)}
                                 {rating?.user?.name}
                               </h3>
                               <div className="text-green-600 text-sm whitespace-nowrap">
@@ -574,16 +537,11 @@ const VendorEarnings = () => {
                                   const total = rating.order?.total_amount || 0;
 
                                   const itemHalf = total / 2;
-                                  console.log("Item half amount:", itemHalf);
                                   const discount =
                                     rating?.order?.vendor_discount || 0;
-                                  console.log(
-                                    "Vendor discount:",
-                                    rating?.order?.vendor_discount
-                                  );
+                               
                                   const final =
                                     (itemHalf * (100 - discount)) / 100;
-                                  console.log("Final spended amount:", final);
                                   return final.toFixed(2);
                                 })()}
                               </div>
@@ -749,7 +707,6 @@ const VendorEarnings = () => {
                               <div className="-mt-1 max-w-md w-full text-sm overflow-auto break-words max-h-32 bg-gray-50 p-2 rounded">
                                 <p className="text-gray-700 whitespace-pre-wrap">
                                   {rating.vendor_reply}
-                                  {console.log("Reply:", rating.vendor_reply)}
                                 </p>
                               </div>
                             </div>

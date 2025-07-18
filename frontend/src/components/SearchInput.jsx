@@ -19,11 +19,8 @@ const SearchInput = ({ placeholder, py }) => {
     useEffect(() => {
         const initGoogleMaps = async () => {
             try {
-                console.log("📦 Trying to load Google Maps script...");
                 await loadGoogleMapsScript();
-                console.log("✅ Google Maps script loaded");
             } catch (error) {
-                console.error("❌ Failed to load Google Maps script:", error);
                 handleAddressError(error, "Failed to initialize location search");
             }
         };
@@ -47,16 +44,12 @@ const SearchInput = ({ placeholder, py }) => {
 
     const fetchGoogleSuggestions = async (query) => {
         try {
-            console.log("🔍 Fetching suggestions for:", query);
             if (!window.google || !window.google.maps || !window.google.maps.places) {
-                console.warn("⚠️ Google Maps Places is not available on window object");
             }
 
             const { success, suggestions, error } = await getGooglePlaceSuggestions(query);
 
-            console.log("📨 Suggestions fetched:", suggestions);
-            console.log("✅ Success status:", success);
-            console.log("❌ Error (if any):", error);
+           
 
             if (success) {
                 setGoogleSuggestions(suggestions);
@@ -64,7 +57,7 @@ const SearchInput = ({ placeholder, py }) => {
                 throw new Error(error);
             }
         } catch (error) {
-            console.error("❌ Error during fetchGoogleSuggestions:", error);
+
             handleAddressError(error, "Failed to get location suggestions");
             setGoogleSuggestions([]);
         }
@@ -73,7 +66,6 @@ const SearchInput = ({ placeholder, py }) => {
     const handleGoogleSuggestionClick = async (suggestion) => {
         try {
             const data = await fetchAddressFromPlaceId(suggestion?.place_id);
-            console.log("Data from fetchAddress",data)
 
             const address = {
                 full_address:data?.full_address,
@@ -84,28 +76,18 @@ const SearchInput = ({ placeholder, py }) => {
                 floor: "NA",
                 h_no: "NA",
             };
-console.log("Address,data",address)
             setSelectedAddress(address);
             // navigate("/edit_address", { state: { isEdit: true } });
             setQuery('');
             setShowSuggestions(false);
-            console.log(setSelectedAddress)
-            console.log("Select", selectedAddress);
+          
         } catch (error) {
-            console.error("❌ Error getting place details:", error);
             handleAddressError(error, "Could not get location details");
             setShowSuggestions(false);
         }
     };
 
-    // Debug useEffects
-    useEffect(() => {
-        console.log("🆕 Query updated:", query);
-    }, [query]);
-
-    useEffect(() => {
-        console.log("🧠 Suggestions updated:", googleSuggestions);
-    }, [googleSuggestions]);
+ 
 
     return (
         <div className="w-full my-4 relative flex justify-center">

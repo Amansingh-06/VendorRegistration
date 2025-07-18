@@ -9,7 +9,6 @@ export const fetchVendorRatingStats = async (vendorId) => {
       .eq("v_id", vendorId);
 
     if (error) {
-      console.error("❌ Error fetching rating stats:", error);
       return { success: false, averageRating: 0, totalCustomers: 0 };
     }
 
@@ -27,7 +26,6 @@ export const fetchVendorRatingStats = async (vendorId) => {
       totalCustomers,
     };
   } catch (err) {
-    console.error("❌ Exception in fetchVendorRatingStats:", err);
     return { success: false, averageRating: 0, totalCustomers: 0 };
   }
 };

@@ -53,8 +53,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
   const location = useLocation();
   const itemData = location.state?.itemData || null;
   const isEditMode = itemData !== null;
-  console.log(itemData);
-  console.log(itemData);
+ 
   const { fetchItems } = useFetch();
 
   const {
@@ -83,7 +82,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
   const watchedFields = watch();
 
-  console.log(itemData);
 
   useEffect(() => {
     if (!vendorId) return; // ⛔ Don't run until v_id is available
@@ -95,7 +93,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
       if (error) {
         toast.error(MESSAGES?.FETCH_FAIL);
-        console.error(error);
       } else {
         setCategories(data);
       }
@@ -124,8 +121,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
       (selectedVendorId &&
         watchedFields.priceMultiplier !==
           itemData.price_multiplier?.toString()); // ✅ add ||
-    console.log("watchedFields", watchedFields?.priceMultiplier);
-    console.log("itemData", itemData?.price_multiplier);
+   
 
     const hasImageChanged =
       (previewImage && typeof previewImage === "object") || // ✅ new image uploaded
@@ -134,7 +130,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     return hasTextChanged || hasImageChanged;
   }, [watchedFields, previewImage, itemData]);
 
-  console.log(isFormChanged, "isform");
 
   const handleAddCategory = async () => {
     const trimmed = newCategory.trim();
@@ -152,7 +147,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
     if (checkError) {
       toast.error(MESSAGES.CHECK_FAIL);
-      console.error(checkError);
       return;
     }
 
@@ -181,7 +175,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     if (error) {
       setCatLoader(false);
       toast.error(MESSAGES.CATEGORY_ADD_FAIL);
-      console.error(error);
       return;
     }
 
@@ -211,7 +204,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
 
   useEffect(() => {
     if (isEditMode && itemData) {
-      console.log(itemData?.item_category_id);
       reset({
         itemName: itemData?.item_name || "",
         quantity: itemData.item_quantity?.toString() || "",
@@ -311,18 +303,15 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
   };
 
   const scrollToRef = (ref) => {
-    console.log("📍 Trying to scroll to:", ref?.current); // 👈 Console added here
     if (ref?.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
       ref.current.focus?.();
     } else {
-      console.warn("❌ Ref not found for scrolling");
     }
   };
 
   const onSubmit = async (data) => {
-    console.log("📝 Form Submit Triggered");
-    console.log("📦 Data:", data);
+  
 
     if (isEditMode && !isFormChanged) {
       toast.error("No updates found!");
@@ -383,7 +372,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
           updated_at: new Date(),
         };
 
-        console.log("➡️ Insert Payload:", insertPayload);
 
         response = await supabase
           .from(SUPABASE_TABLES?.ITEM)
@@ -393,7 +381,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
       const { error } = response;
       if (error) {
         toast.error(isEditMode ? "Item update failed!" : "Item save failed!");
-        console.error(error);
       } else {
         toast.success(
           isEditMode ? "Item updated successfully!" : "Item saved successfully!"
@@ -434,7 +421,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
         onSubmitSuccess?.();
       }
     } catch (err) {
-      console.error("❌ Unexpected error:", err);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -462,11 +448,6 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
     if (formRef.current) formRef.current.requestSubmit();
   };
 
-  console.log("iTemData", itemData);
-
-  // console.log(vendorProfile?.v_id)
-  console.log("isValid", isValid);
-  console.log("isFormChanged", isFormChanged);
 
   return (
     <div className="w-full  mx-auto flex justify-center">
