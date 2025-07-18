@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast";
 import OfferPopup from "../components/Popup";
 import { updateVendorDiscount } from "../utils/OfferUpdate";
 import { BiSearch } from "react-icons/bi";
+import { numberInputClean } from "../utils/Validation";
 
 export { updateVendorDiscount } from "../utils/OfferUpdate"; // ✅ Export for testing
 const OrderPage = () => {
