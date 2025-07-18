@@ -277,7 +277,7 @@ const OrderPage = () => {
               {/* Always-visible Cancel Button */}
               <button
                 onClick={clearSearch}
-                className="absolute md:right-16 right-12 top-[1px] text-white bg-gray py-1 px-4  rounded-l-lg hover:text-red-500 text-xl font-bold"
+                className="absolute md:right-16 right-12 top-[0.5px] text-white bg-gray py-1 px-4  rounded-l-lg hover:text-red-500 text-xl font-bold"
                 aria-label="Clear search"
               >
                 ×
@@ -286,7 +286,7 @@ const OrderPage = () => {
               {/* Search Button */}
               <button
                 onClick={handleSearch}
-                className="absolute right-0 top-[1px] bg-orange-500 hover:bg-orange-600 text-white md:px-2 px-1 py-2 md:text-sm text-xs rounded-r-lg"
+                className="absolute right-0 top-[.5px] bg-orange-500 hover:bg-orange-600 text-white md:px-2 px-1 md:py-2 py-[10px] md:text-sm text-xs rounded-r-lg"
               >
                 Search
               </button>
