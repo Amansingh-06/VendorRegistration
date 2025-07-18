@@ -139,7 +139,7 @@ const OrderPage = () => {
       return
     }
 
-    const lowerQuery = searchQuery.toLowerCase();
+    const lowerQuery = trimmed.toLowerCase();
 
     const filtered = orders.filter(
       (order) => order?.user_order_id?.toLowerCase().includes(lowerQuery)
@@ -158,22 +158,47 @@ const OrderPage = () => {
     setHasSearched(false)
     setFilteredOrders(orders);
   };
-  const handleKeyDown = (e) => {
-    const allowedKeys = [
-      "Backspace",
-      "Delete",
-      "ArrowLeft",
-      "ArrowRight",
-      "Tab",
-    ];
+const handleKeyDown = (e) => {
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+  ];
 
-    if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+  const isNumberKey = /^[0-9]$/.test(e.key);
+  const isAllowedKey = allowedKeys.includes(e.key);
+
+  if (!isNumberKey && !isAllowedKey && e.key !== " ") {
+    e.preventDefault();
+    seterror("Only numeric Order ID is allowed");
+    return;
+  }
+
+  // ❗ If user types space
+  if (e.key === " ") {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
+    const inputLength = input.value.length;
+
+    // Block space if NOT at start (0) or end (inputLength)
+    const isMiddle = cursorPosition !== 0 && cursorPosition !== inputLength;
+
+    if (isMiddle) {
       e.preventDefault();
-      seterror("Only numeric Order ID is allowed");
-    } else {
-      seterror("");
+      seterror("Space is not allowed in the middle");
+      return;
     }
-  };
+  }
+
+  // ✅ Clear error if valid
+  seterror("");
+};
+
+
+
+
 
   // const handlePaste = (e) => {
   //   const pasted = e.clipboardData.getData("text").trim();
