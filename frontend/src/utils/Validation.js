@@ -143,6 +143,18 @@ export const cityStateInputClean = (e) => {
     // .replace(/\s{2,}/g, " ");    // this line removed to allow multiple spaces
 };
 
+export const numberInputClean = (e) => {
+  let val = e.currentTarget.value;
+
+  // Allow digits and space
+  val = val.replace(/[^0-9 ]/g, "");
+
+  // Remove spaces from middle
+  val = val.replace(/(?<=\d)\s+(?=\d)/g, "");
+
+  e.currentTarget.value = val;
+};
+
   
 // 🔢 PINCODE
 export const pincodeValidation = {

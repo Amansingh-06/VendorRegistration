@@ -93,6 +93,52 @@ listner--data listner,child added
 
 
 
+orderId ke niche user ka name aur profile pic---done
+pending ke niche ek seprator add krna hai user app se lena hai padding same rahega --done
+total ke upr solid saprator end to end user app ke jaise--done
+left side me icon aur right side me text rahega--done
+icon user ke jaisa hoga help ya other jo navbar me hoga--done
+button ko user ke app jaisa krna hai hr ek jagah--done
+ek filter add krna hai pending ka--done
+sb heading ke change krna hai user ke jaisa hr jgh--done
+scroll ke liye ravi se conncet krna hai
+edit aur delt ka 30% size increase krna hai--done
++ button ko sahi krna hai 20% increse krna hai buttom se margin dena hai 10 20 px ka isko ek white bg dena hai aur add item likhna hai--done
+price multiplier ko add edit me likhna hai note ke upr usi section me note--done
+street ko jagah house no/plot no/street name profile aur registration page me krna hai--done
+profile me selected location ko update location krna hai location select krne pr updated location dikhana hai-done
+jo last me action button hoga ho fix hoga scroll nhi hoga-done
+logout ke aage ek icon dena hai--done
+Add Offer popup and section---done
+rating ko average dikhana hai aur rating count v dikhana hai your store is rated star icon 3.5 by 22 customers--done
+jo detail invalid ho uspr navigate ho jaye button pr click krte hi
+
+orderId ke niche user ka name aur profile pic---done
+pending ke niche ek seprator add krna hai user app se lena hai padding same rahega --done
+total ke upr solid saprator end to end user app ke jaise--done
+icon user ke jaisa hoga help ya other jo navbar me hoga--done
+button ko user ke app jaisa krna hai hr ek jagah--done
+ek filter add krna hai pending ka--done
+sb heading ke change krna hai user ke jaisa hr jgh--done
+edit aur delt ka 30% size increase krna hai--done
++ button ko sahi krna hai 20% increse krna hai buttom se margin dena hai 10 20 px ka isko ek white bg dena hai aur add item likhna hai--done
+price multiplier ko add edit me likhna hai note ke upr usi section me note--done
+profile me selected location ko update location krna hai location select krne pr updated location dikhana hai-done
+logout ke aage ek icon dena hai--done
+rating ko average dikhana hai aur rating count v dikhana hai your store is rated star icon 3.5 by 22 customers--done
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

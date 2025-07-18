@@ -62,6 +62,8 @@ const OfferPopup = ({ isOpen, onClose, onSubmit, offerText, setOfferText }) => {
         <input
           type="text"
           value={offerText}
+                              inputMode="numeric"
+
           onChange={handleInputChange}
           placeholder="e.g. 10"
           maxLength={3}

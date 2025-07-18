@@ -281,6 +281,8 @@ const OrderCard = ({ order, onStatusUpdate }) => {
             <input
               type="text"
               value={otp}
+                                  inputMode="numeric"
+
               maxLength={6}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))} // only digits
               className={`w-full border ${
