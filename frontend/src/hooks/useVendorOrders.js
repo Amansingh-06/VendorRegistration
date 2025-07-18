@@ -5,7 +5,7 @@ import {
   ORDER_KEYS,
   ORDER_CHANNELS,
   ORDER_PAGINATION,
-} from "../utils/constants/orderConfig";
+ } from "../utils/constants/OrderConfig";
 import { SUPABASE_TABLES } from "../utils/constants/Table&column";
 
 const isStatusMatch = (a, b) =>
