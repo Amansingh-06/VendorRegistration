@@ -9,6 +9,8 @@ import { FaIndianRupeeSign } from "react-icons/fa6";
 import { useAuth } from '../context/authContext';
 import { supabase } from '../utils/supabaseClient';
 import { SUPABASE_TABLES } from '../utils/constants/Table&column';
+import { MdLocalShipping } from "react-icons/md";
+
 
 
 const OrderCard = ({ order, onStatusUpdate }) => {
@@ -96,7 +98,10 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 const item_amount = total_amount / 2;
 const vendor_discount = order?.vendor_discount || 0;
 const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
-const final_amount = discounted_amount || 0;
+    const final_amount = discounted_amount || 0;
+    
+
+    {console.log(order?.delivery_person,"dp")}
     
     return (
         <>
@@ -181,6 +186,36 @@ const final_amount = discounted_amount || 0;
                         </p>
                     </div>
                 </div>
+
+                {order?.delivery_person && (
+                                <div className=" bg-white w-full max-w-sm">
+  {/* First Line: Image + Name */}
+                    <div className="flex items-center ">
+                        <p className='font-semibold text-gray-800 flex justify-center items-center gap-1'> <MdLocalShipping/> Delivery By:</p>
+    <img
+      src={order?.delivery_person?.photo_url || "/placeholder-dp.png"}
+      alt="DP"
+      className="w-10 h-10 rounded-full object-cover"
+    />
+    <p className="font-medium text-gray-800">
+       {order?.delivery_person?.name || "Delivery Partner"}
+    </p>
+  </div>
+
+  {/* Second Line: Call Button */}
+  <div>
+    <a
+      href={`tel:${order?.delivery_person?.mobile_no}`}
+      className="inline-flex items-center justify-center gap-2 bg-orange  text-white px-2 py-1 rounded-lg text-sm transition-all"
+    >
+      📞 Call {order?.delivery_person?.mobile_no}
+    </a>
+  </div>
+</div>
+                )
+                    
+   }
+
 
                 {/* Action Button */}
                 {action && (

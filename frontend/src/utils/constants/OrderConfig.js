@@ -19,6 +19,7 @@ export const ORDER_CHANNELS = {
 // 🔍 Used for supabase .select()
 export const ORDER_SELECT_QUERY = `
   *,
+  dp_id,
   order_item:order_item!order_item_order_id_fkey (
     order_item_id,
     quantity,

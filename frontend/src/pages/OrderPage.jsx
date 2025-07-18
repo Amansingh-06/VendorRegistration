@@ -9,6 +9,8 @@ import ButtonGroup from "../components/FilterButton";
 import { toast } from "react-hot-toast";
 import OfferPopup from "../components/Popup";
 import { updateVendorDiscount } from "../utils/OfferUpdate";
+import { BiSearch } from "react-icons/bi";
+
 export { updateVendorDiscount } from "../utils/OfferUpdate"; // ✅ Export for testing
 const OrderPage = () => {
   
@@ -19,12 +21,17 @@ const OrderPage = () => {
   const [newOffer, setNewOffer] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredOrders, setFilteredOrders] = useState([])
+  const [error, seterror] = useState("");
   // const { vendorProfile } = useAuth();
 
   const { orders,hasMore, loadMore,isLoading } = useVendorOrders(
     vendorId,
     active
   );
+
+  console.log("orders",orders)
   useEffect(() => {
     if (vendorProfile?.current_discount !== undefined) {
       setOffer(`${vendorProfile.current_discount}%`);
@@ -123,6 +130,66 @@ const OrderPage = () => {
     [hasMore, loadMore, isLoading]
   );
 
+useEffect(() => {
+  if (searchQuery.trim() === "") {
+    setFilteredOrders(orders);
+  }
+  // else don't update filteredOrders, keep current filtered state
+}, [orders]);
+
+
+const handleSearch = () => {
+  if (searchQuery.trim()==="") {
+    seterror("please enter Order ID")
+    return;
+  }
+
+
+
+  const lowerQuery = searchQuery.toLowerCase();
+
+  const filtered = orders.filter((order) =>
+    order?.user_order_id?.toLowerCase().includes(lowerQuery) 
+    // order.customer_name?.toLowerCase().includes(lowerQuery)
+  );
+
+  setFilteredOrders(filtered);
+    seterror("");
+};
+
+const clearSearch = () => {
+  setSearchQuery("");
+  seterror("")
+  setFilteredOrders(orders);
+};
+const handleKeyDown = (e) => {
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+  ];
+
+  if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+    e.preventDefault();
+    seterror("Only numeric Order ID is allowed");
+  } else {
+    seterror("");
+  }
+};
+
+const handlePaste = (e) => {
+  const paste = e.clipboardData.getData("text");
+  if (!/^\d+$/.test(paste)) {
+    e.preventDefault();
+    seterror("Only numeric Order ID is allowed");
+  }
+};
+
+
+
+
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">
       {/* <div className="w-full max-w-2xl flex flex-col gap-4"> */}
@@ -188,13 +255,54 @@ const OrderPage = () => {
       />
               <div className="flex flex-wrap -mt-1">
                 <ButtonGroup active={active} setActive={setActive} />
-              </div>
+                </div>
+{/* Updated Search Bar */}
+<div className="relative w-full ">
+  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+    <BiSearch />
+  </span>
+
+  <input
+    type="text"
+    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onPaste={handlePaste}
+    placeholder="Search by Order ID "
+    className="w-full pl-10 pr-28 py-2 bg-white text-sm border  border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-green-300"
+  />
+
+  {/* Always-visible Cancel Button */}
+  <button
+    onClick={clearSearch}
+    className="absolute md:right-16 right-12 top-[1px] text-white bg-gray py-1 px-4  rounded-l-lg hover:text-red-500 text-xl font-bold"
+    aria-label="Clear search"
+  >
+    ×
+  </button>
+
+  {/* Search Button */}
+  <button
+    onClick={handleSearch}
+    className="absolute right-0 top-[1px] bg-orange-500 hover:bg-orange-600 text-white md:px-2 px-1 py-2 md:text-sm text-xs rounded-r-lg"
+  >
+    Search
+                  </button>
+  
+
+                </div>
+                                {error && (
+  <p className="text-red-500 text-xs -mt-2 ml-10">{error}</p>
+)}
+
+
+
   
               <div className="flex flex-col gap-4 pb-6">
-                {orders?.length > 0 ? (
+                {filteredOrders?.length > 0 ? (
                   <>
-                    {orders.map((order, index) => {
-                      const isLast = index === orders.length - 1;
+                    {filteredOrders.map((order, index) => {
+                      const isLast = index === filteredOrders.length - 1;
   
                       return (
                         <div

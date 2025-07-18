@@ -5,7 +5,7 @@ export const fetchVendorOrders = async (
   status = null,
   limit = 10,
   offset = 0,
-  fullFetch = false // ✅ NEW PARAM
+  fullFetch = false
 ) => {
   try {
     let query = supabase
@@ -44,7 +44,7 @@ export const fetchVendorOrders = async (
       query = query.ilike('status', status);
     }
 
-    const { data, error } = await query;
+    const { data: orders, error } = await query;
 
     if (error) throw error;
 
@@ -58,20 +58,45 @@ export const fetchVendorOrders = async (
       "delivered": 6,
     };
 
-    const sortedData = data.sort((a, b) => {
+    const sortedData = orders.sort((a, b) => {
       const statusDiff =
         (statusPriority[a.status?.toLowerCase()] || 99) -
         (statusPriority[b.status?.toLowerCase()] || 99);
       if (statusDiff !== 0) return statusDiff;
-      return new Date(a.created_ts) - new Date(b.created_ts); // ⬅️ ascending (oldest first)
+      return new Date(a.created_ts) - new Date(b.created_ts);
     });
 
-    // ✅ Apply manual pagination only if fullFetch is false
     const finalData = fullFetch
       ? sortedData
       : sortedData.slice(offset, offset + limit);
 
-    return { success: true, data: finalData };
+    // ✅ Collect all dp_ids from finalData
+    const dpIds = finalData
+      .map(order => order.dp_id)
+      .filter(id => !!id); // only non-null
+
+    let dpUsers = [];
+
+    if (dpIds.length > 0) {
+      const { data: users, error: dpError } = await supabase
+        .from('delivery_partner')
+        .select('dp_id, name, photo_url,mobile_no')
+        .in('dp_id', dpIds);
+
+      if (dpError) throw dpError;
+      dpUsers = users;
+    }
+
+    // ✅ Attach DP data to each order
+    const enrichedOrders = finalData.map(order => {
+      const dp = dpUsers.find(user => user.dp_id === order.dp_id);
+      return {
+        ...order,
+        delivery_person: dp || null,
+      };
+    });
+
+    return { success: true, data: enrichedOrders };
   } catch (error) {
     console.error("❌ Exception fetching vendor completed orders:", error);
     return { success: false, data: [] };

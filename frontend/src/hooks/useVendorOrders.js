@@ -5,9 +5,8 @@ import {
   ORDER_KEYS,
   ORDER_CHANNELS,
   ORDER_PAGINATION,
-  ORDER_SELECT_QUERY
 } from '../utils/constants/orderConfig';
-import { SUPABASE_TABLES } from '../utils/constants/Table&column'; // adjust as needed
+import { SUPABASE_TABLES } from '../utils/constants/Table&column';
 
 const isStatusMatch = (a, b) => (a || '').toLowerCase() === (b || '').toLowerCase();
 
@@ -84,13 +83,16 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
             activeStatus.toLowerCase() === 'all' ||
             isStatusMatch(updatedOrder?.[ORDER_KEYS.STATUS], activeStatus);
 
-          const { data: fullOrder, error } = await supabase
-            .from(SUPABASE_TABLES.ORDERS)
-            .select(ORDER_SELECT_QUERY)
-            .eq(ORDER_KEYS.ORDER_ID, updatedOrder[ORDER_KEYS.ORDER_ID])
-            .single();
+          const { success, data } = await fetchVendorOrders(
+            vendorId,
+            activeStatus,
+            1,
+            0,
+            true
+          );
 
-          if (error || !fullOrder) return;
+          const fullOrder = data?.[0];
+          if (!success || !fullOrder) return;
 
           setOrders((prev) => {
             const index = prev.findIndex(
@@ -121,7 +123,7 @@ export const useVendorOrders = (vendorId, activeStatus = 'All') => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [vendorId]);
+  }, [vendorId, activeStatus]);
 
   return {
     orders,
