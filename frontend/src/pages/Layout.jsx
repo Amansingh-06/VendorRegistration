@@ -7,6 +7,8 @@ const pageTitles = {
   '/manage-items': 'Manage Items',
   '/profile': 'Profile',
   '/earning': 'Earning',
+  '/policy': 'Privacy Policy',
+  '/support':'Support'
 };
 
 const Layout = () => {

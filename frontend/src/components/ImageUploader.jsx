@@ -23,7 +23,7 @@ const ImageUploader = ({
                   : ""
               }
               alt="Preview"
-              className="object-cover h-full w-full rounded-lg"
+              className="object-fill h-full w-full rounded-lg"
             />
 
             <X

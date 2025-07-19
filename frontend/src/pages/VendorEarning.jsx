@@ -700,7 +700,7 @@ const VendorEarnings = () => {
                                     : vendorProfile.banner_url
                                 }
                                 alt="Vendor"
-                                className="w-6 h-6 rounded-full object-cover"
+                                className="w-6 h-6 rounded-full object-fill"
                               />
 
                               {/* Reply Text */}

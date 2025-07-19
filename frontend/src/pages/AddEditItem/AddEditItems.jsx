@@ -737,7 +737,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 />
                 <label
                   htmlFor="note"
-                  className="absolute left-3 -top-2.5 text-sm bg-white text-gray-500 font-semibold transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
+                  className="absolute left-3 -top-2.5 text-sm bg-white text-gray-500  transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-semibold"
                 >
                   Note (optional)
                 </label>
@@ -757,7 +757,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
               type="button"
               onClick={handleValidateAndSubmit}
               disabled={loading}
-              className={`flex-1 rounded-[8px] h-11 flex items-center justify-center font-bold text-white text-lg shadow-lg hover:shadow-xl transition-all w-full duration-300 hover:scale-[1.02] disabled:bg-orange/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white 
+              className={`flex-1 rounded-[8px] h-11 flex items-center justify-center font-semibold text-white text-lg shadow-lg hover:shadow-xl transition-all w-full duration-300 hover:scale-[1.02] disabled:bg-orange/50 disabled:cursor-not-allowed disabled:opacity-70 disabled:text-white 
      ${
        !isFormChanged || loading || !isValid
          ? "bg-gray-400 cursor-not-allowed"

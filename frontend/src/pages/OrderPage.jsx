@@ -319,14 +319,14 @@ const handleInputChange = (e) => {
                   {/* ✅ Loader when loading more (scrolling) */}
                   {isLoading && (
                     <div className="flex justify-center py-4">
-                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-8 h-8 border-4 border-orange border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   )}
                 </>
               ) : isLoading ? (
                 // ✅ Loader for first load
                 <div className="flex justify-center items-center py-6">
-                  <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-10 h-10 border-4 border-orange border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : (
                 <p className="text-center text-gray-500">No orders found.</p>

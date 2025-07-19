@@ -19,6 +19,7 @@ import ScrollToTop from './components/ScrolltoTop';
 import Layout from './pages/Layout';
 import BackRedirect from './components/BackRedirectToHome';
 import Support from './pages/Contactsupport';
+import Policy from './components/Policy';
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -68,6 +69,7 @@ function App() {
           <Route path="/" element={<ProtectedGuestRoute><Login /></ProtectedGuestRoute>} />
           <Route path="/otp" element={<ProtectedGuestRoute><Otp /></ProtectedGuestRoute>} />
           <Route path="/vendor-registration" element={<ProtectedGuestRoute><RegistrationPage /></ProtectedGuestRoute>} />
+          <Route path='/policy' element={ <ProtectedGuestRoute><Policy/> </ProtectedGuestRoute> }/>
 
           {/* Protected Layout for all dashboard pages */}
           <Route
@@ -84,7 +86,8 @@ function App() {
             <Route path="/profile" element={<VendorProfile />} />
             {/* <Route path="/address" element={<Address />} /> */}
             {/* <Route path="/edit_address" element={<EditAddress />} /> */}
-            <Route path="/support" element={<Support/>} />
+            <Route path="/support" element={<Support />} />
+          
             
           </Route>
         </Routes>

@@ -159,9 +159,9 @@ ${hasMounted ? "transition-transform duration-300" : ""}
             <button
               onClick={() => logout(setSession, setLoggingOut)}
               disabled={loggingOut}
-              className="button-gradientBG cursor-pointer text-white flex items-center px-3 lg:px-4 py-1 lg:py-2 rounded-md text-lg lg:text-sm hover:bg-orange transition"
+              className="bg-orange cursor-pointer text-white flex items-center px-1 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-sm hover:bg-orange transition"
             >
-              <CiLogout className="inline-block mr-1 text-lg" />
+              <CiLogout className="inline-block mr-1 text-sm" />
               {loggingOut ? "Logging out..." : "Logout"}
             </button>
           )}

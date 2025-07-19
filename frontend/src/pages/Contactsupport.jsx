@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { connectSupport } from "../utils/support";
 import BottomNav from "../components/Footer";
+import Header from "../components/Header";
 
 const Support = () => {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,7 @@ const Support = () => {
 
   return (
     <div className="p-4 pt-15 max-w-2xl mx-auto min-h-screen">
+      {/* <Header title="Support"/> */}
       <h1 className="text-lg lg:text-xl font-medium text-gray mb-2">
         NEED HELP?
       </h1>

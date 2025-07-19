@@ -138,7 +138,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                       : order?.user?.dp_url
                   }
                   alt="User"
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-full h-full object-fill rounded-full"
                 />
               </div>
 
@@ -225,7 +225,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
               <img
                 src={order?.delivery_person?.photo_url || "/placeholder-dp.png"}
                 alt="DP"
-                className="w-6 h-6 rounded-full object-cover"
+                className="w-6 h-6 rounded-full object-fill"
               />
               <p className="font-medium text-gray-800">
                 {order?.delivery_person?.name || "Delivery Partner"}
@@ -238,7 +238,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
                 href={`tel:${order?.delivery_person?.mobile_no}`}
                 className="inline-flex items-center justify-center gap-1  text-blue mt-1  text-sm transition-all"
               >
-                <span className="p-1 rounded-full shadow text-red"><IoMdCall/></span> {order?.delivery_person?.mobile_no}
+                <span className="p-1 rounded-full shadow-all text-red"><IoMdCall/></span> {order?.delivery_person?.mobile_no}
               </a>
             </div>
           </div>

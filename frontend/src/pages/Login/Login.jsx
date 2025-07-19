@@ -17,8 +17,12 @@ const Login = () => {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91"); // Default to India
   const location = useLocation();
-  const defaultPhone = location.state?.phone || "";
-  const defaultCountryCode = location.state?.countryCode || "+91";
+  const defaultPhone = location.state?.phone
+  ? location.state.phone.replace(/^\+\d{1,2}/, "") // remove + and country code
+  : "";
+
+const defaultCountryCode = location.state?.countryCode || "+91";
+
   const {
     register,
     handleSubmit,

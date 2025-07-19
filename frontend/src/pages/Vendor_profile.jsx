@@ -788,7 +788,7 @@ export default function VendorProfile() {
                     <img
                       src={bannerUrl}
                       alt="banner"
-                      className="h-32 w-full object-cover rounded-lg"
+                      className="h-32 w-full object-fill rounded-lg"
                     />
                   ) : (
                     <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -819,7 +819,7 @@ export default function VendorProfile() {
                     <video
                       src={videoUrl}
                       controls
-                      className="h-32 w-full object-cover rounded-lg"
+                      className="h-32 w-full object-fill rounded-lg"
                     />
                   ) : (
                     <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -850,7 +850,7 @@ export default function VendorProfile() {
                     <img
                       src={qrUrl}
                       alt="QR code"
-                      className="h-32 w-full object-cover rounded-lg"
+                      className="h-32 w-full object-fill rounded-lg"
                     />
                   ) : (
                     <div className="h-32 w-full bg-gray-200 flex items-center justify-center text-gray-500 rounded">
@@ -1057,7 +1057,7 @@ export default function VendorProfile() {
             {/* Additional Note */}
             <section className="flex flex-col rounded-lg  border-gray-300 border-1 bg-white shadow-lg px-4 py-4">
               <label
-                className="block mb-1 font-medium text-gray uppercase"
+                className="text-md md:text-2xl lg:text-2xl font-medium text-gray uppercase mb-4"
                 htmlFor="note"
               >
                 Additional Note (Optional)

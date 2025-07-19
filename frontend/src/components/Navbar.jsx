@@ -191,7 +191,7 @@ const Navbar = () => {
                   <img
                     src={vendorProfile.banner_url}
                     alt="Vendor Banner"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-fill"
                   />
                 ) : vendorProfile?.video_url &&
                   vendorProfile.video_url !== "NA" ? (
@@ -206,7 +206,7 @@ const Navbar = () => {
                   <img
                     src="/defaultuserImage.jpg"
                     alt="Default"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-fill"
                   />
                 )}
               </div>

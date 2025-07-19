@@ -208,7 +208,7 @@ const Otp = () => {
         <img
           src={LoginBGimage}
           alt="Login Visual"
-          className="object-cover w-full h-[52vh] lg:h-screen"
+          className="object-fill w-full h-[52vh] lg:h-screen"
         />
         <Link
           to="/"
@@ -223,7 +223,7 @@ const Otp = () => {
         onSubmit={handleSubmit(onSubmit)}
         autoComplete="off"
         id="otp-form"
-        className="relative p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-[66vh]  lg:max-h-none lg:min-h-[66vh] -mt-5 lg:mt-0"
+        className="relative z-5 p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-[66vh]  lg:max-h-none lg:min-h-[66vh] -mt-5 lg:mt-0"
       >
         <div className="flex items-center justify-center mb-3 lg:mb-4 text-sm lg:text-lg font-medium text-gray ">
           {phone && (
