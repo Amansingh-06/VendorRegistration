@@ -159,42 +159,20 @@ const OrderPage = () => {
     setHasSearched(false)
     setFilteredOrders(orders);
   };
-const handleKeyDown = (e) => {
-  const allowedKeys = [
-    "Backspace",
-    "Delete",
-    "ArrowLeft",
-    "ArrowRight",
-    "Tab",
-  ];
+const handleInputChange = (e) => {
+  let val = e.target.value;
 
-  const isNumberKey = /^[0-9]$/.test(e.key);
-  const isAllowedKey = allowedKeys.includes(e.key);
-  const isSpaceKey = e.key === " " || e.code === "Space";
+  // Clean input
+  val = val.replace(/[^0-9 ]/g, ""); // Allow digits and space
+  val = val.replace(/(?<=\d)\s+(?=\d)/g, ""); // Remove spaces from middle
 
-  if (!isNumberKey && !isAllowedKey && !isSpaceKey) {
-    e.preventDefault();
-    seterror("Only numeric Order ID is allowed");
-    return;
-  }
+  // Optional: trim leading/trailing space
+  // val = val.trim();
 
-  // ❗ If user types space
-  if (isSpaceKey) {
-    const input = e.target;
-    const cursorPosition = input.selectionStart;
-    const inputLength = input.value.length;
-
-    const isMiddle = cursorPosition !== 0 && cursorPosition !== inputLength;
-
-    if (isMiddle) {
-      e.preventDefault();
-      seterror("Space is not allowed in the middle");
-      return;
-    }
-  }
-
-  seterror("");
+  setSearchQuery(val);
+  seterror(""); // clear error
 };
+
 
 
 
@@ -291,8 +269,8 @@ const handleKeyDown = (e) => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                onChange={handleInputChange}
+                    
                     onInput={numberInputClean}
                     inputMode="numeric"
                 placeholder="Search by Order ID "

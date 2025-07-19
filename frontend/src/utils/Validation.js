@@ -146,14 +146,22 @@ export const cityStateInputClean = (e) => {
 export const numberInputClean = (e) => {
   let val = e.currentTarget.value;
 
-  // Allow digits and space
+  // Remove all non-digit and space characters
   val = val.replace(/[^0-9 ]/g, "");
 
-  // Remove spaces from middle
+  // ❌ Remove spaces from middle
   val = val.replace(/(?<=\d)\s+(?=\d)/g, "");
 
+  // ✅ Allow only single space at start or end (not both)
+  val = val.replace(/(?!^) +(?=\d)|(?<=\d) +(?=$)/g, "");
+
+  // Optional: disallow leading/trailing spaces too
+  // val = val.trim();
+
   e.currentTarget.value = val;
+  setSearchQuery(val); // If using state
 };
+
 
   
 // 🔢 PINCODE
