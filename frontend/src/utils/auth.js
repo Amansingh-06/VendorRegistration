@@ -144,6 +144,16 @@ export const logout = async (setSession, setLoggingOut) => {
         setLoggingOut(true);
         await supabase.auth.signOut();
         setSession(null);
+
+        // ✅ Safe cleanup for admin login
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_refresh_token");
+        localStorage.removeItem("admin_vendor_id");
+
+        // ✅ Optional: Clear other temporary analytics keys
+        localStorage.removeItem("jam_ephemeral_events_host-network-events");
+        localStorage.removeItem("jam_ephemeral_events_content-interactivity-events");
+
         // toast.success("Logged out");
     } catch (error) {
         toast.error("Error in logging out");
@@ -151,6 +161,8 @@ export const logout = async (setSession, setLoggingOut) => {
         setLoggingOut(false);
     }
 };
+
+
 
 
 export const handleAuthError = (error) => {

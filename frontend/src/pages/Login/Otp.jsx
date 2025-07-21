@@ -223,7 +223,7 @@ const Otp = () => {
         onSubmit={handleSubmit(onSubmit)}
         autoComplete="off"
         id="otp-form"
-        className="relative z-5 p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-[66vh]  lg:max-h-none lg:min-h-[66vh] -mt-5 lg:mt-0"
+        className="relative z-50 p-4 lg:p-10 w-full lg:w-[34%] rounded-t-3xl lg:rounded-none flex flex-col items-start justify-center ml-0 lg:-ml-5 bg-white overflow-y-auto max-h-[66vh]  lg:max-h-none lg:min-h-[66vh] -mt-5 lg:mt-0"
       >
         <div className="flex items-center justify-center mb-3 lg:mb-4 text-sm lg:text-lg font-medium text-gray ">
           {phone && (
@@ -355,7 +355,7 @@ const Otp = () => {
         <ResendButton
           fullPhone={phone}
           setIsResending={setIsResending}
-          onResendSuccess={() => setValue("otp", "")}
+          onResendSuccess={() => setValue("otp", value)}
         />
 
         <div className="flex w-full items-center justify-left mt-6">
@@ -383,12 +383,16 @@ const Otp = () => {
           <button
             type="submit"
             name="defaultSignup"
-            className={`flex items-center  justify-center gap-2 md:gap-3 w-full lg:w-[120px] text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg z-50
-                            ${
-                              isValid && otp?.length === 6
-                                ? "bg-orange text-white hover:bg-orange/90 hover:scale-95 cursor-pointer"
-                                : "bg-orange/50 text-white cursor-not-allowed opacity-70"
-                            }`}
+            className={`flex items-center  justify-center gap-2 md:gap-3 w-full lg:w-[120px] text-white py-3 border-orange border-2 rounded-xl font-semibold transition duration-300 shadow-lg z-50 ${isLogin ? '-mt-16 md:mt-0' : 'mt-0'}
+                            ${isLogin
+                ? !(isValid && otp?.length === 6)
+                  ? "bg-orange/50 text-white cursor-not-allowed opacity-70"
+                  : "bg-orange text-white hover:bg-orange/90 hover:scale-95 cursor-pointer"
+                : !(isValid && otp?.length === 6)
+                  ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-70"
+                  : "bg-grey-100 text-gray hover:text-white hover:bg-orange/90 hover:scale-95 cursor-pointer"
+              }
+    disabled:bg-orange/50 disabled:text-white disabled:cursor-not-allowed disabled:opacity-70`}
             disabled={authenticating}
           >
             {isLogin ? "Login" : "Sign Up"}
