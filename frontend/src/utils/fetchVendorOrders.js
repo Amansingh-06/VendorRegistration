@@ -39,10 +39,11 @@ export const fetchVendorOrders = async (
         )
       `)
       .eq('v_id', vendorId);
+if (status && status.toLowerCase() !== 'all') {
+  query = query.ilike('status', `%${status}%`); // ✅ partial match allow karega
+  console.log("🚀 Supabase filter laga raha hu with status:", status);
+}
 
-    if (status && status.toLowerCase() !== 'all') {
-      query = query.ilike('status', status);
-    }
 
     const { data: orders, error } = await query;
 

@@ -28,11 +28,21 @@ const OrderPage = () => {
   const [error, seterror] = useState("");
   // const { vendorProfile } = useAuth();
 
- const getDbStatus = (active) => {
-  if (active === "Accepted & DP Assign") return "accepted";
-  // if (active === "Preparing & DP Assign") return "preparing"; // optional
-  return active?.toLowerCase();
+const getDbStatus = (active) => {
+  const normalized = active?.toLowerCase().trim();
+  console.log("🔍 getDbStatus() called with:", active);
+  console.log("🎯 Normalized value:", normalized);
+
+  if (normalized === "accepted & dp assign" || normalized === "accepted & dpassigned") {
+    console.log("✅ Returning: accepted");
+    return "accepted";
+  }
+
+  console.log("➡️ Returning:", normalized);
+  return normalized;
 };
+
+
 
 const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
   vendorId,
@@ -138,11 +148,11 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
 
 
  useEffect(() => {
-  if (!orders || orders.length === 0) return;
+  if (!orders) return;
 
   let filtered = [...orders];
 
-  // ✅ 1. Filter by Active Status (Accepted / Accepted & DP Assign)
+  // ✅ Filter by Active Status
   const normalizedActive = active?.toLowerCase().trim();
   if (normalizedActive === "accepted") {
     filtered = filtered.filter((order) => {
@@ -174,7 +184,7 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
     });
   }
 
-  // ✅ 2. Filter by Search Query
+  // ✅ Filter by Search Query
   const trimmed = searchQuery.trim();
   if (trimmed !== "") {
     const lowerQuery = trimmed.toLowerCase();
@@ -185,6 +195,7 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
 
   setFilteredOrders(filtered);
 }, [orders, active, searchQuery]);
+
 
 
 const handleSearch = () => {
@@ -239,7 +250,6 @@ const handleInputChange = (e) => {
   //   }
   // };
 
-  console.log("🧾 Filtered Orders", filteredOrders);
 
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">
