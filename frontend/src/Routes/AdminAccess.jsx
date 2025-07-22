@@ -27,8 +27,15 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
             console.log("🔁 Refresh Token:", refreshToken);
             console.log("🏪 Vendor ID:", vendorId);
 
-            if (!token || !refreshToken) {
-                console.warn("🚫 Token or Refresh Token missing");
+            // ❌ Check for missing or invalid tokens
+            if (
+                !token ||
+                !refreshToken ||
+                token === "undefined" ||
+                refreshToken === "undefined"
+            ) {
+                console.warn("🚫 Invalid or missing token/refreshToken");
+                localStorage.clear(); // optional: to remove bad data
                 if (fallback) {
                     setIsAllowed(false);
                 } else {
@@ -37,6 +44,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 return;
             }
 
+            // ✅ Save values from URL if present
             if (urlToken && urlRefreshToken && urlVendorId) {
                 console.log("💾 Saving tokens from URL to localStorage");
                 localStorage.setItem("admin_token", urlToken);
@@ -44,6 +52,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 localStorage.setItem("admin_vendor_id", urlVendorId);
             }
 
+            // ✅ Set Supabase session
             const { error: sessionError } = await supabase.auth.setSession({
                 access_token: token,
                 refresh_token: refreshToken,
@@ -55,6 +64,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 return;
             }
 
+            // ✅ Get user info
             const { data: { user }, error: userError } = await supabase.auth.getUser();
             if (!user || userError) {
                 console.error("❌ Failed to get user:", userError);
@@ -64,6 +74,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
 
             console.log("👤 Logged in User:", user.id);
 
+            // ✅ Check user's role
             const { data: profile, error } = await supabase
                 .from("user")
                 .select("role")
