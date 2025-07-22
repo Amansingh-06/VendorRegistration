@@ -7,7 +7,8 @@ const ButtonGroup = ({ active, setActive }) => {
     const buttonList = [
     
         { text: FILTER_BUTTON?.ALL, color: FILTER_BUTTON?.COLOR },
-        {text: FILTER_BUTTON?.PENDING, color: FILTER_BUTTON?.COLOR },
+        { text: FILTER_BUTTON?.PENDING, color: FILTER_BUTTON?.COLOR },
+        {text: FILTER_BUTTON?.['ACCEPTED&DPASSIGN'],color: FILTER_BUTTON?.COLOR},
 
         { text: FILTER_BUTTON?.ACCEPTED, color: FILTER_BUTTON?.COLOR },
         { text: FILTER_BUTTON?.PREPARING, color: FILTER_BUTTON?.COLOR },

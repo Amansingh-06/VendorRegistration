@@ -145,6 +145,7 @@ export function capitalize(str) {
 export const FILTER_BUTTON = {
     ALL: "All",
     ACCEPTED: "Accepted",
+    "ACCEPTED&DPASSIGN":" Accepted & DP Assign",
     PREPARED: "Prepared",
     PREPARING: "Preparing",
     ON_THE_WAY: "On The Way",

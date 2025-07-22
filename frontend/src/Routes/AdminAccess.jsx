@@ -8,7 +8,6 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Get params from URL (if available)
     const urlVendorId = new URLSearchParams(location.search).get("vendorId");
     const urlToken = new URLSearchParams(location.search).get("token");
     const urlRefreshToken = new URLSearchParams(location.search).get("refresh");
@@ -18,45 +17,52 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
 
     useEffect(() => {
         const verifyAdmin = async () => {
-            // ✅ 1. Try from URL first, then localStorage fallback
+            console.log("🔐 Verifying Admin Access...");
+
             let token = urlToken || localStorage.getItem("admin_token");
             let refreshToken = urlRefreshToken || localStorage.getItem("admin_refresh_token");
             let vendorId = urlVendorId || localStorage.getItem("admin_vendor_id");
 
-            // ❌ 2. If nothing available, redirect or fallback
+            console.log("🧾 Token:", token);
+            console.log("🔁 Refresh Token:", refreshToken);
+            console.log("🏪 Vendor ID:", vendorId);
+
             if (!token || !refreshToken) {
+                console.warn("🚫 Token or Refresh Token missing");
                 if (fallback) {
-                    setIsAllowed(false); // fallback for vendor
+                    setIsAllowed(false);
                 } else {
                     navigate("/");
                 }
                 return;
             }
 
-            // ✅ 3. Save values to localStorage (only if from URL)
             if (urlToken && urlRefreshToken && urlVendorId) {
+                console.log("💾 Saving tokens from URL to localStorage");
                 localStorage.setItem("admin_token", urlToken);
                 localStorage.setItem("admin_refresh_token", urlRefreshToken);
                 localStorage.setItem("admin_vendor_id", urlVendorId);
             }
 
-            // ✅ 4. Set Supabase session
             const { error: sessionError } = await supabase.auth.setSession({
                 access_token: token,
                 refresh_token: refreshToken,
             });
 
             if (sessionError) {
+                console.error("❌ Supabase Session Error:", sessionError);
                 navigate("/");
                 return;
             }
 
-            // ✅ 5. Get user and verify admin role
             const { data: { user }, error: userError } = await supabase.auth.getUser();
             if (!user || userError) {
+                console.error("❌ Failed to get user:", userError);
                 navigate("/");
                 return;
             }
+
+            console.log("👤 Logged in User:", user.id);
 
             const { data: profile, error } = await supabase
                 .from("user")
@@ -64,12 +70,21 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
                 .eq("user_id", user.id)
                 .single();
 
-            if (error || !profile || profile.role !== "Admin") {
+            if (error || !profile) {
+                console.error("❌ Error fetching profile:", error);
                 navigate("/");
                 return;
             }
 
-            // ✅ 6. All checks passed → grant access
+            console.log("🛡️ User Role:", profile.role);
+
+            if (profile.role !== "Admin") {
+                console.warn("🚫 Not an admin user");
+                navigate("/");
+                return;
+            }
+
+            console.log("✅ Admin verified. Access granted.");
             setSelectedVendorId(vendorId);
             setIsAllowed(true);
         };

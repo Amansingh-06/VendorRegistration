@@ -11,6 +11,7 @@ import OfferPopup from "../components/Popup";
 import { updateVendorDiscount } from "../utils/OfferUpdate";
 import { BiSearch } from "react-icons/bi";
 import { numberInputClean } from "../utils/Validation";
+import {filterOrdersByActive} from '../utils/FilterorderByActive'
 
 export { updateVendorDiscount } from "../utils/OfferUpdate"; // ✅ Export for testing
 const OrderPage = () => {
@@ -27,10 +28,17 @@ const OrderPage = () => {
   const [error, seterror] = useState("");
   // const { vendorProfile } = useAuth();
 
-  const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
-    vendorId,
-    active
-  );
+ const getDbStatus = (active) => {
+  if (active === "Accepted & DP Assign") return "accepted";
+  // if (active === "Preparing & DP Assign") return "preparing"; // optional
+  return active?.toLowerCase();
+};
+
+const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
+  vendorId,
+  getDbStatus(active) // send only actual DB status
+);
+
 
   useEffect(() => {
     if (vendorProfile?.current_discount !== undefined) {
@@ -126,32 +134,69 @@ const OrderPage = () => {
     [hasMore, loadMore, isLoading]
   );
 
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredOrders(orders);
-    }
-    // else don't update filteredOrders, keep current filtered state
-  }, [orders]);
 
-  const handleSearch = () => {
-    const trimmed = searchQuery.trim();
-    if (trimmed === "") {
-      seterror("Search field cannot be empty")
-      return
-    }
 
+
+ useEffect(() => {
+  if (!orders || orders.length === 0) return;
+
+  let filtered = [...orders];
+
+  // ✅ 1. Filter by Active Status (Accepted / Accepted & DP Assign)
+  const normalizedActive = active?.toLowerCase().trim();
+  if (normalizedActive === "accepted") {
+    filtered = filtered.filter((order) => {
+      const status = order?.status?.toLowerCase().trim();
+      return status === "accepted";
+    });
+  } else if (
+    normalizedActive === "accepted & dp assign" ||
+    normalizedActive === "accepted & dpassigned"
+  ) {
+    filtered = filtered.filter((order) => {
+      const status = order?.status?.toLowerCase()?.trim();
+      if (status !== "accepted") return false;
+
+      const dpAssigned = !!order?.dp_id;
+      const createdTs = new Date(order?.created_ts);
+      const etaTs = new Date(order?.eta);
+      const now = new Date();
+
+      if (isNaN(createdTs) || isNaN(etaTs)) return false;
+
+      const totalTime = etaTs - createdTs;
+      if (totalTime <= 0) return false;
+
+      const timePassed = now - createdTs;
+      const percentagePassed = (timePassed / totalTime) * 100;
+
+      return dpAssigned || percentagePassed >= 65;
+    });
+  }
+
+  // ✅ 2. Filter by Search Query
+  const trimmed = searchQuery.trim();
+  if (trimmed !== "") {
     const lowerQuery = trimmed.toLowerCase();
-
-    const filtered = orders.filter(
-      (order) => order?.user_order_id?.toLowerCase().includes(lowerQuery)
-      // order.customer_name?.toLowerCase().includes(lowerQuery)
+    filtered = filtered.filter((order) =>
+      order?.user_order_id?.toLowerCase().includes(lowerQuery)
     );
+  }
 
-    setFilteredOrders(filtered);
-        setHasSearched(true)
+  setFilteredOrders(filtered);
+}, [orders, active, searchQuery]);
 
-    seterror("");
-  };
+
+const handleSearch = () => {
+  const trimmed = searchQuery.trim();
+  if (trimmed === "") {
+    seterror("Search field cannot be empty");
+    return;
+  }
+  setHasSearched(true);
+  seterror("");
+};
+
 
   const clearSearch = () => {
     setSearchQuery("");
@@ -179,6 +224,10 @@ const handleInputChange = (e) => {
 
 
 
+
+
+
+
   // const handlePaste = (e) => {
   //   const pasted = e.clipboardData.getData("text").trim();
   //   if (!/^\d+$/.test(pasted)) {
@@ -189,6 +238,9 @@ const handleInputChange = (e) => {
   //     seterror("");
   //   }
   // };
+
+  console.log("🧾 Filtered Orders", filteredOrders);
+
   return (
     <div className="flex flex-col items-center  bg-white   font-family-poppins">
       {/* <div className="w-full max-w-2xl flex flex-col gap-4"> */}

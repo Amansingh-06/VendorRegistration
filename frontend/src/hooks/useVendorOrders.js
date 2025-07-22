@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { fetchVendorOrders } from "../utils/fetchVendorOrders";
+import { fetchOrderById } from "../utils/FetchOrderById"; // ✅ import added
 import {
   ORDER_KEYS,
   ORDER_CHANNELS,
   ORDER_PAGINATION,
- } from "../utils/constants/OrderConfig";
+} from "../utils/constants/OrderConfig";
 import { SUPABASE_TABLES } from "../utils/constants/Table&column";
 
 const isStatusMatch = (a, b) =>
@@ -81,44 +82,43 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
         },
         async (payload) => {
           const updatedOrder = payload.new;
+          const orderId = updatedOrder?.[ORDER_KEYS.ORDER_ID];
 
           const matchesFilter =
             activeStatus.toLowerCase() === "all" ||
             isStatusMatch(updatedOrder?.[ORDER_KEYS.STATUS], activeStatus);
 
-          const { success, data } = await fetchVendorOrders(
-            vendorId,
-            activeStatus,
-            1,
-            0,
-            true
-          );
+          // Add delay to ensure OTP or other changes reflect in DB
+          setTimeout(async () => {
+            const { success, data: fullOrder } = await fetchOrderById(orderId); // ✅ correct fetch
 
-          const fullOrder = data?.[0];
-          if (!success || !fullOrder) return;
+            console.log("✅ Real-time fetched fullOrder:", fullOrder);
 
-          setOrders((prev) => {
-            const index = prev.findIndex(
-              (o) => o[ORDER_KEYS.ORDER_ID] === fullOrder[ORDER_KEYS.ORDER_ID]
-            );
+            if (!success || !fullOrder) return;
 
-            if (!matchesFilter) {
+            setOrders((prev) => {
+              const index = prev.findIndex(
+                (o) => o[ORDER_KEYS.ORDER_ID] === fullOrder[ORDER_KEYS.ORDER_ID]
+              );
+
+              if (!matchesFilter) {
+                if (index !== -1) {
+                  const updated = [...prev];
+                  updated.splice(index, 1);
+                  return updated;
+                }
+                return prev;
+              }
+
               if (index !== -1) {
                 const updated = [...prev];
-                updated.splice(index, 1);
+                updated[index] = fullOrder;
                 return updated;
               }
-              return prev;
-            }
 
-            if (index !== -1) {
-              const updated = [...prev];
-              updated[index] = fullOrder;
-              return updated;
-            } else {
               return [fullOrder, ...prev];
-            }
-          });
+            });
+          }, 300); // Slight delay to wait for consistency
         }
       )
       .subscribe();

@@ -20,6 +20,8 @@ const OrderCard = ({ order, onStatusUpdate }) => {
   const [otp, setOtp] = useState("");
   const [submittingOtp, setSubmittingOtp] = useState(false);
   const { selectedVendorId, session } = useAuth();
+  const [isActionDisabled, setIsActionDisabled] = useState(false);
+
 
   useEffect(() => {
     setLocalStatus(order?.status);
@@ -48,58 +50,97 @@ const OrderCard = ({ order, onStatusUpdate }) => {
     };
   }
 
-  const handleAction = async () => {
-    if (!action || loading) return;
+const handleAction = async () => {
+  if (!action || loading) return;
 
-    setLoading(true);
+  console.log("👉 Action Triggered");
+  console.log("➡️ Current Status:", currentStatus);
+  console.log("➡️ Next Status:", action?.nextStatus);
 
-    const { success } = await updateOrderStatus(
-      order?.order_id,
-      action?.nextStatus
-    );
+  // ✅ Check for "accepted ➝ preparing"
+  if (
+    currentStatus === ORDER_STATUS?.ACCEPTED &&
+    action?.nextStatus === ORDER_STATUS?.PREPARING
+  ) {
+    const dpAssigned = !!order?.dp_id;
+    const createdTs = new Date(order?.created_ts);
+    const etaTs = new Date(order?.eta);
+    const now = new Date();
 
-    if (success) {
-      setLocalStatus(action.nextStatus);
-      onStatusUpdate?.(order?.order_id);
+    const totalTime = etaTs - createdTs;
+    const timePassed = now - createdTs;
+    const percentagePassed = (timePassed / totalTime) * 100;
 
-      // ✅ Admin log if admin is acting
-      if (selectedVendorId) {
-        const description = `Order status updated for order ID ${order?.order_id}. Status changed to "${action?.nextStatus}".`;
-        let adminId = session?.user?.id;
+    console.log("📦 DP Assigned:", dpAssigned);
+    console.log("📆 Created At:", createdTs.toISOString());
+    console.log("📆 ETA:", etaTs.toISOString());
+    console.log("🕒 Current Time:", now.toISOString());
+    console.log("⌛ Time Passed (ms):", timePassed);
+    console.log("⏳ Total Time (ms):", totalTime);
+    console.log("📊 % Time Passed:", percentagePassed.toFixed(2));
 
-        if (!adminId) {
-          const {
-            data: { user },
-            error,
-          } = await supabase.auth.getUser();
-          if (error || !user) {
-            toast.error("Could not fetch admin user");
-            return;
-          } else {
-            adminId = user.id;
-          }
-        }
-        const { error } = await supabase
-          .from(SUPABASE_TABLES.ADMIN_LOGS)
-          .insert([
-            {
-              // log_id: crypto.randomUUID(), // Only if not defaulted
-              admin_id: adminId,
-              title: "Order Status Updated",
-              description,
-              timestamp: new Date(),
-            },
-          ]);
+    if (!dpAssigned && percentagePassed < 65) {
+      setIsActionDisabled(true)
+      console.log("❌ Blocked: Neither DP assigned nor 65% time passed");
+      toast.error("Delivery partner not assigned yet. Try again after some time.");
+      return;
+    } else {
+      console.log("✅ Allowed: Either DP assigned or 65% time passed");
+      setIsActionDisabled(false)
+    }
+  }
 
-        if (error) {
+  setLoading(true);
+  const { success } = await updateOrderStatus(order?.order_id, action?.nextStatus);
+
+  if (success) {
+    console.log("✅ Order Status Updated to:", action?.nextStatus);
+    setLocalStatus(action.nextStatus);
+    onStatusUpdate?.(order?.order_id);
+
+    if (selectedVendorId) {
+      const description = `Order status updated for order ID ${order?.order_id}. Status changed to "${action?.nextStatus}".`;
+      let adminId = session?.user?.id;
+
+      if (!adminId) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error || !user) {
+          toast.error("Could not fetch admin user");
+          setLoading(false);
+          return;
+        } else {
+          adminId = user.id;
         }
       }
-    } else {
-      alert("Failed to update status");
-    }
 
-    setLoading(false);
-  };
+      const { error } = await supabase
+        .from(SUPABASE_TABLES.ADMIN_LOGS)
+        .insert([
+          {
+            admin_id: adminId,
+            title: "Order Status Updated",
+            description,
+            timestamp: new Date(),
+          },
+        ]);
+
+      if (error) {
+        console.log("⚠️ Admin log insert error:", error);
+      }
+    }
+  } else {
+    console.log("❌ Failed to update order status");
+    alert("Failed to update status");
+  }
+
+  setLoading(false);
+};
+
+
 
   const itemCounts = Array.isArray(order?.order_item)
     ? order?.order_item.map((i) => ({
@@ -116,7 +157,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
   const final_amount = discounted_amount || 0;
 
   
-
+{console.log(order?.user_order_id,order?.dp_otp)}
   return (
     <>
       <div className="rounded-xl shadow-md border border-gray-200 bg-white p-3 md:p-4 space-y-3 text-sm">
@@ -248,14 +289,16 @@ const OrderCard = ({ order, onStatusUpdate }) => {
         {action && (
           <div className="text-center">
             <button
-              onClick={handleAction}
-              disabled={loading}
-              className={`bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange text-white py-1.5 px-4 rounded-[8px] w-full sm:w-1/2 font-semibold text-sm ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Updating..." : action.label}
-            </button>
+  onClick={handleAction}
+  disabled={loading}
+  className={`py-1.5 px-4 rounded-[8px] w-full sm:w-1/2 font-semibold text-sm text-white active:scale-95
+    ${loading || isActionDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-br from-orange via-yellow to-orange cursor-pointer"}
+  `}
+>
+  {loading ? "Updating..." : action.label}
+</button>
+
+            
           </div>
         )}
 
@@ -312,9 +355,13 @@ const OrderCard = ({ order, onStatusUpdate }) => {
               <button
                 onClick={async () => {
                   if (!otp || otp.length !== 6) return;
-
+console.log("Entered OTP:", otp);
+    console.log("Order OTP:", order?.dp_otp);
+    console.log("Parsed Entered OTP:", parseInt(otp));
+    console.log("Parsed Order OTP:", parseInt(order?.dp_otp));
                   setSubmittingOtp(true);
                   if (parseInt(otp) !== parseInt(order?.dp_otp)) {
+                    console.log('OTP mismatch')
                     setSubmittingOtp(false);
                     toast.error("Invalid OTP. Please try again.");
                     return;
