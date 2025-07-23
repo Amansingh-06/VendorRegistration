@@ -12,7 +12,7 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
   const urlToken = new URLSearchParams(location.search).get("token");
   const urlRefreshToken = new URLSearchParams(location.search).get("refresh");
 
-  const { setSelectedVendorId } = useAuth();
+  const { setSelectedVendorId,setSession } = useAuth();
   const [isAllowed, setIsAllowed] = useState(null);
 
   useEffect(() => {
@@ -53,10 +53,14 @@ export default function AdminProtectedRoute({ children, fallback = null }) {
       }
 
       // ✅ Set Supabase session
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: token,
-        refresh_token: refreshToken,
-      });
+    const { data: session, error: sessionError } = await supabase.auth.setSession({
+  access_token: token,
+  refresh_token: refreshToken,
+});
+
+if (session) {
+  setSession(session); // ✅ Add this line to store session in context
+}
 
       if (sessionError) {
         console.error("❌ Supabase Session Error:", sessionError.message);
