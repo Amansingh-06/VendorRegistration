@@ -399,7 +399,7 @@ export default function VendorProfile() {
   const formRef = useRef();
   const onSubmit = async (formData) => {
     if (!session?.user?.id) return alert("User not logged in");
-    console.log(session?.user?.id)
+    console.log(session?.user?.id,"session id")
 
     if (isFormIncomplete) {
       toast.error("Please fill all required fields.");
