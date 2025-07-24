@@ -13,6 +13,8 @@ export default function ItemCategory({
   const [allOptions, setAllOptions] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [localError, setLocalError] = useState("");
+
 
   const maxSuggestions = 10;
   const maxSelections = 5;
@@ -71,21 +73,26 @@ export default function ItemCategory({
     }
   };
 
-  const toggleItem = (id) => {
-    const strId = String(id);
-    let updated;
-    if (selectedIds.includes(strId)) {
-      updated = selectedIds.filter((i) => i !== strId);
-    } else if (selectedIds.length < maxSelections) {
-      updated = [...selectedIds, strId];
-    } else {
-      updated = selectedIds;
-    }
+const toggleItem = (id) => {
+  const strId = String(id);
+  let updated;
 
-    setSelectedIds(updated);
-    onChange(updated);
-    // Don't clear input or suggestions
-  };
+  if (selectedIds.includes(strId)) {
+    updated = selectedIds.filter((i) => i !== strId);
+    setLocalError(""); // ❌ error reset on remove
+  } else if (selectedIds.length < maxSelections) {
+    updated = [...selectedIds, strId];
+    setLocalError(""); // ✅ no error
+  } else {
+    // ✅ Show error
+    setLocalError(`You can select up to ${maxSelections} cuisines only.`);
+    return; // Don't update anything
+  }
+
+  setSelectedIds(updated);
+  onChange(updated);
+};
+
 
   const getNameById = (c_id) => {
     const item = allOptions.find((i) => String(i.c_id) === String(c_id));
@@ -115,6 +122,7 @@ export default function ItemCategory({
 
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
+
       {selectedIds.length > 0 && (
         <div className="mt-4">
           <h3 className="font-medium text-gray-500 text-sm uppercase mb-2">
@@ -137,7 +145,10 @@ export default function ItemCategory({
                 {getNameById(c_id)}
               </label>
             ))}
+
           </div>
+                            {localError && <p className="text-red-500 text-sm mt-1">{localError}</p>}
+
         </div>
       )}
 

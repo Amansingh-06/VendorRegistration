@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { fetchVendorOrders } from "../utils/fetchVendorOrders";
-import { fetchOrderById } from "../utils/FetchOrderById"; // ✅ import added
+import { fetchOrderById } from "../utils/FetchOrderById";
 import {
   ORDER_KEYS,
   ORDER_CHANNELS,
@@ -9,6 +9,7 @@ import {
 } from "../utils/constants/OrderConfig";
 import { SUPABASE_TABLES } from "../utils/constants/Table&column";
 
+// helper function to match statuses
 const isStatusMatch = (a, b) =>
   (a || "").toLowerCase() === (b || "").toLowerCase();
 
@@ -20,6 +21,7 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
 
   const initialLoaded = useRef(false);
 
+  // function to fetch orders
   const loadOrders = useCallback(
     async (reset = false) => {
       if (!vendorId || isLoading) return;
@@ -54,6 +56,7 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
     [vendorId, activeStatus, orders.length, isLoading]
   );
 
+  // reset state on vendor or status change
   useEffect(() => {
     if (!vendorId) return;
     initialLoaded.current = false;
@@ -61,12 +64,14 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
     setHasMore(true);
   }, [vendorId, activeStatus]);
 
+  // load orders initially once
   useEffect(() => {
     if (!vendorId || initialLoaded.current) return;
     initialLoaded.current = true;
     loadOrders(true);
   }, [vendorId, activeStatus, loadOrders]);
 
+  // handle realtime updates
   useEffect(() => {
     if (!vendorId) return;
 
@@ -83,17 +88,11 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
         async (payload) => {
           const updatedOrder = payload.new;
           const orderId = updatedOrder?.[ORDER_KEYS.ORDER_ID];
+          if (!updatedOrder || !orderId) return;
 
-          const matchesFilter =
-            activeStatus.toLowerCase() === "all" ||
-            isStatusMatch(updatedOrder?.[ORDER_KEYS.STATUS], activeStatus);
-
-          // Add delay to ensure OTP or other changes reflect in DB
+          // fetch complete latest order from DB
           setTimeout(async () => {
-            const { success, data: fullOrder } = await fetchOrderById(orderId); // ✅ correct fetch
-
-            console.log("✅ Real-time fetched fullOrder:", fullOrder);
-
+            const { success, data: fullOrder } = await fetchOrderById(orderId);
             if (!success || !fullOrder) return;
 
             setOrders((prev) => {
@@ -101,24 +100,17 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
                 (o) => o[ORDER_KEYS.ORDER_ID] === fullOrder[ORDER_KEYS.ORDER_ID]
               );
 
-              if (!matchesFilter) {
-                if (index !== -1) {
-                  const updated = [...prev];
-                  updated.splice(index, 1);
-                  return updated;
-                }
-                return prev;
-              }
-
               if (index !== -1) {
+                // update existing
                 const updated = [...prev];
                 updated[index] = fullOrder;
                 return updated;
               }
 
+              // add new
               return [fullOrder, ...prev];
             });
-          }, 300); // Slight delay to wait for consistency
+          }, 300); // delay for DB consistency
         }
       )
       .subscribe();
@@ -126,7 +118,7 @@ export const useVendorOrders = (vendorId, activeStatus = "All") => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [vendorId, activeStatus]);
+  }, [vendorId]);
 
   return {
     orders,
