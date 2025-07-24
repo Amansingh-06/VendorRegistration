@@ -209,11 +209,11 @@ const VendorEarnings = () => {
         orders.forEach((order, index) => {
           const status = order?.status?.toLowerCase();
           const orderDate = new Date(order?.created_ts);
-          const total_amount = order?.total_amount || 0;
-          const Item_amount = total_amount / 2;
+          const item_amount = order?.order_item?.[0]?.item_real_price || 0;
+          
           const vendor_discount = order?.vendor_discount || 0;
           const discounted_amount =
-            (Item_amount * (100 - vendor_discount)) / 100;
+            (item_amount * (100 - vendor_discount)) / 100;
           const amount = discounted_amount || 0;
 
           if (status === "delivered") {
@@ -283,11 +283,11 @@ const VendorEarnings = () => {
 
         orders.forEach((order) => {
           const orderDate = new Date(order?.created_ts);
-          const total_amount = order?.total_amount || 0;
-          const Item_amount = total_amount / 2;
+         const item_amount = order?.order_item?.[0]?.item_real_price || 0;
+          
           const vendor_discount = order?.vendor_discount || 0;
           const discounted_amount =
-            (Item_amount * (100 - vendor_discount)) / 100;
+            (item_amount * (100 - vendor_discount)) / 100;
           const amount = discounted_amount || 0;
 
           if (orderDate >= start && orderDate <= end) {
@@ -532,19 +532,19 @@ const VendorEarnings = () => {
                                 {rating?.user?.name}
                               </h3>
                               <div className="text-green-600 text-sm whitespace-nowrap">
-                                <span className="text-gray-500">Spended</span> ₹
-                                {(() => {
-                                  const total = rating.order?.total_amount || 0;
+  <span className="text-gray-500">Spended</span> ₹
+  {(() => {
+    // ✅ Use item_real_price from the first order_item
+    const item_amount = rating?.order?.order_item?.[0]?.item_real_price || 0;
+    const discount = rating?.order?.vendor_discount || 0;
+    const final = (item_amount * (100 - discount)) / 100;
 
-                                  const itemHalf = total / 2;
-                                  const discount =
-                                    rating?.order?.vendor_discount || 0;
-                               
-                                  const final =
-                                    (itemHalf * (100 - discount)) / 100;
-                                  return final.toFixed(2);
+    return final.toFixed(2);
                                 })()}
-                              </div>
+                                {console.log("ratig",rating)}
+                                {console.log("item_amount",rating?.order?.order_item?.[0]?.item_real_price)}
+</div>
+
                             </div>
                           </div>
                         </div>

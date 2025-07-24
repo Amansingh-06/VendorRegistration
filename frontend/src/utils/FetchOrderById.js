@@ -10,6 +10,7 @@ export const fetchOrderById = async (orderId) => {
           order_item_id,
           quantity,
           final_price,
+          item_real_price
           items:item_id (
             item_id,
             item_name,

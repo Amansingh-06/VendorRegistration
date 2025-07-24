@@ -245,15 +245,14 @@ export default function VendorProfile() {
     fetchVendor();
   }, [vendorId, reset]);
 
-  useEffect(() => {
- 
+ useEffect(() => {
+  const fetchReadableAddress = async () => {
+    const lat = initialFormState?.latitude;
+    const lng = initialFormState?.longitude;
 
-    const fetchReadableAddress = async () => {
-      if (initialFormState.latitude && initialFormState.longitude) {
-        const response = await getAddressFromLatLng(
-          initialFormState.latitude,
-          initialFormState.longitude
-        );
+    if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+      try {
+        const response = await getAddressFromLatLng(lat, lng);
         const addressData = response?.results?.[0];
 
         if (addressData) {
@@ -262,46 +261,37 @@ export default function VendorProfile() {
           const getComponent = (type) =>
             components.find((c) => c.types.includes(type))?.long_name || "";
 
-          // ✅ Extract parts
-          const area =
-            getComponent("sublocality_level_1") || getComponent("locality");
-          const city =
-            getComponent("locality") ||
-            getComponent("administrative_area_level_2");
-          const state = getComponent("administrative_area_level_1");
-          const pincode = getComponent("postal_code");
-          const formatted = addressData.formatted_address;
-
-          // ✅ More accurate landmark like "Fazalganj Industrial Estate"
-          const landmark =
-            getComponent("neighborhood") ||
-            getComponent("premise") ||
-            getComponent("sublocality_level_2") ||
-            getComponent("point_of_interest") ||
-            getComponent("establishment");
-
           const addressToSet = {
-            area,
-            landmark,
-            city,
-            state,
-            pincode,
-            full: formatted,
-            lat: initialFormState?.latitude,
-            long: initialFormState?.longitude,
+            area: getComponent("sublocality_level_1") || getComponent("locality"),
+            landmark:
+              getComponent("neighborhood") ||
+              getComponent("premise") ||
+              getComponent("sublocality_level_2") ||
+              getComponent("point_of_interest") ||
+              getComponent("establishment"),
+            city: getComponent("locality") || getComponent("administrative_area_level_2"),
+            state: getComponent("administrative_area_level_1"),
+            pincode: getComponent("postal_code"),
+            full: addressData.formatted_address,
+            lat,
+            long: lng,
           };
 
-          // setFetchedAddress(addressToSet);
           setSelectedAddress(addressToSet);
-
         } else {
+          console.warn("📭 No address found for lat/lng");
         }
-      } else {
+      } catch (err) {
+        console.error("🌐 Error fetching address:", err);
       }
-    };
+    } else {
+      console.warn("❌ Invalid lat/lng:", lat, lng);
+    }
+  };
 
-    fetchReadableAddress();
-  }, [initialFormState?.latitude, initialFormState?.longitude]);
+  fetchReadableAddress();
+}, [initialFormState?.latitude, initialFormState?.longitude]);
+
 
   const normalizeTime = (time) => {
     if (!time) return "";

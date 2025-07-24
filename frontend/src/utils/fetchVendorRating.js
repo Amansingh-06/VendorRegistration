@@ -25,6 +25,7 @@ export const fetchVendorRatings = async (vendorId, page = 1, limit = 5) => {
           order_item:order_item!order_item_order_id_fkey (
             quantity,
             final_price,
+            item_real_price,
             items:item_id (
               item_id,
               item_name,

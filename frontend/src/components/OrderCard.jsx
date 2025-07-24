@@ -149,15 +149,17 @@ const handleAction = async () => {
         price: i.final_price,
       }))
     : [];
+console.log("order",order)
+const item_amount = order?.order_item?.[0]?.item_real_price || 0;
+const vendor_discount = order?.vendor_discount || 0;
+const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
+const final_amount = discounted_amount || 0;
 
-  const total_amount = order?.total_amount || 0;
-  const item_amount = total_amount / 2;
-  const vendor_discount = order?.vendor_discount || 0;
-  const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
-  const final_amount = discounted_amount || 0;
+console.log("item_real_price", item_amount);
+console.log("final_amount", final_amount);
+
 
   
-{console.log(order?.user_order_id,order?.dp_otp)}
   return (
     <>
       <div className="rounded-xl shadow-md border border-gray-200 bg-white p-3 md:p-4 space-y-3 text-sm">
@@ -216,11 +218,11 @@ const handleAction = async () => {
           <span
             className={`text-xs font-medium
       ${
-        order?.delivery_type === "Schedule"
+        order?.delivery_type === "schedule"
           ? "text-green-600"
-          : order?.delivery_type === "Standard"
+          : order?.delivery_type === "standard"
           ? "text-yellow-500"
-          : order?.delivery_type === "Rapid"
+          : order?.delivery_type === "rapid"
           ? "text-red-500"
           : "text-gray-500"
       }`}
@@ -272,7 +274,7 @@ const handleAction = async () => {
                 {order?.delivery_person?.name || "Delivery Partner"}
               </p>
             </div>
-
+{console.log(order?.delivery_person,"DP")}
             {/* Second Line: Call Button */}
             <div>
               <a

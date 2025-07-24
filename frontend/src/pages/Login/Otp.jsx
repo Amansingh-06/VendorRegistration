@@ -383,7 +383,7 @@ const Otp = () => {
           <button
             type="submit"
             name="defaultSignup"
-            className={`flex items-center  justify-center gap-2 md:gap-3 w-full lg:w-[120px] text-white py-3 border-orange border-2 rounded-xl font-semibold transition duration-300 shadow-lg z-50 ${isLogin ? '-mt-16 md:mt-0' : 'mt-0'}
+            className={`flex items-center  justify-center gap-2 md:gap-3 w-full lg:w-[120px] text-white py-3 border-orange border-2 rounded-xl font-semibold transition duration-300 shadow-lg z-50 
                             ${isLogin
                 ? !(isValid && otp?.length === 6)
                   ? "bg-orange/50 text-white cursor-not-allowed opacity-70"

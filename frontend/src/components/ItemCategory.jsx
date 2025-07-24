@@ -40,6 +40,7 @@ export default function ItemCategory({
       validIds.every((val, i) => val === selectedIds[i]);
 
     if (!areSame) {
+      console.log("Updating selectedIDS from props:",validIds)
       setSelectedIds(validIds);
     }
   }, [value]);

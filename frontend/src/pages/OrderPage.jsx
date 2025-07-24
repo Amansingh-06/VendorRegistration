@@ -194,19 +194,40 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
   }
 
   setFilteredOrders(filtered);
-}, [orders, active, searchQuery]);
+}, [orders, active]);
 
 
 
-const handleSearch = () => {
+const handleSearch = async () => {
   const trimmed = searchQuery.trim();
   if (trimmed === "") {
     seterror("Search field cannot be empty");
     return;
   }
+
   setHasSearched(true);
   seterror("");
+
+  try {
+    const { data, error } = await supabase
+      .from("orders") // 👈 your table name
+      .select("*")
+      .ilike("user_order_id", `%${trimmed}%`); // 🔍 only search filter, no status
+
+    if (error) {
+      console.error("Supabase search error:", error);
+      seterror("Failed to search orders");
+      return;
+    }
+
+    setFilteredOrders(data); // ✅ Directly show results without status filtering
+  } catch (err) {
+    console.error("Unexpected search error:", err);
+    seterror("Unexpected error occurred");
+  }
 };
+
+
 
 
   const clearSearch = () => {
