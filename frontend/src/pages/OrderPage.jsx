@@ -211,9 +211,19 @@ const handleSearch = async () => {
   try {
     const { data, error } = await supabase
       .from("orders")
-      .select("*")
+      .select(`
+        user_order_id,created_ts,status,delivery_type,dp_id,
+        user:u_id (dp_url,name),
+    
+        
+        
+        order_item:order_item_order_id_fkey (
+          *,
+          items:item_id (*)
+        )
+      `)
       .ilike("user_order_id", `%${trimmed}%`)
-      .eq("v_id", vendorId); // ✅ only fetch orders of that vendor
+      .eq("v_id", vendorId); // ✅ fetch only vendor's orders
 
     if (error) {
       console.error("Supabase search error:", error);
@@ -227,6 +237,7 @@ const handleSearch = async () => {
     seterror("Unexpected error occurred");
   }
 };
+
 
 
 
