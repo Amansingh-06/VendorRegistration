@@ -28,8 +28,40 @@ const OrderCard = ({ order, onStatusUpdate }) => {
   }, [order?.status]);
 
   const currentStatus = localStatus?.toLowerCase();
+    let action = null;
 
-  let action = null;
+
+
+  useEffect(() => {
+  const checkActionAllowed = () => {
+    if (
+      currentStatus === ORDER_STATUS?.ACCEPTED &&
+      action?.nextStatus === ORDER_STATUS?.PREPARING
+    ) {
+      const dpAssigned = !!order?.dp_id;
+      const createdTs = new Date(order?.created_ts);
+      const etaTs = new Date(order?.eta);
+      const now = new Date();
+
+      const totalTime = etaTs - createdTs;
+      const timePassed = now - createdTs;
+      const percentagePassed = (timePassed / totalTime) * 100;
+
+      if (dpAssigned || percentagePassed >= 65) {
+        setIsActionDisabled(false); // ✅ enable
+      } else {
+        setIsActionDisabled(true); // ❌ disable
+      }
+    } else {
+      setIsActionDisabled(false); // other status - always enable
+    }
+  };
+
+  checkActionAllowed();
+}, [order?.dp_id, order?.created_ts, order?.eta, currentStatus, action?.nextStatus]);
+
+
+
   if (currentStatus === ORDER_STATUS?.PENDING) {
     action = {
       label: ORDER_STATUS?.ACCEPT_LABLE,
@@ -79,14 +111,15 @@ const handleAction = async () => {
     console.log("⏳ Total Time (ms):", totalTime);
     console.log("📊 % Time Passed:", percentagePassed.toFixed(2));
 
-    if (!dpAssigned && percentagePassed < 65) {
-      setIsActionDisabled(true)
+    // ✅ Check if either DP assigned OR 65% time passed
+    if (dpAssigned || percentagePassed >= 65) {
+      console.log("✅ Allowed: Either DP assigned or 65% time passed");
+      setIsActionDisabled(false); // ✅ enable button
+    } else {
       console.log("❌ Blocked: Neither DP assigned nor 65% time passed");
+      setIsActionDisabled(true);  // ❌ disable button
       toast.error("Delivery partner not assigned yet. Try again after some time.");
       return;
-    } else {
-      console.log("✅ Allowed: Either DP assigned or 65% time passed");
-      setIsActionDisabled(false)
     }
   }
 
@@ -139,6 +172,7 @@ const handleAction = async () => {
 
   setLoading(false);
 };
+
 
 
 

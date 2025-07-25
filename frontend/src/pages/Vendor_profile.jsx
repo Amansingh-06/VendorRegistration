@@ -233,8 +233,9 @@ export default function VendorProfile() {
           banner: data.banner_url || "",
           video: data.video_url || "",
           qr: data.payment_url || "",
-          longitude: data.longitude || "",
-          latitude: data.latitude || "",
+        longitude: Number(data.longitude) || null,
+latitude: Number(data.latitude) || null,
+
         });
 
         setIsFormReady(true);
@@ -245,12 +246,15 @@ export default function VendorProfile() {
     fetchVendor();
   }, [vendorId, reset]);
 
- useEffect(() => {
+useEffect(() => {
   const fetchReadableAddress = async () => {
-    const lat = initialFormState?.latitude;
-    const lng = initialFormState?.longitude;
+    const latRaw = initialFormState?.latitude;
+    const lngRaw = initialFormState?.longitude;
 
-    if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+    const lat = Number(latRaw);
+    const lng = Number(lngRaw);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
       try {
         const response = await getAddressFromLatLng(lat, lng);
         const addressData = response?.results?.[0];
@@ -285,12 +289,13 @@ export default function VendorProfile() {
         console.error("🌐 Error fetching address:", err);
       }
     } else {
-      console.warn("❌ Invalid lat/lng:", lat, lng);
+      console.warn("❌ Invalid lat/lng:", latRaw, lngRaw);
     }
   };
 
   fetchReadableAddress();
 }, [initialFormState?.latitude, initialFormState?.longitude]);
+
 
 
   const normalizeTime = (time) => {
@@ -776,7 +781,7 @@ export default function VendorProfile() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {/* Banner Image */}
                 <div className="flex flex-col items-center border-dashed rounded-lg border-primary border-1 p-4">
-                  {bannerUrl ? (
+                  {bannerUrl && bannerUrl !=='NA' ? (
                     <img
                       src={bannerUrl}
                       alt="banner"
@@ -807,7 +812,7 @@ export default function VendorProfile() {
 
                 {/* Video */}
                 <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
-                  {videoUrl ? (
+                  {videoUrl && videoUrl !== 'NA' ? (
                     <video
                       src={videoUrl}
                       controls
@@ -838,7 +843,7 @@ export default function VendorProfile() {
 
                 {/* QR Code */}
                 <div className="flex flex-col items-center p-4 border-dashed border-primary rounded-lg border-1">
-                  {qrUrl ? (
+                  {qrUrl && qrUrl !== 'NA' ? (
                     <img
                       src={qrUrl}
                       alt="QR code"

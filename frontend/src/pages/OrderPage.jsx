@@ -210,9 +210,10 @@ const handleSearch = async () => {
 
   try {
     const { data, error } = await supabase
-      .from("orders") // 👈 your table name
+      .from("orders")
       .select("*")
-      .ilike("user_order_id", `%${trimmed}%`); // 🔍 only search filter, no status
+      .ilike("user_order_id", `%${trimmed}%`)
+      .eq("v_id", vendorId); // ✅ only fetch orders of that vendor
 
     if (error) {
       console.error("Supabase search error:", error);
@@ -220,12 +221,13 @@ const handleSearch = async () => {
       return;
     }
 
-    setFilteredOrders(data); // ✅ Directly show results without status filtering
+    setFilteredOrders(data);
   } catch (err) {
     console.error("Unexpected search error:", err);
     seterror("Unexpected error occurred");
   }
 };
+
 
 
 

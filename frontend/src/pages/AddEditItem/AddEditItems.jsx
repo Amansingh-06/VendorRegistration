@@ -743,6 +743,7 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
                 </label>
               </div>
             </div>
+            <div className="flex border-1 flex-col gap-4 border-gray-300 bg-white rounded-lg p-4 shadow-lg ">
 
             <ImageUploader
               previewImage={previewImage}
@@ -750,7 +751,8 @@ const AddEditItem = ({ defaultValues = {}, onSubmitSuccess }) => {
               fileInputRef={fileInputRef}
               register={register}
               onChange={handleImageChange}
-            />
+              />
+              </div>
           </form>
           <div className="fixed bottom-20 w-full max-w-2xl md:px-4 px-2">
             <button
