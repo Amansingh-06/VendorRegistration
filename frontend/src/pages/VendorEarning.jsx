@@ -209,12 +209,23 @@ const VendorEarnings = () => {
         orders.forEach((order, index) => {
           const status = order?.status?.toLowerCase();
           const orderDate = new Date(order?.created_ts);
-          const item_amount = order?.order_item?.[0]?.item_real_price || 0;
-          
-          const vendor_discount = order?.vendor_discount || 0;
-          const discounted_amount =
-            (item_amount * (100 - vendor_discount)) / 100;
-          const amount = discounted_amount || 0;
+          const items = order?.order_item || [];
+const vendor_discount = order?.vendor_discount || 0;
+
+// 🔁 Calculate total amount = sum of (item_real_price * quantity)
+const item_amount = items.reduce(
+  (sum, item) => sum + ((item.item_real_price || 0) * (item.quantity || 1)),
+  0
+);
+
+// ✅ Apply discount
+const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
+const amount = discounted_amount || 0;
+
+console.log("🧾 item_amount (with quantity):", item_amount);
+console.log("🏷️ vendor_discount:", vendor_discount);
+console.log("💰 Final amount after discount:", amount);
+
 
           if (status === "delivered") {
             deliveredOrders++;
@@ -283,12 +294,23 @@ const VendorEarnings = () => {
 
         orders.forEach((order) => {
           const orderDate = new Date(order?.created_ts);
-         const item_amount = order?.order_item?.[0]?.item_real_price || 0;
-          
-          const vendor_discount = order?.vendor_discount || 0;
-          const discounted_amount =
-            (item_amount * (100 - vendor_discount)) / 100;
-          const amount = discounted_amount || 0;
+       const items = order?.order_item || [];
+const vendor_discount = order?.vendor_discount || 0;
+
+// 🔁 Calculate total amount = sum of (item_real_price * quantity)
+const item_amount = items.reduce(
+  (sum, item) => sum + ((item.item_real_price || 0) * (item.quantity || 1)),
+  0
+);
+
+// ✅ Apply discount
+const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
+const amount = discounted_amount || 0;
+
+console.log("🧾 item_amount (with quantity):", item_amount);
+console.log("🏷️ vendor_discount:", vendor_discount);
+console.log("💰 Final amount after discount:", amount);
+
 
           if (orderDate >= start && orderDate <= end) {
             const status = order.status?.toLowerCase();
@@ -533,16 +555,25 @@ const VendorEarnings = () => {
                               </h3>
                               <div className="text-green-600 text-sm whitespace-nowrap">
   <span className="text-gray-500">Spended</span> ₹
-  {(() => {
-    // ✅ Use item_real_price from the first order_item
-    const item_amount = rating?.order?.order_item?.[0]?.item_real_price || 0;
-    const discount = rating?.order?.vendor_discount || 0;
-    const final = (item_amount * (100 - discount)) / 100;
+{(() => {
+  const items = rating?.order?.order_item || [];
+  const discount = rating?.order?.vendor_discount || 0;
 
-    return final.toFixed(2);
-                                })()}
-                                {console.log("ratig",rating)}
-                                {console.log("item_amount",rating?.order?.order_item?.[0]?.item_real_price)}
+  // ✅ Total amount = sum of (item_real_price * quantity)
+  const item_amount = items.reduce(
+    (sum, item) => sum + ((item.item_real_price || 0) * (item.quantity || 1)),
+    0
+  );
+
+  const final = (item_amount * (100 - discount)) / 100;
+
+  console.log("rating", rating);
+  console.log("item_amount (with quantity):", item_amount);
+
+  return final.toFixed(2);
+})()}
+
+                               
 </div>
 
                             </div>

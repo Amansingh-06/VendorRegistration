@@ -184,13 +184,24 @@ const handleAction = async () => {
       }))
     : [];
 console.log("order",order)
-const item_amount = order?.order_item?.[0]?.item_real_price || 0;
+const items = order?.order_item || [];
 const vendor_discount = order?.vendor_discount || 0;
-const discounted_amount = (item_amount * (100 - vendor_discount)) / 100;
+
+// ✅ Step 1: Sum of (item_real_price * quantity)
+const total_item_price = items.reduce(
+  (sum, item) => sum + ((item?.item_real_price || 0) * (item?.quantity || 1)),
+  0
+);
+
+// ✅ Step 2: Apply vendor discount
+const discounted_amount = (total_item_price * (100 - vendor_discount)) / 100;
 const final_amount = discounted_amount || 0;
 
-console.log("item_real_price", item_amount);
-console.log("final_amount", final_amount);
+console.log("🧾 Total Item Price (with quantity):", total_item_price);
+console.log("🏷️ Discount (%):", vendor_discount);
+console.log("💰 Final Amount:", final_amount);
+
+
 
 
   
