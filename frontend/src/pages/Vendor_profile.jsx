@@ -60,6 +60,9 @@ export default function VendorProfile() {
   // 1. Default null
   const [position, setPosition] = useState(null);
   const [fetchedAddress, setFetchedAddress] = useState("");
+  const [isAddressFetching, setIsAddressFetching] = useState(false);
+const [addressFetchFailed, setAddressFetchFailed] = useState(false);
+
 
   // 2. Inside fetchVendor useEffect:
 
@@ -255,6 +258,12 @@ useEffect(() => {
     const lng = Number(lngRaw);
 
     if (!isNaN(lat) && !isNaN(lng)) {
+      setIsAddressFetching(true);
+      setAddressFetchFailed(false);
+
+      // ⏳ Wait 1 second to ensure lat/lng has arrived
+      await new Promise((res) => setTimeout(res, 1000));
+
       try {
         const response = await getAddressFromLatLng(lat, lng);
         const addressData = response?.results?.[0];
@@ -282,19 +291,23 @@ useEffect(() => {
           };
 
           setSelectedAddress(addressToSet);
+          setIsAddressFetching(false);
         } else {
           console.warn("📭 No address found for lat/lng");
+          setIsAddressFetching(false);
+          setAddressFetchFailed(true);
         }
       } catch (err) {
         console.error("🌐 Error fetching address:", err);
+        setIsAddressFetching(false);
+        setAddressFetchFailed(true);
       }
-    } else {
-      console.warn("❌ Invalid lat/lng:", latRaw, lngRaw);
     }
   };
 
   fetchReadableAddress();
 }, [initialFormState?.latitude, initialFormState?.longitude]);
+
 
 
 
@@ -977,68 +990,74 @@ useEffect(() => {
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2  ">
-                  <button
-                    type="button"
-                    onClick={() => setShowPopup(true)}
-                    disabled={waitloading}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white transition 
-                                        ${
-                                          waitloading
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-gradient-to-br from-orange via-yellow cursor-pointer active:scale-95 to-orange"
-                                        }`}
-                  >
-                    <MdAddLocationAlt className="text-lg" />
-                    {isLocationUpdated
-                      ? "Updated Location"
-                      : selectedAddress?.lat && selectedAddress?.long
-                      ? "Update Location"
-                      : "Current Location"}
-                  </button>
+<div className="flex items-center gap-2">
+  {/* Location Selector Popup Button */}
+  <button
+    type="button"
+    onClick={() => setShowPopup(true)}
+    disabled={waitloading}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white transition
+      ${waitloading
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-gradient-to-br from-orange via-yellow to-orange active:scale-95 cursor-pointer"}`}
+  >
+    <MdAddLocationAlt className="text-lg" />
+    {!selectedAddress?.lat || !selectedAddress?.long
+      ? "Current Location"
+      : isLocationUpdated
+      ? "Updated Location"
+      : "Update Location"}
+  </button>
 
-                  {/* Popup */}
-                  {showPopup && (
-                    <LocationPopup
-                      setLocation={(loc) => {
-                        setLocation(loc);
-                        setSelectedAddress(loc);
-                        setIsLocationUpdated(true);
-                        // setShowPopup(false);
-                      }}
-                      show={showPopup}
-                      onClose={() => setShowPopup(false)}
-                    />
-                  )}
+  {/* Location Popup */}
+  {showPopup && (
+    <LocationPopup
+      setLocation={(loc) => {
+        setSelectedAddress(loc);
+        setIsLocationUpdated(true);
+      }}
+      show={showPopup}
+      onClose={() => setShowPopup(false)}
+    />
+  )}
 
-                  <button
-                    type="button"
-                    onClick={handleCurrentLocation}
-                    disabled={waitloading}
-                    className={`flex justify-center items-center rounded-full p-2 
-                                        ${
-                                          waitloading
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-gradient-to-br from-orange via-yellow  active:scale-95 to-orange cursor-pointer"
-                                        }`}
-                  >
-                    <MdGpsFixed className="text-2xl text-white" />
-                  </button>
-                </div>
-                {selectedAddress || location || fetchedAddress ? (
-                  <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
-                    <FiMapPin className="inline-block mr-1" />
-                    {
-                      selectedAddress?.area && selectedAddress?.city
-                        ? `${selectedAddress.area}, ${selectedAddress.city}`
-                        : selectedAddress?.landmark
-                      // ? selectedAddress.landmark
-                      // : fetchedAddress?.area && fetchedAddress?.city
-                      // ? `${fetchedAddress.area}, ${fetchedAddress.city}`
-                      // : fetchedAddress?.landmark || "N/A"
-                    }
-                  </p>
-                ) : null}
+  {/* GPS Retry Button */}
+  <button
+    type="button"
+    onClick={handleCurrentLocation}
+    disabled={waitloading}
+    className={`flex justify-center items-center rounded-full p-2
+      ${waitloading
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-gradient-to-br from-orange via-yellow to-orange active:scale-95 cursor-pointer"}`}
+  >
+    <MdGpsFixed className="text-2xl text-white" />
+  </button>
+</div>
+
+{/* 🧠 Address Info with States: Fetching / Fetched / Failed */}
+{isAddressFetching ? (
+  <p className="mt-2 text-sm text-gray-700 bg-orange-100 w-fit p-1 px-2 rounded-lg">
+    <FiMapPin className="inline-block mr-1 animate-pulse" />
+    Fetching...
+  </p>
+) : selectedAddress?.area || selectedAddress?.landmark ? (
+  <p className="mt-2 text-sm text-gray-700 bg-orange-200 w-fit p-1 px-2 rounded-lg">
+    <FiMapPin className="inline-block mr-1" />
+    {selectedAddress?.area && selectedAddress?.city
+      ? `${selectedAddress.area}, ${selectedAddress.city}`
+      : selectedAddress?.landmark || "N/A"}
+  </p>
+) : addressFetchFailed ? (
+  <button
+    onClick={() => window.location.reload()}
+    className="mt-2 text-sm text-red-600 underline hover:text-red-800"
+  >
+    🔁 Refresh to load location
+  </button>
+) : null}
+
+
               </div>
             </section>
 
