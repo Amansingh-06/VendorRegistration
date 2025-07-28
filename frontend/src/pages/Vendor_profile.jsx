@@ -1003,7 +1003,7 @@ useEffect(() => {
   >
     <MdAddLocationAlt className="text-lg" />
     {!selectedAddress?.lat || !selectedAddress?.long
-      ? "Current Location"
+      ? "Update Location"
       : isLocationUpdated
       ? "Updated Location"
       : "Update Location"}

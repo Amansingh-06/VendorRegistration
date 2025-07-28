@@ -315,7 +315,7 @@ console.log("💰 Final amount after discount:", amount);
           if (orderDate >= start && orderDate <= end) {
             const status = order.status?.toLowerCase();
 
-            if (status === "rejected") {
+            if (status === "cancelled") {
               rejectedCount++;
               rejectedAmount += amount;
             }
@@ -506,7 +506,7 @@ console.log("💰 Final amount after discount:", amount);
                     </p>
                   </div>
                   <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
-                    <p className="text-gray-600">Rejected</p>
+                    <p className="text-gray-600">cancelled</p>
                     <p className="text-xl font-semibold text-orange-600">
                       ₹{selectedStats?.rejected?.amount} (
                       {selectedStats?.rejected?.count} orders)

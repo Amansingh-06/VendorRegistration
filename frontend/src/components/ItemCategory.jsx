@@ -17,7 +17,7 @@ export default function ItemCategory({
 
 
   const maxSuggestions = 10;
-  const maxSelections = 5;
+  const maxSelections = 10;
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -85,7 +85,7 @@ const toggleItem = (id) => {
     setLocalError(""); // ✅ no error
   } else {
     // ✅ Show error
-    setLocalError(`You can select up to ${maxSelections} cuisines only.`);
+    setLocalError(`You can select up to ${maxSelections} categories only.`);
     return; // Don't update anything
   }
 

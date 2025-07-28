@@ -17,7 +17,7 @@ export { updateVendorDiscount } from "../utils/OfferUpdate"; // ✅ Export for t
 const OrderPage = () => {
   const { vendorProfile, selectedVendorId, session } = useAuth();
   const vendorId = vendorProfile?.v_id || selectedVendorId; // ✅ fallback
-  const [active, setActive] = useState("All");
+  const [active, setActive] = useState("Pending");
   const [offer, setOffer] = useState(`0%`);
   const [newOffer, setNewOffer] = useState("");
   const [showPopup, setShowPopup] = useState(false);
