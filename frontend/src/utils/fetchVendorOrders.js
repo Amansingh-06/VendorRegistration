@@ -22,7 +22,8 @@ export const fetchVendorOrders = async (
             item_name,
             item_price,
             img_url,
-            veg
+            veg,
+            item_quantity
           )
         ),
         transaction:t_id (

@@ -180,9 +180,12 @@ const handleAction = async () => {
     ? order?.order_item.map((i) => ({
         name: i.items?.item_name,
         quantity: i.quantity,
-        price: i.final_price,
+      price: i.final_price,
+      item_quantity: i.items?.item_quantity,
       }))
     : [];
+  
+    
 console.log("order",order)
 const items = order?.order_item || [];
 const vendor_discount = order?.vendor_discount || 0;
@@ -203,7 +206,7 @@ console.log("💰 Final Amount:", final_amount);
 
 
 
-
+console.log(order, "Order Details");
   
   return (
     <>
@@ -283,7 +286,8 @@ console.log("💰 Final Amount:", final_amount);
           <div className="flex flex-wrap gap-2 text-gray-800 text-xs">
             {itemCounts?.map((item, i) => (
               <span key={i} className="bg-gray-100 px-2 py-1 rounded">
-                {item?.quantity} x {item?.name}
+                {item?.quantity} x {item?.name}{item?.item_quantity && ` (${item?.item_quantity})`}
+                {console.log(item,"item")}
               </span>
             ))}
           </div>
