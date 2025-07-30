@@ -41,15 +41,58 @@ export const fetchVendorOrders = async (
         )
       `)
       .eq('v_id', vendorId);
-if (status && status.toLowerCase() !== 'all') {
-  query = query.ilike('status', `%${status}%`); // ✅ partial match allow karega
-  console.log("🚀 Supabase filter laga raha hu with status:", status);
+
+    const normalizedStatus = status?.toLowerCase().trim();
+
+    // ✅ Only apply filter in query if not custom logic
+ // ✅ Handle filters
+if (normalizedStatus && normalizedStatus !== "all") {
+  if (
+    normalizedStatus === "accepted & dp assign" ||
+    normalizedStatus === "accepted & dpassigned"
+  ) {
+    // Don't apply Supabase filter, we’ll handle it later
+  } else if (normalizedStatus === "accepted") {
+    // ✅ Apply exact match for "accepted"
+    query = query.eq('status', 'accepted');
+    console.log("🚀 Supabase exact filter: accepted");
+  } else {
+    // ✅ Partial match for all other statuses
+    query = query.ilike('status', `%${status}%`);
+    console.log("🚀 Supabase ilike filter with status:", status);
+  }
 }
 
 
-    const { data: orders, error } = await query;
+    let { data: orders, error } = await query;
 
     if (error) throw error;
+
+    // ✅ Apply custom logic if status is "accepted & dp assign"
+    if (
+      normalizedStatus === "accepted & dp assign" ||
+      normalizedStatus === "accepted & dpassigned"
+    ) {
+      const now = new Date();
+      orders = orders.filter(order => {
+        const status = order?.status?.toLowerCase().trim();
+        if (status !== "accepted") return false;
+
+        const dpAssigned = !!order?.dp_id;
+        const createdTs = new Date(order?.created_ts);
+        const etaTs = new Date(order?.eta);
+
+        if (isNaN(createdTs) || isNaN(etaTs)) return false;
+
+        const totalTime = etaTs - createdTs;
+        if (totalTime <= 0) return false;
+
+        const timePassed = now - createdTs;
+        const percentagePassed = (timePassed / totalTime) * 100;
+
+        return dpAssigned || percentagePassed >= 65;
+      });
+    }
 
     // ✅ Sorting logic
     const statusPriority = {
@@ -73,17 +116,17 @@ if (status && status.toLowerCase() !== 'all') {
       ? sortedData
       : sortedData.slice(offset, offset + limit);
 
-    // ✅ Collect all dp_ids from finalData
+    // ✅ Collect all dp_ids
     const dpIds = finalData
       .map(order => order.dp_id)
-      .filter(id => !!id); // only non-null
+      .filter(id => !!id);
 
     let dpUsers = [];
 
     if (dpIds.length > 0) {
       const { data: users, error: dpError } = await supabase
         .from('delivery_partner')
-        .select('dp_id, name, photo_url,mobile_no')
+        .select('dp_id, name, photo_url, mobile_no')
         .in('dp_id', dpIds);
 
       if (dpError) throw dpError;
@@ -101,6 +144,7 @@ if (status && status.toLowerCase() !== 'all') {
 
     return { success: true, data: enrichedOrders };
   } catch (error) {
+    console.error("❌ fetchVendorOrders error:", error);
     return { success: false, data: [] };
   }
 };

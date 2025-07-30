@@ -26,6 +26,7 @@ const OrderPage = () => {
   const [hasSearched,setHasSearched] = useState(false)
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [error, seterror] = useState("");
+  
   // const { vendorProfile } = useAuth();
 
 const getDbStatus = (active) => {
@@ -33,10 +34,10 @@ const getDbStatus = (active) => {
   console.log("🔍 getDbStatus() called with:", active);
   console.log("🎯 Normalized value:", normalized);
 
-  if (normalized === "accepted & dp assign" || normalized === "accepted & dpassigned") {
-    console.log("✅ Returning: accepted");
-    return "accepted";
-  }
+  // if (normalized === "accepted & dp assign" || normalized === "accepted & dpassigned") {
+  //   console.log("✅ Returning: accepted");
+  //   return "accepted";
+  // }
 
   console.log("➡️ Returning:", normalized);
   return normalized;
@@ -147,44 +148,12 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
 
 
 
- useEffect(() => {
+useEffect(() => {
   if (!orders) return;
 
   let filtered = [...orders];
 
-  // ✅ Filter by Active Status
-  const normalizedActive = active?.toLowerCase().trim();
-  if (normalizedActive === "accepted") {
-    filtered = filtered.filter((order) => {
-      const status = order?.status?.toLowerCase().trim();
-      return status === "accepted";
-    });
-  } else if (
-    normalizedActive === "accepted & dp assign" ||
-    normalizedActive === "accepted & dpassigned"
-  ) {
-    filtered = filtered.filter((order) => {
-      const status = order?.status?.toLowerCase()?.trim();
-      if (status !== "accepted") return false;
-
-      const dpAssigned = !!order?.dp_id;
-      const createdTs = new Date(order?.created_ts);
-      const etaTs = new Date(order?.eta);
-      const now = new Date();
-
-      if (isNaN(createdTs) || isNaN(etaTs)) return false;
-
-      const totalTime = etaTs - createdTs;
-      if (totalTime <= 0) return false;
-
-      const timePassed = now - createdTs;
-      const percentagePassed = (timePassed / totalTime) * 100;
-
-      return dpAssigned || percentagePassed >= 65;
-    });
-  }
-
-  // ✅ Filter by Search Query
+  // ✅ Filter by Search Query only
   const trimmed = searchQuery.trim();
   if (trimmed !== "") {
     const lowerQuery = trimmed.toLowerCase();
@@ -194,7 +163,8 @@ const { orders, hasMore, loadMore, isLoading } = useVendorOrders(
   }
 
   setFilteredOrders(filtered);
-}, [orders, active]);
+}, [orders, searchQuery]); // 👈 active hat gaya, searchQuery add ho gaya
+
 
 
 
