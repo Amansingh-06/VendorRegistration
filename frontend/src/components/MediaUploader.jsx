@@ -50,7 +50,11 @@ export default function MediaUploader({
           ) : (
             <img
               src={previewUrl}
-              alt={label}
+                alt={label}
+                onAbort={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop on broken image
+                  e.target.src = "/placeholder.jpg";
+                }}
               className="h-full w-full object-contain"
             />
           )

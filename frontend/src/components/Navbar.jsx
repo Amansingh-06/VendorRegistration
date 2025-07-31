@@ -189,10 +189,14 @@ const Navbar = () => {
                 {vendorProfile?.banner_url &&
                 vendorProfile.banner_url !== "NA" ? (
                   <img
-                    src={vendorProfile.banner_url}
-                    alt="Vendor Banner"
-                    className="w-full h-full object-fill"
-                  />
+                      src={vendorProfile?.banner_url}
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop on broken image
+                        e.target.src = "/placeholder.jpg";
+                      }}
+                      alt="Vendor Banner"
+                      className="w-full h-full object-fill"
+                    />
                 ) : vendorProfile?.video_url &&
                   vendorProfile.video_url !== "NA" ? (
                   <video

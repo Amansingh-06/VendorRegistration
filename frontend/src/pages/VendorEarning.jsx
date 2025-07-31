@@ -546,6 +546,10 @@ console.log("💰 Final amount after discount:", amount);
                                   ? "/defaultuserImage.jpg"
                                   : rating.user.dp_url
                               }
+                              onError={(e) => {
+                                e.target.onerror = null; // Prevent infinite loop on broken image
+                                e.target.src = "/placeholder.jpg";
+                              }}
                               className="w-10 h-10 rounded-full"
                               alt="User DP"
                             />
@@ -631,6 +635,10 @@ console.log("💰 Final amount after discount:", amount);
                                   ? "/defaultuserImage.jpg"
                                   : rating.user.dp_url
                               }
+                              onError={(e) => {
+                                e.target.onerror = null; // Prevent infinite loop on broken image
+                                e.target.src = "/placeholder.jpg";
+                              }}
                               alt="Customer"
                               className="w-6 h-6 rounded-full object-cover"
                             />
@@ -669,6 +677,10 @@ console.log("💰 Final amount after discount:", amount);
                                   ? "/defaultuserImage.jpg"
                                   : vendorProfile.banner_url
                               }
+                              onError={(e) => {
+                                e.target.onerror = null; // Prevent infinite loop on broken image
+                                e.target.src = "/placeholder.jpg";
+                              }}
                               className="w-6 h-6 rounded-full object-cover"
                               alt="Vendor"
                             />
@@ -730,6 +742,10 @@ console.log("💰 Final amount after discount:", amount);
                                     ? "/defaultuserImage.jpg"
                                     : vendorProfile.banner_url
                                 }
+                                onError={(e) => {
+                                  e.target.onerror = null; // Prevent infinite loop on broken image
+                                  e.target.src = "/placeholder.jpg";
+                                }}
                                 alt="Vendor"
                                 className="w-6 h-6 rounded-full object-fill"
                               />

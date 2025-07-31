@@ -797,6 +797,10 @@ useEffect(() => {
                   {bannerUrl && bannerUrl !=='NA' ? (
                     <img
                       src={bannerUrl}
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop on broken image
+                        e.target.src = "/placeholder.jpg";
+                      }}
                       alt="banner"
                       className="h-32 w-full object-fill rounded-lg"
                     />
@@ -860,6 +864,10 @@ useEffect(() => {
                     <img
                       src={qrUrl}
                       alt="QR code"
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop on broken image
+                        e.target.src = "/placeholder.jpg";
+                      }}
                       className="h-32 w-full object-fill rounded-lg"
                     />
                   ) : (

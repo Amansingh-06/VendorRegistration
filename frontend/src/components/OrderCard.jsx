@@ -228,6 +228,10 @@ console.log(order, "Order Details");
                       ? "/defaultuserImage.jpg"
                       : order?.user?.dp_url
                   }
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevent infinite loop on broken image}
+                    e.target.src = "/placeholder.jpg";
+                  }}
                   alt="User"
                   className="w-full h-full object-fill rounded-full"
                 />
@@ -316,6 +320,10 @@ console.log(order, "Order Details");
               </p>
               <img
                 src={order?.delivery_person?.photo_url || "/placeholder-dp.png"}
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop on broken image
+                  e.target.src = "/placeholder-dp.png";
+                }}
                 alt="DP"
                 className="w-6 h-6 rounded-full object-fill"
               />

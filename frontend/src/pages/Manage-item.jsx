@@ -168,6 +168,10 @@ export default function ManageItemsPage() {
                           ? item.img_url
                           : "/public/defaultItem.jpeg"
                       }
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop on broken image
+                        e.target.src = "/placeholder.jpg";
+                      }}
                       alt={item?.item_name || "Preview"}
                       className="w-full h-full rounded-lg object-fill"
                     />
