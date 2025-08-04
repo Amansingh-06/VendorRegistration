@@ -69,30 +69,37 @@ if (normalizedStatus && normalizedStatus !== "all") {
     if (error) throw error;
 
     // ✅ Apply custom logic if status is "accepted & dp assign"
-    if (
-      normalizedStatus === "accepted & dp assign" ||
-      normalizedStatus === "accepted & dpassigned"
-    ) {
-      const now = new Date();
-      orders = orders.filter(order => {
-        const status = order?.status?.toLowerCase().trim();
-        if (status !== "accepted") return false;
+if (
+  normalizedStatus === "accepted & dp assign" ||
+  normalizedStatus === "accepted & dpassigned"
+) {
+  const now = new Date();
+  orders = orders.filter(order => {
+    const status = order?.status?.toLowerCase().trim();
+    if (status !== "accepted") return false;
 
-        const dpAssigned = !!order?.dp_id;
-        const createdTs = new Date(order?.created_ts);
-        const etaTs = new Date(order?.eta);
+    const dpAssigned = !!order?.dp_id;
+    const createdTs = new Date(order?.created_ts);
+    const etaTs = new Date(order?.eta);
 
-        if (isNaN(createdTs) || isNaN(etaTs)) return false;
+    if (isNaN(createdTs) || isNaN(etaTs)) return false;
 
-        const totalTime = etaTs - createdTs;
-        if (totalTime <= 0) return false;
+    const totalTime = etaTs - createdTs;
+    if (totalTime <= 0) return false;
 
-        const timePassed = now - createdTs;
-        const percentagePassed = (timePassed / totalTime) * 100;
+    const timePassed = now - createdTs;
+    const percentagePassed = (timePassed / totalTime) * 100;
 
-        return dpAssigned || percentagePassed >= 65;
-      });
-    }
+    // ✅ travel_time check
+    const travelTimeInMs = (order?.travel_time || 0) * 60 * 1000; // travel_time in minutes → milliseconds
+    const remainingTime = etaTs - now;
+    const allowDueToTravelTime = remainingTime <= travelTimeInMs;
+
+    // ✅ Final condition
+    return dpAssigned || percentagePassed >= 65 || allowDueToTravelTime;
+  });
+}
+
 
     // ✅ Sorting logic
     const statusPriority = {

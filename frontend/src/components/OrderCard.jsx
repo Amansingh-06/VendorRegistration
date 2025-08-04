@@ -32,7 +32,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 
 
 
-  useEffect(() => {
+useEffect(() => {
   const checkActionAllowed = () => {
     if (
       currentStatus === ORDER_STATUS?.ACCEPTED &&
@@ -47,7 +47,12 @@ const OrderCard = ({ order, onStatusUpdate }) => {
       const timePassed = now - createdTs;
       const percentagePassed = (timePassed / totalTime) * 100;
 
-      if (dpAssigned || percentagePassed >= 65) {
+      // ✅ travel_time logic
+      const travelTimeInMs = Number(order?.travel_time || 0) * 60 * 1000; // minutes → ms
+      const remainingTime = etaTs - now;
+      const allowDueToTravelTime = remainingTime <= travelTimeInMs;
+
+      if (dpAssigned || percentagePassed >= 65 || allowDueToTravelTime) {
         setIsActionDisabled(false); // ✅ enable
       } else {
         setIsActionDisabled(true); // ❌ disable
@@ -58,7 +63,15 @@ const OrderCard = ({ order, onStatusUpdate }) => {
   };
 
   checkActionAllowed();
-}, [order?.dp_id, order?.created_ts, order?.eta, currentStatus, action?.nextStatus]);
+}, [
+  order?.dp_id,
+  order?.created_ts,
+  order?.eta,
+  order?.travel_time, // ✅ added dependency
+  currentStatus,
+  action?.nextStatus
+]);
+
 
 
 
@@ -103,6 +116,11 @@ const handleAction = async () => {
     const timePassed = now - createdTs;
     const percentagePassed = (timePassed / totalTime) * 100;
 
+    // ✅ Travel time logic
+    const travelTimeInMs = Number(order?.travel_time || 0) * 60 * 1000;
+    const remainingTime = etaTs - now;
+    const allowDueToTravelTime = remainingTime <= travelTimeInMs;
+
     console.log("📦 DP Assigned:", dpAssigned);
     console.log("📆 Created At:", createdTs.toISOString());
     console.log("📆 ETA:", etaTs.toISOString());
@@ -110,13 +128,15 @@ const handleAction = async () => {
     console.log("⌛ Time Passed (ms):", timePassed);
     console.log("⏳ Total Time (ms):", totalTime);
     console.log("📊 % Time Passed:", percentagePassed.toFixed(2));
+    console.log("🚗 Travel Time (ms):", travelTimeInMs);
+    console.log("⏱️ Remaining Time (ms):", remainingTime);
 
-    // ✅ Check if either DP assigned OR 65% time passed
-    if (dpAssigned || percentagePassed >= 65) {
-      console.log("✅ Allowed: Either DP assigned or 65% time passed");
+    // ✅ Check if either DP assigned, or 65% time passed, or travel time is near
+    if (dpAssigned || percentagePassed >= 65 || allowDueToTravelTime) {
+      console.log("✅ Allowed: Conditions passed");
       setIsActionDisabled(false); // ✅ enable button
     } else {
-      console.log("❌ Blocked: Neither DP assigned nor 65% time passed");
+      console.log("❌ Blocked: Neither DP assigned nor enough time passed");
       setIsActionDisabled(true);  // ❌ disable button
       toast.error("Delivery partner not assigned yet. Try again after some time.");
       return;
@@ -172,6 +192,7 @@ const handleAction = async () => {
 
   setLoading(false);
 };
+
 
 
 
